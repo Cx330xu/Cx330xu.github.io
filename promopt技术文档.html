@@ -1,0 +1,1982 @@
+<!DOCTYPE html><html lang="zh-CN"><head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>提示工程技术文档</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            overflow-x: hidden;
+        }
+        
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #0f766e;
+            --accent-color: #059669;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+        
+        .font-display { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'Inter', sans-serif; }
+        
+        .toc-fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-right: 1px solid var(--border-color);
+            z-index: 50;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .citation-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid transparent;
+            transition: all 0.2s ease;
+        }
+        
+        .citation-link:hover {
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .section-header {
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
+            margin: 3rem 0 1.5rem 0;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .mermaid-container {
+            display: flex;
+            justify-content: center;
+            min-height: 300px;
+            max-height: 800px;
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mermaid-container .mermaid {
+            width: 100%;
+            max-width: 100%;
+            height: 100%;
+            cursor: grab;
+            transition: transform 0.3s ease;
+            transform-origin: center center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
+        .mermaid-container .mermaid svg {
+            max-width: 100%;
+            height: 100%;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .mermaid-container .mermaid:active {
+            cursor: grabbing;
+        }
+
+        .mermaid-container.zoomed .mermaid {
+            height: 100%;
+            width: 100%;
+            cursor: grab;
+        }
+
+        .mermaid-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mermaid-control-btn {
+            background: #ffffff;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #374151;
+            font-size: 14px;
+            min-width: 36px;
+            height: 36px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mermaid-control-btn:hover {
+            background: #f8fafc;
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-1px);
+        }
+
+        .mermaid-control-btn:active {
+            transform: scale(0.95);
+        }
+        
+        @media (max-width: 1024px) {
+            .toc-fixed {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .toc-fixed.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .hero-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .mermaid-control-btn:not(.reset-zoom) {
+                display: none;
+            }
+            .mermaid-controls {
+                top: auto;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+  </head>
+
+  <body class="bg-gray-50 font-body">
+    <!-- Mobile TOC Toggle -->
+    <button id="toc-toggle" class="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded shadow">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Table of Contents -->
+    <nav id="toc" class="toc-fixed">
+      <div class="mb-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">目录</h2>
+        <ul class="space-y-2 text-sm">
+          <li>
+            <a href="#introduction" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">引言</a>
+          </li>
+          <li>
+            <a href="#basics" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">1. 基础概念与核心原理</a>
+            <ul class="ml-4 mt-1 space-y-1">
+              <li>
+                <a href="#basics-what" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">1.1 什么是提示工程</a>
+              </li>
+              <li>
+                <a href="#basics-structure" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">1.2 基本提示结构</a>
+              </li>
+              <li>
+                <a href="#basics-interaction" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">1.3 模型交互原理</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#advanced" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">2. 高级提示工程方法论</a>
+            <ul class="ml-4 mt-1 space-y-1">
+              <li>
+                <a href="#advanced-zero" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">2.1 零样本提示</a>
+              </li>
+              <li>
+                <a href="#advanced-few" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">2.2 少样本提示</a>
+              </li>
+              <li>
+                <a href="#advanced-chain" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">2.3 思维链 (CoT)</a>
+              </li>
+              <li>
+                <a href="#advanced-role" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">2.4 角色扮演</a>
+              </li>
+              <li>
+                <a href="#advanced-template" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">2.5 模板化方法</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#context" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">3. 上下文工程与知识增强</a>
+            <ul class="ml-4 mt-1 space-y-1">
+              <li>
+                <a href="#context-strategies" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">3.1 上下文管理策略</a>
+              </li>
+              <li>
+                <a href="#context-rag" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">3.2 检索增强生成 (RAG)</a>
+              </li>
+              <li>
+                <a href="#context-fusion" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">3.3 实现知识融合</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#programming" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">4. 编程与代码生成中的提示工程</a>
+            <ul class="ml-4 mt-1 space-y-1">
+              <li>
+                <a href="#programming-generation" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">4.1 代码生成与补全</a>
+              </li>
+              <li>
+                <a href="#programming-debugging" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">4.2 代码解释与调试</a>
+              </li>
+              <li>
+                <a href="#programming-testing" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">4.3 自动化测试用例生成</a>
+              </li>
+            </ul>
+          </li>
+          <li>
+            <a href="#best-practices" class="block py-1 px-2 text-gray-700 hover:bg-blue-50 rounded">5. 最佳实践与常见陷阱</a>
+            <ul class="ml-4 mt-1 space-y-1">
+              <li>
+                <a href="#best-design" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">5.1 设计高效提示的原则</a>
+              </li>
+              <li>
+                <a href="#best-pitfalls" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">5.2 常见陷阱与解决方案</a>
+              </li>
+              <li>
+                <a href="#best-optimization" class="block py-1 px-2 text-gray-600 hover:bg-blue-50 rounded">5.3 性能优化策略</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="main" class="main-content">
+      <!-- Hero Section with Grid Layout -->
+      <section class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
+          <div class="hero-grid">
+            <!-- Main Title and Description -->
+            <div class="space-y-6">
+              <div class="space-y-4">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-gray-900 leading-tight">
+                  <em class="text-blue-600">提示工程</em>
+                  <br/>
+                  技术文档
+                </h1>
+                <p class="text-base sm:text-xl text-gray-600 leading-relaxed">
+                  一份专注于设计和优化输入指令的综合性技术指南，旨在引导大型语言模型生成更准确、更相关的输出
+                </p>
+              </div>
+
+              <!-- Key Highlights -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                  <h3 class="font-semibold text-blue-900 mb-2">核心概念</h3>
+                  <p class="text-blue-700 text-sm">提示结构、Tokenization机制、模型交互原理</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                  <h3 class="font-semibold text-green-900 mb-2">高级技术</h3>
+                  <p class="text-green-700 text-sm">思维链、少样本学习、角色扮演、RAG</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Element -->
+            <div class="relative mt-6 sm:mt-0">
+              <img src="https://kimi-web-img.moonshot.cn/img/static001.geekbang.org/c30b335715330c98cb87a2ad5acaa9dd553fe0bb.jpeg" alt="AI语言模型提示工程抽象概念示意图" class="w-full h-48 sm:h-64 object-cover rounded-lg shadow-lg" size="medium" aspect="wide" query="抽象提示工程概念" referrerpolicy="no-referrer" data-modified="1" data-score="0.00"/>
+              <div class="absolute inset-0 bg-gradient-to-t from-blue-900/20 to-transparent rounded-lg"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Introduction -->
+      <section id="introduction" class="bg-gray-50 py-12">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="prose prose-lg max-w-none">
+            <p class="text-xl text-gray-700 leading-relaxed">
+              提示工程（Prompt Engineering）是一门专注于设计和优化输入指令（即&#34;提示&#34;）的学科，旨在引导大型语言模型（LLM）等人工智能系统生成更准确、更相关、更符合用户期望的输出。它不仅仅是简单地提出问题，而是涉及一套系统化的方法论，通过精心构建的提示来&#34;解锁&#34;模型的潜在能力，并控制其行为。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 1: Basics -->
+      <section id="basics" class="py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="section-header">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">1. 基础概念与核心原理</h2>
+            <p class="text-gray-600">理解提示工程的基础知识和核心工作机制</p>
+          </div>
+
+          <div id="basics-what" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">1.1 什么是提示工程 (Prompt Engineering)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              提示工程（Prompt Engineering）是一门专注于设计和优化输入指令（即&#34;提示&#34;）的学科，旨在引导大型语言模型（LLM）等人工智能系统生成更准确、更相关、更符合用户期望的输出。它不仅仅是简单地提出问题，而是涉及一套系统化的方法论，通过精心构建的提示来&#34;解锁&#34;模型的潜在能力，并控制其行为。
+            </p>
+
+            <div class="highlight-box">
+              <p class="text-gray-700 leading-relaxed">
+                提示工程师需要深入理解模型的内部工作机制、训练数据的特点以及不同提示结构对输出结果的影响，从而设计出能够高效完成特定任务的指令。这门学科的核心在于，通过改变输入的措辞、结构、上下文和示例，来影响模型的&#34;思考&#34;过程和最终答案，使其从一个通用的文本生成器，转变为一个能够执行复杂推理、代码生成、创意写作等高级任务的强大工具。
+              </p>
+            </div>
+          </div>
+
+          <div id="basics-structure" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">1.2 基本提示结构</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              一个结构清晰、组织良好的提示（Prompt）是引导大型语言模型（LLM）产生高质量、高相关性输出的基石。根据 <a href="https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api" class="citation-link">OpenAI 官方的最佳实践指南</a>，一个高效的提示通常由四个核心部分构成：<strong>指令（Instruction）、上下文（Context）、输入数据（Input Data）和输出指示（Output Indicator）</strong>。
+            </p>
+
+            <div class="grid md:grid-cols-2 gap-6 mt-8">
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                  <i class="fas fa-bullseye text-blue-500 mr-2"></i>
+                  指令 (Instruction)
+                </h4>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  指令是提示的核心，它直接、明确地告诉模型需要执行的具体任务。一个好的指令应该是具体、无歧义且以动词开头的。
+                </p>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                  <i class="fas fa-layer-group text-green-500 mr-2"></i>
+                  上下文 (Context)
+                </h4>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  上下文为模型提供了执行任务所需的背景信息和约束条件。它可以帮助模型更好地理解输入数据的含义。
+                </p>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                  <i class="fas fa-database text-purple-500 mr-2"></i>
+                  输入数据 (Input Data)
+                </h4>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  输入数据是模型需要处理的具体内容，它是提示中不可或缺的一部分。清晰地标识出输入数据的开始和结束位置很重要。
+                </p>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h4 class="font-semibold text-gray-900 mb-3 flex items-center">
+                  <i class="fas fa-code text-red-500 mr-2"></i>
+                  输出指示 (Output Indicator)
+                </h4>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  输出指示部分用于定义模型输出的期望格式和结构，这对于后续的程序化处理至关重要。
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div id="basics-interaction" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">1.3 模型交互原理</h3>
+
+            <div class="space-y-8">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">1.3.1 Tokenization 机制</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  Tokenization（分词）是大型语言模型（LLM）处理文本的第一步，也是理解模型如何&#34;看待&#34;语言的关键。它指的是将一段连续的文本字符串分解成一系列更小的、有意义的单元，这些单元被称为<strong>Token</strong>。
+                </p>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <p class="text-sm text-gray-600">
+                    <strong>示例：</strong> 句子 &#34;I love programming.&#34; 可能会被分解成
+                    <code class="bg-gray-200 px-1 rounded">[&#34;I&#34;, &#34; love&#34;, &#34; program&#34;, &#34;ming&#34;, &#34;.&#34;]</code> 这样的 Token 序列。
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">1.3.2 温度 (Temperature) 与 Top-p 采样</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  在调用大型语言模型 API 时，
+                  <code>temperature</code> 和
+                  <code>top_p</code> 是两个至关重要的参数，它们共同控制着模型生成文本的随机性和创造性。<a href="https://moldstud.com/articles/p-the-ultimate-guide-to-openai-api-for-prompt-engineers-unlocking-the-power-of-advanced-ai-techniques" class="citation-link">根据 MoldStud 的指南</a>，这些参数的正确设置对输出质量有显著影响。
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="bg-blue-50 p-6 rounded-lg border border-blue-200">
+                    <h5 class="font-semibold text-blue-900 mb-2">Temperature</h5>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                      <li>• 较低值 (0.2)：更确定、保守的输出</li>
+                      <li>• 较高值 (1.0+)：更具创意和多样性</li>
+                      <li>• 适用场景：事实性任务 vs 创意任务</li>
+                    </ul>
+                  </div>
+                  <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                    <h5 class="font-semibold text-green-900 mb-2">Top-p (Nucleus Sampling)</h5>
+                    <ul class="text-sm text-green-800 space-y-1">
+                      <li>• 设置概率阈值 (如 0.9)</li>
+                      <li>• 只从累积概率超过阈值的词语中选择</li>
+                      <li>• 平衡创造性和连贯性</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Advanced Methods -->
+      <section id="advanced" class="bg-white py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="section-header">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">2. 高级提示工程方法论</h2>
+            <p class="text-gray-600">掌握高级提示技术，提升模型性能</p>
+          </div>
+
+          <div id="advanced-zero" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">2.1 零样本提示 (Zero-Shot Prompting)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              零样本提示（Zero-Shot Prompting）是最基础的提示工程方法，它指的是直接向大型语言模型（LLM）提出任务要求，<strong>不提供任何示例或上下文学习</strong>。模型完全依赖其预训练期间学到的知识和能力来理解任务并生成答案。
+            </p>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg mb-6">
+              <h4 class="font-semibold mb-4 text-white">代码示例：基础零样本提示</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 定义零样本提示
+zero_shot_prompt = &#34;请将以下英文句子翻译成中文：&#39;The future of AI is full of possibilities.&#39;&#34;
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: zero_shot_prompt}
+        ],
+        temperature=0.7,
+        max_tokens=100
+    )
+
+    # 提取并打印模型生成的翻译
+    translation = response.choices[0].message.content.strip()
+    print(f&#34;翻译结果: {translation}&#34;)
+
+except Exception as e:
+    print(f&#34;调用 API 时出错: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="advanced-few" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">2.2 少样本提示 (Few-Shot Prompting)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              少样本提示（Few-Shot Prompting）是一种通过在提示中提供少量输入-输出示例来引导大型语言模型（LLM）执行特定任务的技术。与零样本提示不同，少样本提示通过展示期望的行为模式，帮助模型更好地理解任务要求和输出格式，从而显著提高其在复杂或模糊任务上的表现。
+            </p>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-gray-900 mb-3">示例选择策略</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">代表性 (Representativeness)</h5>
+                  <p class="text-gray-700 text-sm">选择的示例应该能够覆盖任务的主要情况和边界条件</p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">多样性 (Diversity)</h5>
+                  <p class="text-gray-700 text-sm">示例之间应该具有一定的差异性，避免过于相似</p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">清晰性 (Clarity)</h5>
+                  <p class="text-gray-700 text-sm">示例本身应该是清晰、无歧义的，关系明确</p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">格式一致性 (Format Consistency)</h5>
+                  <p class="text-gray-700 text-sm">所有示例的格式和结构都应该保持一致</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg mt-6">
+              <h4 class="font-semibold mb-4 text-white">代码示例：实现少样本学习</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 定义少样本提示
+few_shot_prompt = &#34;&#34;&#34;
+Extract keywords from the corresponding texts below.
+
+Text 1: Stripe provides APIs that web developers can use to integrate payment processing into their websites and mobile applications.
+Keywords 1: Stripe, payment processing, APIs, web developers, websites, mobile applications
+
+Text 2: OpenAI has trained cutting-edge language models that are very good at understanding and generating text. Our API provides access to these models and can be used to solve virtually any task that involves processing language.
+Keywords 2: OpenAI, language models, text processing, API
+
+Text 3: {text_input}
+Keywords 3:
+&#34;&#34;&#34;
+
+# 需要提取关键词的文本
+new_text = &#34;LangChain is a framework for developing applications powered by language models. It provides tools to create context-aware and reasoning applications.&#34;
+
+# 将输入文本填充到提示模板中
+formatted_prompt = few_shot_prompt.format(text_input=new_text)
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: formatted_prompt}
+        ],
+        temperature=0.3,  # 使用较低的温度以获得更确定性的结果
+        max_tokens=100
+    )
+
+    # 提取并打印模型生成的关键词
+    keywords = response.choices[0].message.content.strip()
+    print(f&#34;Extracted Keywords: {keywords}&#34;)
+
+except Exception as e:
+    print(f&#34;An error occurred: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="advanced-chain" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">2.3 思维链 (Chain-of-Thought, CoT)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              思维链（Chain-of-Thought, CoT）是一种先进的提示工程技术，其核心原理是通过引导大型语言模型（LLM）<strong>生成一系列中间推理步骤</strong>，来解决复杂的逻辑、数学或常识推理问题。这种方法模拟了人类解决复杂问题时的思维过程。
+            </p>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+              <h4 class="font-semibold text-gray-900 mb-4">零样本 CoT vs 少样本 CoT</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gray-200">
+                      <th class="text-left py-2 px-3 font-medium text-gray-900">特性</th>
+                      <th class="text-left py-2 px-3 font-medium text-gray-900">零样本 CoT</th>
+                      <th class="text-left py-2 px-3 font-medium text-gray-900">少样本 CoT</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-2 px-3 font-medium">实现方式</td>
+                      <td class="py-2 px-3">在问题后添加指令性短语</td>
+                      <td class="py-2 px-3">提供包含详细推理步骤的示例</td>
+                    </tr>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-2 px-3 font-medium">优点</td>
+                      <td class="py-2 px-3">简单、通用、无需准备示例</td>
+                      <td class="py-2 px-3">更精确、可控，能引导特定推理模式</td>
+                    </tr>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-2 px-3 font-medium">缺点</td>
+                      <td class="py-2 px-3">推理过程可能不够稳定</td>
+                      <td class="py-2 px-3">需要精心准备高质量的示例</td>
+                    </tr>
+                    <tr>
+                      <td class="py-2 px-3 font-medium">适用场景</td>
+                      <td class="py-2 px-3">通用推理任务、快速测试</td>
+                      <td class="py-2 px-3">复杂逻辑问题、数学问题</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：构建思维链提示</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 定义包含思维链的少样本提示
+cot_prompt = &#34;&#34;&#34;
+Solve the following math problems by breaking them down into steps.
+
+Problem: Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can has 3 tennis balls. How many tennis balls does he have now?
+Let&#39;s think step by step.
+Step 1: Roger starts with 5 tennis balls.
+Step 2: He buys 2 cans, and each can has 3 balls, so he buys 2 * 3 = 6 tennis balls.
+Step 3: The total number of tennis balls is the sum of what he started with and what he bought: 5 + 6 = 11.
+Answer: 11
+
+Problem: A bakery sold 45 cookies in the morning and 38 cookies in the afternoon. How many cookies did they sell in total?
+Let&#39;s think step by step.
+Step 1: The bakery sold 45 cookies in the morning.
+Step 2: The bakery sold 38 cookies in the afternoon.
+Step 3: The total number of cookies sold is the sum of the morning and afternoon sales: 45 + 38 = 83.
+Answer: 83
+
+Problem: {new_problem}
+Let&#39;s think step by step.
+&#34;&#34;&#34;
+
+# 需要解决的新问题
+new_problem = &#34;A library had 120 books. It received a donation of 50 books and then lent out 30 books. How many books does the library have now?&#34;
+
+# 将新问题填充到提示模板中
+formatted_prompt = cot_prompt.format(new_problem=new_problem)
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: formatted_prompt}
+        ],
+        temperature=0.2,  # 使用较低的温度以确保推理的准确性
+        max_tokens=200
+    )
+
+    # 提取并打印模型的完整回答
+    full_answer = response.choices[0].message.content.strip()
+    print(f&#34;Model&#39;s Reasoning and Answer:\n{full_answer}&#34;)
+
+except Exception as e:
+    print(f&#34;An error occurred: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="advanced-role" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">2.4 角色扮演 (Role-Playing)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              角色扮演是一种在提示工程中广泛使用的技术，它通过为大型语言模型（LLM）设定一个特定的角色或身份，来引导其生成符合该角色特征和知识背景的输出。<a href="https://zhuanlan.zhihu.com/p/668732959" class="citation-link">相关研究</a>表明，这种方法可以显著提高模型在特定领域任务上的表现。
+            </p>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：创建专家角色提示</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 定义一个函数，用于向设定为特定角色的模型提问
+def ask_expert(question, role=&#34;a helpful assistant&#34;):
+    &#34;&#34;&#34;
+    向大型语言模型提问，并为其设定一个特定的角色。
+    &#34;&#34;&#34;
+    try:
+        response = client.chat.completions.create(
+            model=&#34;gpt-3.5-turbo&#34;,
+            messages=[
+                {&#34;role&#34;: &#34;system&#34;, &#34;content&#34;: f&#34;You are {role}.&#34;},
+                {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: question}
+            ],
+            temperature=0.5,
+            max_tokens=300
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f&#34;An error occurred: {e}&#34;
+
+# 用户提出的问题
+technical_question = &#34;请解释Python中的GIL（全局解释器锁）是什么，以及它对多线程程序的影响。&#34;
+
+# 调用函数，将模型设定为&#34;专业的AI编程助手&#34;
+expert_answer = ask_expert(
+    question=technical_question,
+    role=&#34;a professional AI programming assistant, skilled in explaining complex programming concepts clearly and concisely.&#34;
+)
+
+print(&#34;--- 角色扮演：专业编程助手 ---&#34;)
+print(f&#34;问题：{technical_question}\n&#34;)
+print(f&#34;回答：{expert_answer}\n&#34;)
+
+# 对比实验：使用默认角色（普通助手）
+default_answer = ask_expert(question=technical_question)
+print(&#34;--- 对比实验：默认助手 ---&#34;)
+print(f&#34;问题：{technical_question}\n&#34;)
+print(f&#34;回答：{default_answer}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="advanced-template" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">2.5 模板化方法 (Template-Based Approaches)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              在构建复杂的提示工程应用时，手动拼接字符串来创建提示不仅繁琐，而且容易出错，难以维护。为了解决这个问题，LangChain 等框架提供了强大的模板化工具，其中最核心的就是
+              <code>PromptTemplate</code>。
+            </p>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：构建可复用的提示模板</h4>
+              <pre class="code-block">from langchain.prompts import PromptTemplate
+
+# 定义一个包含变量的提示模板
+code_explanation_template = &#34;&#34;&#34;
+You are an expert Python programmer. Your task is to explain the following code snippet in a clear and concise manner.
+
+Code Snippet:
+```python
+{code}
+```
+
+Explanation:
+&#34;&#34;&#34;
+
+# 创建一个 PromptTemplate 对象
+prompt_template = PromptTemplate(
+    input_variables=[&#34;code&#34;],
+    template=code_explanation_template
+)
+
+# 定义要解释的代码
+python_code = &#34;&#34;&#34;
+def fibonacci(n):
+    if n &lt;= 1:
+        return n
+    else:
+        return fibonacci(n-1) + fibonacci(n-2)
+&#34;&#34;&#34;
+
+# 使用模板生成最终的提示
+formatted_prompt = prompt_template.format(code=python_code)
+
+print(&#34;--- 生成的提示 ---&#34;)
+print(formatted_prompt)
+
+# 在实际应用中，可以将 formatted_prompt 发送给 LLM
+# llm_response = llm.invoke(formatted_prompt)
+                        </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 3: Context Engineering -->
+      <section id="context" class="bg-gray-50 py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="section-header">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">3. 上下文工程与知识增强</h2>
+            <p class="text-gray-600">通过上下文管理和知识增强提升模型性能</p>
+          </div>
+
+          <div id="context-strategies" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">3.1 上下文管理策略</h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">3.1.1 利用对话历史</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  在多轮对话系统中，维持对话的连续性是至关重要的。由于大型语言模型（LLM）本身是无状态的，它不会自动记忆之前的交互内容。因此，实现多轮对话的核心技术在于<strong>将历史对话记录作为上下文，在每次新的请求中一并发送给模型</strong>。
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <p class="text-sm text-blue-800">
+                    <a href="https://cloud.tencent.com/document/product/1772/115969" class="citation-link">腾讯云知识引擎</a>的实现方式明确指出：服务端不记录用户请求的上下文，用户在每次请求时，需要将之前所有对话的历史拼接好之后，再传递到对话API。
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">3.1.2 动态上下文适应</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  动态上下文适应是比简单拼接历史对话更高级的上下文管理策略，它要求系统能够根据当前对话的进展、用户的意图变化或外部环境的更新，智能地调整传递给模型的上下文信息。
+                </p>
+                <div class="space-y-3">
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-window-maximize text-green-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">滑动窗口机制</h5>
+                      <p class="text-sm text-gray-600">只保留最近N轮的对话历史</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-compress text-green-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">摘要技术</h5>
+                      <p class="text-sm text-gray-600">对过长历史进行摘要处理</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-search text-green-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">意图识别</h5>
+                      <p class="text-sm text-gray-600">动态判断对话主题并检索相关内容</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="context-rag" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">3.2 检索增强生成 (Retrieval-Augmented Generation, RAG)</h3>
+
+            <p class="text-gray-700 mb-6 leading-relaxed">
+              检索增强生成（Retrieval-Augmented Generation, RAG）是一种先进的自然语言处理技术，旨在通过整合外部知识源来显著提升大型语言模型（LLM）的性能和可靠性。<a href="https://okram.co.in/retrieval-augmented-generation-practical-tutorial/" class="citation-link">研究表明</a>，RAG通过引入动态的信息检索组件，有效解决了模型的知识时效性和幻觉问题。
+            </p>
+
+            <div class="mb-8">
+              <div class="mermaid-container">
+                <div class="mermaid-controls">
+                  <button class="mermaid-control-btn zoom-in" title="放大">
+                    <i class="fas fa-search-plus"></i>
+                  </button>
+                  <button class="mermaid-control-btn zoom-out" title="缩小">
+                    <i class="fas fa-search-minus"></i>
+                  </button>
+                  <button class="mermaid-control-btn reset-zoom" title="重置">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                  </button>
+                  <button class="mermaid-control-btn fullscreen" title="全屏查看">
+                    <i class="fas fa-expand"></i>
+                  </button>
+                </div>
+                <div class="mermaid">
+                  graph TD
+                  A[&#34;用户查询&#34;] --&gt; B[&#34;查询嵌入&#34;]
+                  B --&gt; C[&#34;相似度搜索&#34;]
+                  C --&gt; D[&#34;检索相关文本块&#34;]
+                  D --&gt; E[&#34;构建增强提示&#34;]
+                  E --&gt; F[&#34;LLM生成答案&#34;]
+                  F --&gt; G[&#34;最终回答&#34;]
+
+                  style A fill:#e3f2fd
+                  style G fill:#e8f5e8
+                  style F fill:#fff3e0
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white border border-gray-200 rounded-lg p-6">
+              <h4 class="font-semibold text-gray-900 mb-4">RAG 工作流程：检索、增强、生成</h4>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="border-b border-gray-200">
+                      <th class="text-left py-3 px-4 font-medium text-gray-900">阶段</th>
+                      <th class="text-left py-3 px-4 font-medium text-gray-900">核心任务</th>
+                      <th class="text-left py-3 px-4 font-medium text-gray-900">关键技术/组件</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-3 px-4 font-medium">1. 检索 (Retrieval)</td>
+                      <td class="py-3 px-4">从外部知识库中找到与用户查询最相关的信息片段</td>
+                      <td class="py-3 px-4">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>查询嵌入 (Query Embedding)</li>
+                          <li>相似度搜索 (Similarity Search)</li>
+                          <li>后处理 (Post-processing)</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    <tr class="border-b border-gray-100">
+                      <td class="py-3 px-4 font-medium">2. 增强 (Augmentation)</td>
+                      <td class="py-3 px-4">将检索到的信息与原始查询融合，构建增强提示</td>
+                      <td class="py-3 px-4">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>提示模板 (Prompt Template)</li>
+                          <li>构建增强提示 (Building Augmented Prompt)</li>
+                        </ul>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-3 px-4 font-medium">3. 生成 (Generation)</td>
+                      <td class="py-3 px-4">将增强后的提示输入LLM，生成最终答案</td>
+                      <td class="py-3 px-4">
+                        <ul class="list-disc list-inside space-y-1">
+                          <li>模型推理 (Model Inference)</li>
+                          <li>答案输出 (Answer Output)</li>
+                        </ul>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div id="context-fusion" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">3.3 实现知识融合</h3>
+
+            <div class="grid md:grid-cols-2 gap-8">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">3.3.1 将检索结果融入提示</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  将检索结果融入提示是RAG流程中至关重要的一步，它直接决定了LLM能否有效利用外部知识。这个过程的核心在于设计一个清晰、明确的提示结构。
+                </p>
+                <div class="bg-gray-100 p-4 rounded-lg">
+                  <h5 class="font-medium text-gray-800 mb-2">关键要素</h5>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• 使用分隔符和明确标签组织内容</li>
+                    <li>• &#34;背景知识：&#34;或&#34;上下文信息：&#34;标签</li>
+                    <li>• &#34;问题：&#34;或&#34;用户查询：&#34;标签</li>
+                    <li>• 明确指令告知模型基于提供的信息回答</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">3.3.2 提示模板设计</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  <a href="https://zhuanlan.zhihu.com/p/673552320" class="citation-link">有效的提示模板</a>是实现外部知识与LLM有效整合的核心。一个好的模板应该包含以下要素：
+                </p>
+                <div class="space-y-3">
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-user text-purple-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">角色定义</h5>
+                      <p class="text-sm text-gray-600">明确指定LLM的角色和回答基调</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-layer-group text-purple-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">上下文引入</h5>
+                      <p class="text-sm text-gray-600">使用清晰标签引入检索到的文本块</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-question-circle text-purple-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">问题陈述</h5>
+                      <p class="text-sm text-gray-600">明确区分用户的原始问题</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg mt-8">
+              <h4 class="font-semibold mb-4 text-white">代码示例：使用 LangChain 实现 RAG</h4>
+              <pre class="code-block"># 安装必要的库
+# pip install langchain langchain-openai langchain-chroma beautifulsoup4
+
+import bs4
+from langchain_community.document_loaders import WebBaseLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain import hub
+from langchain_core.runnables import RunnablePassthrough
+from langchain_core.output_parsers import StrOutputParser
+
+# 1. 加载文档
+loader = WebBaseLoader(
+    web_paths=(&#34;https://lilianweng.github.io/posts/2023-06-23-agent/&#34;,),
+    bs_kwargs=dict(
+        parse_only=bs4.SoupStrainer(
+            class_=(&#34;post-content&#34;, &#34;post-title&#34;, &#34;post-header&#34;)
+        )
+    ),
+)
+docs = loader.load()
+
+# 2. 分割文档
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+splits = text_splitter.split_documents(docs)
+
+# 3. 创建向量存储
+vectorstore = Chroma.from_documents(documents=splits, embedding=OpenAIEmbeddings())
+
+# 4. 定义检索器
+retriever = vectorstore.as_retriever()
+
+# 5. 定义提示模板
+prompt = hub.pull(&#34;rlm/rag-prompt&#34;)
+
+# 辅助函数：格式化检索到的文档
+def format_docs(docs):
+    return &#34;\n\n&#34;.join(doc.page_content for doc in docs)
+
+# 6. 构建RAG链
+llm = ChatOpenAI(model=&#34;gpt-3.5-turbo&#34;, temperature=0)
+rag_chain = (
+    {&#34;context&#34;: retriever | format_docs, &#34;question&#34;: RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+
+# 7. 运行查询
+result = rag_chain.invoke(&#34;What is Task Decomposition?&#34;)
+print(result)
+                        </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 4: Programming -->
+      <section id="programming" class="bg-white py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="section-header">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">4. 编程与代码生成中的提示工程</h2>
+            <p class="text-gray-600">在软件开发中应用提示工程技术</p>
+          </div>
+
+          <div id="programming-generation" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">4.1 代码生成与补全</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">4.1.1 从自然语言生成代码</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  从自然语言描述生成代码是大型语言模型（LLM）在软件开发领域最具革命性的应用之一。通过精心设计的提示，开发者可以引导 LLM 将高层次的需求描述转换为具体的、可执行的代码片段、函数，甚至是整个程序。
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                  <h5 class="font-medium text-blue-900 mb-2">关键要素</h5>
+                  <ul class="text-sm text-blue-800 space-y-1">
+                    <li>• 明确目标编程语言</li>
+                    <li>• 详细的功能逻辑描述</li>
+                    <li>• 输入输出格式要求</li>
+                    <li>• 特定的编码规范或风格</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">4.1.2 代码补全与重构</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  除了从零开始生成代码，LLM 在代码补全和重构方面也展现出强大的能力。在集成开发环境（IDE）中，代码补全功能可以根据当前代码的上下文，智能地预测并建议接下来可能要输入的代码。
+                </p>
+                <div class="space-y-3">
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-magic text-green-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">智能代码补全</h5>
+                      <p class="text-sm text-gray-600">基于上下文理解编程意图</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-tools text-green-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">代码重构建议</h5>
+                      <p class="text-sm text-gray-600">优化代码结构和可读性</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：生成特定功能的代码片段</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 定义用于代码生成的提示
+code_generation_prompt = &#34;&#34;&#34;
+You are an expert Python developer. Write a Python function that validates an email address based on a standard format.
+
+Requirements:
+1. The function should be named `is_valid_email`.
+2. It should take a single string argument, `email`.
+3. It should return `True` if the email is in a valid format, and `False` otherwise.
+4. Use regular expressions (regex) for the validation.
+5. The regex should check for a standard format: a local part, an &#34;@&#34; symbol, and a domain part.
+6. Include a docstring explaining the function&#39;s purpose, arguments, and return value.
+7. Provide a few example usages of the function in the comments.
+
+Please provide only the Python code, without any additional explanations.
+&#34;&#34;&#34;
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: code_generation_prompt}
+        ],
+        temperature=0.2,  # 使用较低的温度以获得更确定性的代码
+        max_tokens=500
+    )
+
+    # 提取并打印生成的代码
+    generated_code = response.choices[0].message.content.strip()
+    print(&#34;--- 生成的代码 ---&#34;)
+    print(generated_code)
+
+except Exception as e:
+    print(f&#34;An error occurred: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="programming-debugging" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">4.2 代码解释与调试</h3>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">4.2.1 解释复杂代码逻辑</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  大型语言模型（LLM）在解释复杂代码逻辑方面是一个极其有价值的工具。对于开发者来说，理解一段不熟悉的、复杂的或遗留的代码库往往是一项耗时且具有挑战性的任务。
+                </p>
+                <div class="bg-purple-50 p-4 rounded-lg border border-purple-200">
+                  <h5 class="font-medium text-purple-900 mb-2">最佳实践</h5>
+                  <ul class="text-sm text-purple-800 space-y-1">
+                    <li>• 明确要求特定的详细程度</li>
+                    <li>• 指定目标受众（如初级开发者）</li>
+                    <li>• 请求逐行解释</li>
+                    <li>• 要求说明算法和设计模式</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="text-xl font-semibold text-gray-900 mb-4">4.2.2 识别并修复代码错误</h4>
+                <p class="text-gray-700 mb-4 leading-relaxed">
+                  LLM 不仅能解释代码，还能在调试过程中扮演&#34;结对编程伙伴&#34;的角色，帮助开发者识别和修复代码中的错误。当开发者遇到一个难以解决的 bug 时，可以将出错的代码片段以及相关的错误信息一并提供给 LLM。
+                </p>
+                <div class="space-y-3">
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-bug text-red-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">错误分析</h5>
+                      <p class="text-sm text-gray-600">分析代码执行流程，定位逻辑缺陷</p>
+                    </div>
+                  </div>
+                  <div class="flex items-start space-x-3">
+                    <i class="fas fa-wrench text-red-500 mt-1"></i>
+                    <div>
+                      <h5 class="font-medium text-gray-800">修复建议</h5>
+                      <p class="text-sm text-gray-600">提供具体的修改建议和修复后的代码</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：调试 Python 脚本</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 包含错误的 Python 代码
+buggy_code = &#34;&#34;&#34;
+def calculate_average(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    average = total / len(numbers)
+    return average
+
+# 测试代码
+my_list = [10, 20, 30]
+print(&#34;Average:&#34;, calculate_average(my_list))
+
+# 这行代码会导致错误
+empty_list = []
+print(&#34;Average of empty list:&#34;, calculate_average(empty_list))
+&#34;&#34;&#34;
+
+# 定义用于调试的提示
+debug_prompt = f&#34;&#34;&#34;
+The following Python code is intended to calculate the average of a list of numbers.
+However, it contains a bug that causes a runtime error when the input list is empty.
+
+Please do the following:
+1. Identify the bug and explain why it occurs.
+2. Provide a corrected version of the `calculate_average` function that handles the edge case of an empty list gracefully (e.g., by returning `None` or `0`).
+
+Buggy Code:
+```python
+{buggy_code}
+```
+
+Corrected Code:
+&#34;&#34;&#34;
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: debug_prompt}
+        ],
+        temperature=0.2,
+        max_tokens=600
+    )
+
+    # 提取并打印调试结果
+    debug_result = response.choices[0].message.content.strip()
+    print(&#34;--- 调试结果 ---&#34;)
+    print(debug_result)
+
+except Exception as e:
+    print(f&#34;An error occurred: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+
+          <div id="programming-testing" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">4.3 自动化测试用例生成</h3>
+
+            <div class="mb-8">
+              <h4 class="text-xl font-semibold text-gray-900 mb-4">4.3.1 为函数生成单元测试</h4>
+              <p class="text-gray-700 mb-4 leading-relaxed">
+                自动化测试是确保软件质量的关键环节，而编写全面的测试用例往往是一项繁琐且耗时的工作。大型语言模型（LLM）可以极大地简化这一过程，通过分析函数的代码逻辑，自动生成相应的单元测试。
+              </p>
+              <div class="bg-green-50 p-6 rounded-lg border border-green-200">
+                <h5 class="font-semibold text-green-900 mb-3">测试覆盖范围</h5>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <ul class="text-sm text-green-800 space-y-1">
+                      <li>• 正常情况测试</li>
+                      <li>• 边界条件测试</li>
+                      <li>• 异常情况测试</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <ul class="text-sm text-green-800 space-y-1">
+                      <li>• 有效输入验证</li>
+                      <li>• 无效输入处理</li>
+                      <li>• 空值和极值测试</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-900 text-gray-100 p-6 rounded-lg">
+              <h4 class="font-semibold mb-4 text-white">代码示例：使用提示生成测试代码</h4>
+              <pre class="code-block">import os
+from openai import OpenAI
+
+# 初始化 OpenAI 客户端
+client = OpenAI(api_key=os.getenv(&#34;OPENAI_API_KEY&#34;))
+
+# 需要生成测试的函数
+function_to_test = &#34;&#34;&#34;
+def is_palindrome(s):
+    \&#34;\&#34;\&#34;Check if a given string is a palindrome, ignoring case and non-alphanumeric characters.\&#34;\&#34;\&#34;
+    import re
+    cleaned = re.sub(r&#39;[^a-zA-Z0-9]&#39;, &#39;&#39;, s).lower()
+    return cleaned == cleaned[::-1]
+&#34;&#34;&#34;
+
+# 定义用于生成测试的提示
+test_generation_prompt = f&#34;&#34;&#34;
+You are an expert Python developer specializing in test-driven development (TDD).
+Your task is to generate a comprehensive set of unit tests for the following Python function.
+
+Function to test:
+```python
+{function_to_test}
+```
+
+Requirements for the tests:
+1. Use the `unittest` framework.
+2. The test class should be named `TestIsPalindrome`.
+3. Include test cases for:
+    - Typical palindromes (e.g., &#34;racecar&#34;, &#34;A man, a plan, a canal: Panama&#34;).
+    - Non-palindromes (e.g., &#34;hello&#34;, &#34;python&#34;).
+    - Edge cases: empty string (&#34;&#34;), single character (&#34;a&#34;), strings with only non-alphanumeric characters (&#34;!!!&#34;).
+    - Case insensitivity (&#34;RaceCar&#34;).
+    - Strings with mixed alphanumeric characters and punctuation (&#34;Was it a car or a cat I saw?&#34;).
+4. Each test case should have a descriptive name (e.g., `test_palindrome_with_punctuation`).
+5. Provide the complete, runnable test code.
+
+Please provide only the Python test code, without any additional explanations.
+&#34;&#34;&#34;
+
+try:
+    # 调用 OpenAI API
+    response = client.chat.completions.create(
+        model=&#34;gpt-3.5-turbo&#34;,
+        messages=[
+            {&#34;role&#34;: &#34;user&#34;, &#34;content&#34;: test_generation_prompt}
+        ],
+        temperature=0.2,
+        max_tokens=800
+    )
+
+    # 提取并打印生成的测试代码
+    generated_test_code = response.choices[0].message.content.strip()
+    print(&#34;--- 生成的单元测试代码 ---&#34;)
+    print(generated_test_code)
+
+except Exception as e:
+    print(f&#34;An error occurred: {e}&#34;)
+                        </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Best Practices -->
+      <section id="best-practices" class="bg-gray-50 py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="section-header">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-2">5. 最佳实践与常见陷阱</h2>
+            <p class="text-gray-600">提升提示工程效果的实用指南</p>
+          </div>
+
+          <div id="best-design" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">5.1 设计高效提示的原则</h3>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-bullseye text-blue-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">明确性与具体性</h4>
+                </div>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  确保提示清晰地定义任务目标、范围和期望的输出格式。避免模糊的描述，使用具体的、可衡量的标准。
+                </p>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-shield-alt text-green-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">避免歧义</h4>
+                </div>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  提供足够的上下文信息消除多义性，使用结构化指令明确执行顺序，避免语法和结构上的模糊性。
+                </p>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-sync-alt text-purple-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">迭代优化</h4>
+                </div>
+                <p class="text-gray-700 text-sm leading-relaxed">
+                  将提示工程视为持续的改进循环，通过测试、评估和修改不断提升提示效果，记录每次修改的影响。
+                </p>
+              </div>
+            </div>
+
+            <div class="highlight-box">
+              <h4 class="font-semibold text-gray-900 mb-3">提示优化 checklist</h4>
+              <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">✓ 任务定义</h5>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• 明确说明需要完成的任务</li>
+                    <li>• 指定编程语言和框架</li>
+                    <li>• 定义输入输出格式</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800 mb-2">✓ 质量要求</h5>
+                  <ul class="text-sm text-gray-700 space-y-1">
+                    <li>• 指定代码风格和规范</li>
+                    <li>• 要求错误处理和边界条件</li>
+                    <li>• 包含测试和文档要求</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="best-pitfalls" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">5.2 常见陷阱与解决方案</h3>
+
+            <div class="space-y-8">
+              <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                <h4 class="text-xl font-semibold text-red-900 mb-4 flex items-center">
+                  <i class="fas fa-exclamation-triangle mr-3"></i>
+                  5.2.1 提示注入 (Prompt Injection)
+                </h4>
+                <p class="text-red-800 mb-4 leading-relaxed">
+                  提示注入是一种针对大型语言模型（LLM）的安全漏洞，攻击者通过精心构造的恶意输入，试图覆盖或绕过模型原有的指令，从而诱导模型执行非预期的操作或泄露敏感信息。
+                </p>
+                <div class="bg-white p-4 rounded border border-red-200">
+                  <h5 class="font-medium text-red-900 mb-2">防御策略</h5>
+                  <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <ul class="text-red-800 space-y-1">
+                      <li>• 用户输入过滤和清洗</li>
+                      <li>• 使用分隔符和结构化输入</li>
+                      <li>• 提示加固技术</li>
+                    </ul>
+                    <ul class="text-red-800 space-y-1">
+                      <li>• 输出监控和过滤</li>
+                      <li>• 多层次安全策略</li>
+                      <li>• 定期安全审计</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                <h4 class="text-xl font-semibold text-orange-900 mb-4 flex items-center">
+                  <i class="fas fa-eye-slash mr-3"></i>
+                  5.2.2 模型幻觉 (Hallucination)
+                </h4>
+                <p class="text-orange-800 mb-4 leading-relaxed">
+                  模型幻觉是指大型语言模型（LLM）在生成文本时，产生看似合理但实际上是虚假或不准确的信息的现象。这在需要高度准确性的领域（如医疗、法律、金融）可能带来严重问题。
+                </p>
+                <div class="bg-white p-4 rounded border border-orange-200">
+                  <h5 class="font-medium text-orange-900 mb-2">缓解策略</h5>
+                  <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <ul class="text-orange-800 space-y-1">
+                      <li>• 明确要求基于提供的信息回答</li>
+                      <li>• 使用检索增强生成（RAG）</li>
+                      <li>• 提供可靠的参考来源</li>
+                    </ul>
+                    <ul class="text-orange-800 space-y-1">
+                      <li>• 事实核查和验证</li>
+                      <li>• 设置保守的生成边界</li>
+                      <li>• 多模型交叉验证</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                <h4 class="text-xl font-semibold text-yellow-900 mb-4 flex items-center">
+                  <i class="fas fa-balance-scale mr-3"></i>
+                  5.2.3 偏见与公平性
+                </h4>
+                <p class="text-yellow-800 mb-4 leading-relaxed">
+                  大型语言模型（LLM）在训练过程中会不可避免地学习并放大其训练数据中存在的社会偏见，这可能导致模型在生成内容时表现出对某些群体的不公平或歧视性倾向。
+                </p>
+                <div class="bg-white p-4 rounded border border-yellow-200">
+                  <h5 class="font-medium text-yellow-900 mb-2">解决方案</h5>
+                  <div class="grid md:grid-cols-2 gap-4 text-sm">
+                    <ul class="text-yellow-800 space-y-1">
+                      <li>• 构建平衡和多样化的训练数据</li>
+                      <li>• 使用去偏见技术进行微调</li>
+                      <li>• 设计公平的提示指南</li>
+                    </ul>
+                    <ul class="text-yellow-800 space-y-1">
+                      <li>• 输出后处理和审查</li>
+                      <li>• 多元化评估团队</li>
+                      <li>• 建立公平性指标</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="best-optimization" class="mb-12">
+            <h3 class="text-2xl font-display font-semibold text-gray-900 mb-6">5.3 性能优化策略</h3>
+
+            <div class="grid md:grid-cols-3 gap-6">
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-compress-arrows-alt text-blue-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">控制 Token 数量</h4>
+                </div>
+                <ul class="text-gray-700 text-sm space-y-2">
+                  <li>• 精简提示内容，去除冗余信息</li>
+                  <li>• 使用摘要技术提取关键信息</li>
+                  <li>• 设置 max_tokens 限制输出长度</li>
+                  <li>• 采用分块处理长文本</li>
+                </ul>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-dollar-sign text-green-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">优化 API 调用成本</h4>
+                </div>
+                <ul class="text-gray-700 text-sm space-y-2">
+                  <li>• 选择性价比最高的模型</li>
+                  <li>• 利用缓存机制减少重复调用</li>
+                  <li>• 优化提示提高效率</li>
+                  <li>• 监控和分析API使用情况</li>
+                </ul>
+              </div>
+
+              <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <div class="flex items-center mb-4">
+                  <i class="fas fa-chart-line text-purple-500 text-xl mr-3"></i>
+                  <h4 class="font-semibold text-gray-900">评估与监控模型输出</h4>
+                </div>
+                <ul class="text-gray-700 text-sm space-y-2">
+                  <li>• 使用自动评估指标（ROUGE、BLEU）</li>
+                  <li>• 建立人工评估流程</li>
+                  <li>• 实时监控异常输出</li>
+                  <li>• 构建完整的质量管理体系</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Conclusion -->
+      <section class="bg-white py-16 border-t">
+        <div class="max-w-4xl mx-auto px-6">
+          <div class="text-center">
+            <h2 class="text-3xl font-display font-bold text-gray-900 mb-6">总结与展望</h2>
+            <p class="text-xl text-gray-700 leading-relaxed mb-8">
+              提示工程作为一门新兴的学科，正在快速发展。随着大型语言模型的不断进步，提示工程技术也将持续演进。掌握这些核心概念和技术，将帮助开发者更好地利用AI的能力，构建更智能、更可靠的应用程序。
+            </p>
+            <div class="bg-blue-50 p-8 rounded-lg border border-blue-200">
+              <h3 class="font-semibold text-blue-900 mb-4">关键要点</h3>
+              <div class="grid md:grid-cols-2 gap-6 text-left">
+                <div>
+                  <h4 class="font-medium text-blue-800 mb-2">技术核心</h4>
+                  <ul class="text-blue-700 text-sm space-y-1">
+                    <li>• 理解模型工作原理是基础</li>
+                    <li>• 结构化提示提高输出质量</li>
+                    <li>• 上下文管理是关键技能</li>
+                    <li>• 迭代优化是不可或缺的过程</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 class="font-medium text-blue-800 mb-2">发展方向</h4>
+                  <ul class="text-blue-700 text-sm space-y-1">
+                    <li>• 自动化提示生成工具</li>
+                    <li>• 多模态提示工程技术</li>
+                    <li>• 个性化提示优化</li>
+                    <li>• 安全性和伦理考量</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- References -->
+      <section class="bg-gray-50 py-16">
+        <div class="max-w-4xl mx-auto px-6">
+          <h2 class="text-2xl font-display font-bold text-gray-900 mb-8">参考文献</h2>
+          <div class="grid gap-4 text-sm">
+            <div class="bg-white p-4 rounded border border-gray-200">
+              <p><strong>OpenAI 最佳实践指南:</strong>
+                <a href="https://help.openai.com/en/articles/6654000-best-practices-for-prompt-engineering-with-the-openai-api" class="citation-link">Best Practices for Prompt Engineering with the OpenAI API</a>
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded border border-gray-200">
+              <p><strong>检索增强生成教程:</strong>
+                <a href="https://okram.co.in/retrieval-augmented-generation-practical-tutorial/" class="citation-link">Retrieval Augmented Generation - Practical Tutorial</a>
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded border border-gray-200">
+              <p><strong>LangChain RAG 实现指南:</strong>
+                <a href="https://blog.frognew.com/library/agi/langchain/tutorials/rag.html" class="citation-link">LangChain Tutorials - RAG</a>
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded border border-gray-200">
+              <p><strong>腾讯云知识引擎文档:</strong>
+                <a href="https://cloud.tencent.com/document/product/1772/115969" class="citation-link">腾讯云知识引擎原子能力</a>
+              </p>
+            </div>
+            <div class="bg-white p-4 rounded border border-gray-200">
+              <p><strong>微软 Azure OpenAI 文档:</strong>
+                <a href="https://learn.microsoft.com/zh-cn/azure/ai-foundry/openai/chatgpt-quickstart" class="citation-link">Azure OpenAI ChatGPT 快速入门</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+        // Initialize Mermaid
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            themeVariables: {
+                primaryColor: '#dbeafe',
+                primaryTextColor: '#1f2937',
+                primaryBorderColor: '#2563eb',
+                lineColor: '#6b7280',
+                secondaryColor: '#f8fafc',
+                tertiaryColor: '#f1f5f9',
+                background: '#ffffff',
+                mainBkg: '#dbeafe',
+                secondBkg: '#dcfce7',
+                tertiaryColor: '#fef3c7',
+                primaryBorderColor: '#2563eb',
+                primaryTextColor: '#1f2937',
+                secondaryTextColor: '#1f2937',
+                tertiaryTextColor: '#1f2937',
+                lineColor: '#6b7280',
+                textColor: '#1f2937',
+                nodeBkg: '#ffffff',
+                nodeBorder: '#2563eb',
+                clusterBkg: '#f8fafc',
+                clusterBorder: '#6b7280',
+                defaultLinkColor: '#6b7280',
+                titleColor: '#1f2937',
+                edgeLabelBackground: '#ffffff',
+                nodeTextColor: '#1f2937'
+            },
+            flowchart: {
+                useMaxWidth: false,
+                htmlLabels: true,
+                curve: 'basis',
+                padding: 20
+            },
+            fontFamily: 'Inter, sans-serif',
+            fontSize: '14px'
+        });
+
+        // Initialize Mermaid Controls for zoom and pan
+        function initializeMermaidControls() {
+            const containers = document.querySelectorAll('.mermaid-container');
+
+            containers.forEach(container => {
+            const mermaidElement = container.querySelector('.mermaid');
+            let scale = 1;
+            let isDragging = false;
+            let startX, startY, translateX = 0, translateY = 0;
+
+            // 触摸相关状态
+            let isTouch = false;
+            let touchStartTime = 0;
+            let initialDistance = 0;
+            let initialScale = 1;
+            let isPinching = false;
+
+            // Zoom controls
+            const zoomInBtn = container.querySelector('.zoom-in');
+            const zoomOutBtn = container.querySelector('.zoom-out');
+            const resetBtn = container.querySelector('.reset-zoom');
+            const fullscreenBtn = container.querySelector('.fullscreen');
+
+            function updateTransform() {
+                mermaidElement.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+
+                if (scale > 1) {
+                container.classList.add('zoomed');
+                } else {
+                container.classList.remove('zoomed');
+                }
+
+                mermaidElement.style.cursor = isDragging ? 'grabbing' : 'grab';
+            }
+
+            if (zoomInBtn) {
+                zoomInBtn.addEventListener('click', () => {
+                scale = Math.min(scale * 1.25, 4);
+                updateTransform();
+                });
+            }
+
+            if (zoomOutBtn) {
+                zoomOutBtn.addEventListener('click', () => {
+                scale = Math.max(scale / 1.25, 0.3);
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+                updateTransform();
+                });
+            }
+
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                scale = 1;
+                translateX = 0;
+                translateY = 0;
+                updateTransform();
+                });
+            }
+
+            if (fullscreenBtn) {
+                fullscreenBtn.addEventListener('click', () => {
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                });
+            }
+
+            // Mouse Events
+            mermaidElement.addEventListener('mousedown', (e) => {
+                if (isTouch) return; // 如果是触摸设备，忽略鼠标事件
+
+                isDragging = true;
+                startX = e.clientX - translateX;
+                startY = e.clientY - translateY;
+                mermaidElement.style.cursor = 'grabbing';
+                updateTransform();
+                e.preventDefault();
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isDragging && !isTouch) {
+                translateX = e.clientX - startX;
+                translateY = e.clientY - startY;
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            document.addEventListener('mouseleave', () => {
+                if (isDragging && !isTouch) {
+                isDragging = false;
+                mermaidElement.style.cursor = 'grab';
+                updateTransform();
+                }
+            });
+
+            // 获取两点之间的距离
+            function getTouchDistance(touch1, touch2) {
+                return Math.hypot(
+                touch2.clientX - touch1.clientX,
+                touch2.clientY - touch1.clientY
+                );
+            }
+
+            // Touch Events - 触摸事件处理
+            mermaidElement.addEventListener('touchstart', (e) => {
+                isTouch = true;
+                touchStartTime = Date.now();
+
+                if (e.touches.length === 1) {
+                // 单指拖动
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+
+                } else if (e.touches.length === 2) {
+                // 双指缩放
+                isPinching = true;
+                isDragging = false;
+
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                initialDistance = getTouchDistance(touch1, touch2);
+                initialScale = scale;
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 1 && isDragging && !isPinching) {
+                // 单指拖动
+                const touch = e.touches[0];
+                translateX = touch.clientX - startX;
+                translateY = touch.clientY - startY;
+                updateTransform();
+
+                } else if (e.touches.length === 2 && isPinching) {
+                // 双指缩放
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const currentDistance = getTouchDistance(touch1, touch2);
+
+                if (initialDistance > 0) {
+                    const newScale = Math.min(Math.max(
+                    initialScale * (currentDistance / initialDistance),
+                    0.3
+                    ), 4);
+                    scale = newScale;
+                    updateTransform();
+                }
+                }
+
+                e.preventDefault();
+            }, { passive: false });
+
+            mermaidElement.addEventListener('touchend', (e) => {
+                // 重置状态
+                if (e.touches.length === 0) {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                // 延迟重置isTouch，避免鼠标事件立即触发
+                setTimeout(() => {
+                    isTouch = false;
+                }, 100);
+                } else if (e.touches.length === 1 && isPinching) {
+                // 从双指变为单指，切换为拖动模式
+                isPinching = false;
+                isDragging = true;
+
+                const touch = e.touches[0];
+                startX = touch.clientX - translateX;
+                startY = touch.clientY - translateY;
+                }
+
+                updateTransform();
+            });
+
+            mermaidElement.addEventListener('touchcancel', (e) => {
+                isDragging = false;
+                isPinching = false;
+                initialDistance = 0;
+
+                setTimeout(() => {
+                isTouch = false;
+                }, 100);
+
+                updateTransform();
+            });
+
+            // Enhanced wheel zoom with better center point handling
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const delta = e.deltaY > 0 ? 0.9 : 1.1;
+                const newScale = Math.min(Math.max(scale * delta, 0.3), 4);
+
+                // Adjust translation to zoom towards center
+                if (newScale !== scale) {
+                const scaleDiff = newScale / scale;
+                translateX = translateX * scaleDiff;
+                translateY = translateY * scaleDiff;
+                scale = newScale;
+
+                if (scale <= 1) {
+                    translateX = 0;
+                    translateY = 0;
+                }
+
+                updateTransform();
+                }
+            });
+
+            // Initialize display
+            updateTransform();
+            });
+        }
+
+        // Mobile TOC Toggle
+        const tocToggle = document.getElementById('toc-toggle');
+        const toc = document.getElementById('toc');
+        const mainContent = document.getElementById('main');
+        
+        tocToggle.addEventListener('click', () => {
+            toc.classList.toggle('open');
+        });
+        
+        // Close TOC when clicking outside on mobile
+        mainContent.addEventListener('click', () => {
+            if (window.innerWidth <= 1024) {
+                toc.classList.remove('open');
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile TOC after clicking
+                    if (window.innerWidth <= 1024) {
+                        toc.classList.remove('open');
+                    }
+                }
+            });
+        });
+
+        // Highlight active section in TOC
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -70% 0px',
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Remove active class from all TOC links
+                    document.querySelectorAll('#toc a').forEach(link => {
+                        link.classList.remove('bg-blue-100', 'text-blue-800', 'font-medium');
+                    });
+                    
+                    // Add active class to current section's TOC link
+                    const activeLink = document.querySelector(`#toc a[href="#${entry.target.id}"]`);
+                    if (activeLink) {
+                        activeLink.classList.add('bg-blue-100', 'text-blue-800', 'font-medium');
+                    }
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section[id]').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Initialize Mermaid controls
+        initializeMermaidControls();
+    </script>
+  
+
+</body></html>
