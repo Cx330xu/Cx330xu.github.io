@@ -1,0 +1,53 @@
+---
+import { giscus } from '../data/site';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const enabled = !giscus.repoId.includes('REPLACE');
+---
+
+{
+  enabled ? (
+    <section class="mt-12 pt-8 border-t border-[var(--color-border)]">
+      <div
+        class="giscus"
+        data-repo={giscus.repo}
+        data-repo-id={giscus.repoId}
+        data-category={giscus.category}
+        data-category-id={giscus.categoryId}
+        data-mapping={giscus.mapping}
+        data-strict={giscus.strict}
+        data-reactions-enabled={giscus.reactionsEnabled}
+        data-emit-metadata={giscus.emitMetadata}
+        data-input-position={giscus.inputPosition}
+        data-theme="preferred_color_scheme"
+        data-lang={locale === 'zh' ? 'zh-CN' : 'en'}
+      />
+      <script src="https://giscus.app/client.js" async crossorigin="anonymous" />
+    </section>
+  ) : (
+    <section class="mt-12 pt-8 border-t border-[var(--color-border)] text-sm text-[var(--color-muted)]">
+      <p>
+        {locale === 'zh'
+          ? '评论功能待配置：请在 GitHub 开启 Discussions 后，于 giscus.app 获取 repoId 与 categoryId，填入 src/data/site.ts。'
+          : 'Comments pending setup: enable GitHub Discussions and fill repoId/categoryId in src/data/site.ts via giscus.app.'}
+      </p>
+    </section>
+  )
+}
+
+<script>
+  document.addEventListener('astro:after-swap', () => {
+    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    if (iframe) iframe.remove();
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.async = true;
+    script.crossOrigin = 'anonymous';
+    document.body.appendChild(script);
+  });
+</script>

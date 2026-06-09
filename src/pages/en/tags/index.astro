@@ -1,0 +1,23 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import TagCloud from '../../../components/TagCloud.astro';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, collectTags } from '../../../utils/content';
+
+const locale = 'en' as const;
+const ui = t(locale);
+
+const blog = filterByLocale(await getCollection('blog', ({ data }) => !data.draft), locale);
+const notes = filterByLocale(await getCollection('notes', ({ data }) => !data.draft), locale);
+const projects = filterByLocale(await getCollection('projects', ({ data }) => !data.draft), locale);
+const tags = collectTags([...blog, ...notes, ...projects]);
+---
+
+<BaseLayout locale={locale} title={ui.tags.title} description={ui.tags.subtitle}>
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{ui.tags.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.tags.subtitle}</p>
+  </header>
+  <TagCloud tags={tags} locale={locale} />
+</BaseLayout>

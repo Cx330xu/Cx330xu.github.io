@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HomeContent from '../../components/HomeContent.astro';
+import { t } from '../../i18n/ui';
+
+const locale = 'zh' as const;
+const ui = t(locale);
+---
+
+<BaseLayout locale={locale} title={ui.nav.home}>
+  <HomeContent locale={locale} />
+</BaseLayout>

@@ -1,0 +1,27 @@
+---
+import { categories } from '../../../data/site';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { t } from '../../../i18n/ui';
+
+const locale = 'en' as const;
+const ui = t(locale);
+---
+
+<BaseLayout locale={locale} title={ui.categories.title} description={ui.categories.subtitle}>
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{ui.categories.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.categories.subtitle}</p>
+  </header>
+  <div class="grid gap-3 sm:grid-cols-2">
+    {
+      categories.map((cat) => (
+        <a
+          href={`/${locale}/categories/${cat.id}/`}
+          class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)] transition-colors"
+        >
+          <h2 class="font-semibold text-lg">{cat.label[locale]}</h2>
+        </a>
+      ))
+    }
+  </div>
+</BaseLayout>

@@ -1,0 +1,93 @@
+---
+import { stacks } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+---
+
+<div class="mb-8">
+  <div class="flex flex-wrap gap-2 mb-4">
+    <button
+      type="button"
+      data-filter="all"
+      class="filter-btn active px-3 py-1 text-sm rounded-full border border-[var(--color-border)] bg-[var(--color-primary)] text-white"
+    >
+      {ui.projects.filterAll}
+    </button>
+    <button
+      type="button"
+      data-filter="featured"
+      class="filter-btn px-3 py-1 text-sm rounded-full border border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-primary)]"
+    >
+      {ui.projects.filterFeatured}
+    </button>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    {
+      stacks.map((stack) => (
+        <button
+          type="button"
+          data-stack={stack.label.toLowerCase()}
+          class="stack-btn px-3 py-1 text-xs rounded-full border border-[var(--color-border)] text-[var(--color-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+        >
+          {stack.label}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  function setupProjectFilter() {
+    const cards = document.querySelectorAll<HTMLElement>('[data-project-card]');
+    const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+    const stackBtns = document.querySelectorAll<HTMLButtonElement>('.stack-btn');
+    let activeFilter = 'all';
+    let activeStacks = new Set<string>();
+
+    function apply() {
+      cards.forEach((card) => {
+        const featured = card.dataset.featured === 'true';
+        const stacks = (card.dataset.stacks ?? '').split(',').filter(Boolean);
+        const matchFeatured = activeFilter !== 'featured' || featured;
+        const matchStack =
+          activeStacks.size === 0 || stacks.some((s) => activeStacks.has(s.toLowerCase()));
+        card.style.display = matchFeatured && matchStack ? '' : 'none';
+      });
+    }
+
+    filterBtns.forEach((btn) => {
+      btn.onclick = () => {
+        activeFilter = btn.dataset.filter ?? 'all';
+        filterBtns.forEach((b) => {
+          b.classList.toggle('bg-[var(--color-primary)]', b === btn);
+          b.classList.toggle('text-white', b === btn);
+          b.classList.toggle('text-[var(--color-muted)]', b !== btn);
+        });
+        apply();
+      };
+    });
+
+    stackBtns.forEach((btn) => {
+      btn.onclick = () => {
+        const stack = btn.dataset.stack ?? '';
+        if (activeStacks.has(stack)) {
+          activeStacks.delete(stack);
+          btn.classList.remove('bg-[var(--color-primary)]', 'text-white');
+        } else {
+          activeStacks.add(stack);
+          btn.classList.add('bg-[var(--color-primary)]', 'text-white');
+        }
+        apply();
+      };
+    });
+  }
+
+  setupProjectFilter();
+  document.addEventListener('astro:after-swap', setupProjectFilter);
+</script>

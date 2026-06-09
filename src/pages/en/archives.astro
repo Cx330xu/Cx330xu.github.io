@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { t } from '../../i18n/ui';
+import { filterByLocale, sortByDate, groupByYearMonth, getSlugFromId } from '../../utils/content';
+
+const locale = 'en' as const;
+const ui = t(locale);
+
+const blog = sortByDate(filterByLocale(await getCollection('blog', ({ data }) => !data.draft), locale));
+const notes = sortByDate(filterByLocale(await getCollection('notes', ({ data }) => !data.draft), locale));
+
+const blogGroups = groupByYearMonth(blog);
+const noteGroups = groupByYearMonth(notes);
+const allKeys = [...new Set([...blogGroups.keys(), ...noteGroups.keys()])].sort().reverse();
+---
+
+<BaseLayout locale={locale} title={ui.archives.title} description={ui.archives.subtitle}>
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{ui.archives.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.archives.subtitle}</p>
+  </header>
+  {
+    allKeys.map((key) => {
+      const [year, month] = key.split('-');
+      const posts = blogGroups.get(key) ?? [];
+      const noteItems = noteGroups.get(key) ?? [];
+      return (
+        <section class="mb-10">
+          <h2 class="text-xl font-semibold mb-4">{year} · {month}</h2>
+          {
+            posts.length > 0 && (
+              <div class="mb-4">
+                <h3 class="text-sm font-medium text-[var(--color-muted)] mb-2">{ui.archives.posts}</h3>
+                <ul class="space-y-2">
+                  {posts.map((post) => (
+                    <li>
+                      <a href={`/${locale}/blog/${getSlugFromId(post.id)}/`} class="text-[var(--color-primary)] hover:underline">
+                        {post.data.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+          {
+            noteItems.length > 0 && (
+              <div>
+                <h3 class="text-sm font-medium text-[var(--color-muted)] mb-2">{ui.archives.notes}</h3>
+                <ul class="space-y-2">
+                  {noteItems.map((note) => (
+                    <li>
+                      <a href={`/${locale}/notes/${getSlugFromId(note.id)}/`} class="text-[var(--color-primary)] hover:underline">
+                        {note.data.title ?? note.body.trim().slice(0, 60)}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+        </section>
+      );
+    })
+  }
+</BaseLayout>

@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: Inter, 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --color-bg: #fafafa;
+  --color-surface: #ffffff;
+  --color-primary: #2563eb;
+  --color-text: #111827;
+  --color-muted: #6b7280;
+  --color-border: #e5e7eb;
+}
+
+.dark {
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-primary: #58a6ff;
+  --color-text: #e6edf3;
+  --color-muted: #8b949e;
+  --color-border: #30363d;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+.prose {
+  max-width: 720px;
+  line-height: 1.75;
+}
+
+.prose :where(h1, h2, h3) {
+  font-weight: 700;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose :where(p) {
+  margin-bottom: 1em;
+}
+
+.prose :where(a) {
+  color: var(--color-primary);
+  text-decoration: underline;
+}
+
+.prose :where(code) {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 0.125em 0.375em;
+  border-radius: 0.25rem;
+}
+
+.prose :where(pre) {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+  margin: 1.25em 0;
+}
+
+.prose :where(pre code) {
+  background: none;
+  border: none;
+  padding: 0;
+}

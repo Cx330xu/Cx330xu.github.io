@@ -1,0 +1,49 @@
+---
+import { getSlugFromId, formatDate, readingTime } from '../utils/content';
+import { categories } from '../data/site';
+import type { Locale } from '../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import { t } from '../i18n/ui';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  locale: Locale;
+}
+
+const { post, locale } = Astro.props;
+const ui = t(locale);
+const slug = getSlugFromId(post.id);
+const cat = categories.find((c) => c.id === post.data.category);
+const minutes = readingTime(post.body);
+---
+
+<article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)] transition-colors">
+  <div class="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-2">
+    {
+      cat && (
+        <a href={`/${locale}/categories/${cat.id}/`} class="text-[var(--color-primary)] hover:underline">
+          {cat.label[locale]}
+        </a>
+      )
+    }
+    <span>·</span>
+    <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, locale)}</time>
+    <span>·</span>
+    <span>{minutes} {ui.blog.minRead}</span>
+  </div>
+  <h3 class="font-semibold text-lg mb-2 group-hover:text-[var(--color-primary)] transition-colors">
+    <a href={`/${locale}/blog/${slug}/`}>{post.data.title}</a>
+  </h3>
+  <p class="text-sm text-[var(--color-muted)] mb-3 line-clamp-2">{post.data.description}</p>
+  {
+    post.data.tags.length > 0 && (
+      <div class="flex flex-wrap gap-1.5">
+        {post.data.tags.map((tag) => (
+          <a href={`/${locale}/tags/${tag.toLowerCase()}/`} class="text-xs px-2 py-0.5 rounded-md bg-[var(--color-bg)] text-[var(--color-muted)] hover:text-[var(--color-primary)]">
+            #{tag}
+          </a>
+        ))}
+      </div>
+    )
+  }
+</article>

@@ -1,43 +1,49 @@
-# Astro Starter Kit: Minimal
+# Cx330xu · Personal Tech Hub
 
-```sh
-npm create astro@latest -- --template minimal
+中英双语个人技术站点，基于 [Astro](https://astro.build) 构建，部署于 [GitHub Pages](https://Cx330xu.github.io/)。
+
+## 功能
+
+- 中英双语（`/zh/` · `/en/`）
+- 项目展示 + 技术栈筛选
+- 技术博客（分类 / 标签）
+- Notes 短笔记
+- RSS · 归档 · 暗色模式 · Giscus 评论
+
+## 本地开发
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # 构建到 dist/
+npm run preview  # 预览构建结果
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## 发布内容
 
-## 🚀 Project Structure
+| 类型 | 路径 |
+|------|------|
+| 项目 | `src/content/projects/{zh\|en}/` |
+| 博客 | `src/content/blog/{zh\|en}/` |
+| 笔记 | `src/content/notes/{zh\|en}/` |
+| 关于 | `src/content/pages/{zh\|en}/about.md` |
+| 站点信息 | `src/data/site.ts` |
 
-Inside of your Astro project, you'll see the following folders and files:
+新建 Markdown 后 `git push` 到 `main`，GitHub Actions 自动部署。
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
+## Giscus 评论配置
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+1. 在 GitHub 仓库 **Settings → General → Features** 开启 **Discussions**
+2. 访问 [giscus.app](https://giscus.app)，选择仓库 `Cx330xu/Cx330xu.github.io`
+3. 将获得的 `repoId` 和 `categoryId` 填入 `src/data/site.ts` 的 `giscus` 字段
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## 部署
 
-Any static assets, like images, can be placed in the `public/` directory.
+1. 创建仓库 `Cx330xu/Cx330xu.github.io`
+2. 推送本目录到 `main` 分支
+3. **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**
+4. 首次 push 后等待 Actions 完成，访问 https://Cx330xu.github.io/
 
-## 🧞 Commands
+## 隐私
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+本站不公开学校、学历、电话、微信。公开联系方式：GitHub + cx330xu@qq.com

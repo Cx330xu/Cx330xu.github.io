@@ -1,0 +1,35 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import NoteItem from '../../../components/NoteItem.astro';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, sortByDate } from '../../../utils/content';
+
+const locale = 'zh' as const;
+const ui = t(locale);
+
+const notes = sortByDate(
+  filterByLocale(
+    await getCollection('notes', ({ data }) => !data.draft),
+    locale,
+  ),
+);
+---
+
+<BaseLayout locale={locale} title={ui.notes.title} description={ui.notes.subtitle}>
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{ui.notes.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.notes.subtitle}</p>
+  </header>
+  {
+    notes.length === 0 ? (
+      <p class="text-[var(--color-muted)]">{ui.notes.empty}</p>
+    ) : (
+      <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
+        {notes.map((note) => (
+          <NoteItem note={note} locale={locale} />
+        ))}
+      </div>
+    )
+  }
+</BaseLayout>

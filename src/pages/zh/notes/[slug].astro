@@ -1,0 +1,36 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Giscus from '../../../components/Giscus.astro';
+import { t } from '../../../i18n/ui';
+import { getSlugFromId, formatDate } from '../../../utils/content';
+
+export async function getStaticPaths() {
+  const items = await getCollection('notes', ({ id, data }) => id.startsWith('zh/') && !data.draft);
+  return items.map((note) => ({
+    params: { slug: getSlugFromId(note.id) },
+    props: { note },
+  }));
+}
+
+const locale = 'zh' as const;
+const { note } = Astro.props;
+const ui = t(locale);
+const { Content } = await render(note);
+const title = note.data.title ?? note.body.trim().split('\n')[0]?.slice(0, 80);
+---
+
+<BaseLayout locale={locale} title={title ?? ui.notes.title}>
+  <article>
+    <header class="mb-6">
+      <time datetime={note.data.date.toISOString()} class="text-sm text-[var(--color-muted)]">
+        {formatDate(note.data.date, locale)}
+      </time>
+      {note.data.title && <h1 class="text-2xl font-bold mt-2">{note.data.title}</h1>}
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <Giscus locale={locale} />
+  </article>
+</BaseLayout>

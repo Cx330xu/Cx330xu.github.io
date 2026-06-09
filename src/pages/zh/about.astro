@@ -1,0 +1,29 @@
+---
+import { getEntry, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Avatar from '../../components/Avatar.astro';
+import { profile } from '../../data/site';
+import { t } from '../../i18n/ui';
+
+const locale = 'zh' as const;
+const ui = t(locale);
+const page = await getEntry('pages', 'zh/about')!;
+const { Content } = await render(page);
+---
+
+<BaseLayout locale={locale} title={ui.about.title} description={page.data.description}>
+  <div class="flex flex-col sm:flex-row gap-8 items-start mb-8">
+    <Avatar />
+    <div>
+      <h1 class="text-3xl font-bold mb-2">{profile.name}</h1>
+      <p class="text-lg text-[var(--color-muted)] mb-4">{profile.title[locale]}</p>
+      <div class="flex flex-wrap gap-4 text-sm">
+        <a href={profile.github} target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">GitHub</a>
+        <a href={`mailto:${profile.email}`} class="text-[var(--color-primary)] hover:underline">{profile.email}</a>
+      </div>
+    </div>
+  </div>
+  <div class="prose">
+    <Content />
+  </div>
+</BaseLayout>

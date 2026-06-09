@@ -1,0 +1,51 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Giscus from '../../../components/Giscus.astro';
+import { t } from '../../../i18n/ui';
+import { getSlugFromId, formatDate } from '../../../utils/content';
+
+export async function getStaticPaths() {
+  const items = await getCollection('projects', ({ id, data }) => id.startsWith('zh/') && !data.draft);
+  return items.map((project) => ({
+    params: { slug: getSlugFromId(project.id) },
+    props: { project },
+  }));
+}
+
+const locale = 'zh' as const;
+const { project } = Astro.props;
+const ui = t(locale);
+const { Content } = await render(project);
+---
+
+<BaseLayout locale={locale} title={project.data.title} description={project.data.description}>
+  <article>
+    <header class="mb-8">
+      <div class="flex items-center gap-2 text-sm text-[var(--color-muted)] mb-3">
+        <span class="px-2 py-0.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-border)]">
+          {ui.projects.status[project.data.status]}
+        </span>
+        <time datetime={project.data.date.toISOString()}>{formatDate(project.data.date, locale)}</time>
+      </div>
+      <h1 class="text-3xl font-bold mb-3">{project.data.title}</h1>
+      <p class="text-[var(--color-muted)] mb-4">{project.data.description}</p>
+      {
+        project.data.stack.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-4">
+            {project.data.stack.map((s) => (
+              <span class="text-xs px-2 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)]">{s}</span>
+            ))}
+          </div>
+        )
+      }
+      <a href={project.data.github} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline">
+        {ui.projects.github} →
+      </a>
+    </header>
+    <div class="prose">
+      <Content />
+    </div>
+    <Giscus locale={locale} />
+  </article>
+</BaseLayout>

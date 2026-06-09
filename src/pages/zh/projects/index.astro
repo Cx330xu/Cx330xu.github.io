@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ProjectCard from '../../../components/ProjectCard.astro';
+import ProjectFilter from '../../../components/ProjectFilter.astro';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, sortByDate } from '../../../utils/content';
+
+const locale = 'zh' as const;
+const ui = t(locale);
+
+const all = sortByDate(
+  filterByLocale(
+    await getCollection('projects', ({ data }) => !data.draft),
+    locale,
+  ),
+);
+---
+
+<BaseLayout locale={locale} title={ui.projects.title} description={ui.projects.subtitle}>
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold mb-2">{ui.projects.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.projects.subtitle}</p>
+  </header>
+
+  <ProjectFilter locale={locale} />
+
+  {
+    all.length === 0 ? (
+      <p class="text-[var(--color-muted)]">{ui.projects.empty}</p>
+    ) : (
+      <div class="grid gap-4 sm:grid-cols-2">
+        {
+          all.map((project) => (
+            <div
+              data-project-card
+              data-featured={project.data.featured}
+              data-stacks={project.data.stack.join(',').toLowerCase()}
+            >
+              <ProjectCard project={project} locale={locale} />
+            </div>
+          ))
+        }
+      </div>
+    )
+  }
+</BaseLayout>

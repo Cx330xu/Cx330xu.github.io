@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import NoteItem from '../../../components/NoteItem.astro';
+import ProjectCard from '../../../components/ProjectCard.astro';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, getSlugFromId } from '../../../utils/content';
+
+export async function getStaticPaths() {
+  const locale = 'zh';
+  const blog = filterByLocale(await getCollection('blog', ({ data }) => !data.draft), locale);
+  const notes = filterByLocale(await getCollection('notes', ({ data }) => !data.draft), locale);
+  const projects = filterByLocale(await getCollection('projects', ({ data }) => !data.draft), locale);
+  const tagSet = new Set<string>();
+  for (const item of [...blog, ...notes, ...projects]) {
+    for (const tag of item.data.tags ?? []) tagSet.add(tag.toLowerCase());
+  }
+  return [...tagSet].map((tag) => ({ params: { tag } }));
+}
+
+const locale = 'zh' as const;
+const { tag } = Astro.params;
+const ui = t(locale);
+
+const blog = filterByLocale(await getCollection('blog', ({ data }) => !data.draft), locale).filter((p) =>
+  p.data.tags.some((t) => t.toLowerCase() === tag),
+);
+const notes = filterByLocale(await getCollection('notes', ({ data }) => !data.draft), locale).filter((n) =>
+  n.data.tags.some((t) => t.toLowerCase() === tag),
+);
+const projects = filterByLocale(await getCollection('projects', ({ data }) => !data.draft), locale).filter((p) =>
+  p.data.tags.some((t) => t.toLowerCase() === tag),
+);
+---
+
+<BaseLayout locale={locale} title={`#${tag}`} description={ui.tags.subtitle}>
+  <header class="mb-8">
+    <a href={`/${locale}/tags/`} class="text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)]">← {ui.tags.title}</a>
+    <h1 class="text-3xl font-bold mt-2">#{tag}</h1>
+  </header>
+  {
+    projects.length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-4">{ui.nav.projects}</h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          {projects.map((p) => (
+            <ProjectCard project={p} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    blog.length > 0 && (
+      <section class="mb-8">
+        <h2 class="text-lg font-semibold mb-4">{ui.nav.blog}</h2>
+        <div class="space-y-4">
+          {blog.map((p) => (
+            <PostCard post={p} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+  {
+    notes.length > 0 && (
+      <section>
+        <h2 class="text-lg font-semibold mb-4">{ui.nav.notes}</h2>
+        <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
+          {notes.map((n) => (
+            <NoteItem note={n} locale={locale} />
+          ))}
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>

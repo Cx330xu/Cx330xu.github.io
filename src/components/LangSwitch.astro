@@ -1,0 +1,34 @@
+---
+import { switchLocalePath } from '../utils/content';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  currentPath: string;
+}
+
+const { locale, currentPath } = Astro.props;
+const other: Locale = locale === 'zh' ? 'en' : 'zh';
+const targetPath = switchLocalePath(currentPath, other);
+---
+
+<div class="flex items-center rounded-md border border-[var(--color-border)] text-xs overflow-hidden">
+  <a
+    href={locale === 'zh' ? currentPath : switchLocalePath(currentPath, 'zh')}
+    class:list={[
+      'px-2 py-1 transition-colors',
+      locale === 'zh' ? 'bg-[var(--color-primary)] text-white font-medium' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]',
+    ]}
+  >
+    ZH
+  </a>
+  <a
+    href={locale === 'en' ? currentPath : targetPath}
+    class:list={[
+      'px-2 py-1 transition-colors',
+      locale === 'en' ? 'bg-[var(--color-primary)] text-white font-medium' : 'text-[var(--color-muted)] hover:text-[var(--color-text)]',
+    ]}
+  >
+    EN
+  </a>
+</div>

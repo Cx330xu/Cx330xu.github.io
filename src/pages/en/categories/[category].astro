@@ -1,0 +1,37 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import CategoryTabs from '../../../components/CategoryTabs.astro';
+import { categories } from '../../../data/site';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, sortByDate } from '../../../utils/content';
+
+export async function getStaticPaths() {
+  return categories.map((cat) => ({ params: { category: cat.id } }));
+}
+
+const locale = 'en' as const;
+const { category } = Astro.params;
+const ui = t(locale);
+const cat = categories.find((c) => c.id === category)!;
+
+const posts = sortByDate(
+  filterByLocale(await getCollection('blog', ({ data }) => !data.draft), locale).filter(
+    (p) => p.data.category === category,
+  ),
+);
+---
+
+<BaseLayout locale={locale} title={cat.label[locale]} description={ui.categories.subtitle}>
+  <header class="mb-6">
+    <a href={`/${locale}/categories/`} class="text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)]">← {ui.categories.title}</a>
+    <h1 class="text-3xl font-bold mt-2">{cat.label[locale]}</h1>
+  </header>
+  <CategoryTabs locale={locale} active={category} />
+  <div class="space-y-4">
+    {posts.map((post) => (
+      <PostCard post={post} locale={locale} />
+    ))}
+  </div>
+</BaseLayout>

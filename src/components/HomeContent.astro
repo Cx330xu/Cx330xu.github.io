@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import { profile } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+import { filterByLocale, sortByDate, collectTags } from '../utils/content';
+import Avatar from './Avatar.astro';
+import ProjectCard from './ProjectCard.astro';
+import PostCard from './PostCard.astro';
+import NoteItem from './NoteItem.astro';
+import TagCloud from './TagCloud.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+
+const allProjects = await getCollection('projects', ({ data }) => !data.draft);
+const allPosts = await getCollection('blog', ({ data }) => !data.draft);
+const allNotes = await getCollection('notes', ({ data }) => !data.draft);
+
+const projects = sortByDate(filterByLocale(allProjects, locale));
+const posts = sortByDate(filterByLocale(allPosts, locale));
+const notes = sortByDate(filterByLocale(allNotes, locale));
+
+const featured = projects.filter((p) => p.data.featured).slice(0, 3);
+const latestPosts = posts.slice(0, 3);
+const latestNotes = notes.slice(0, 5);
+const allTags = collectTags([...posts, ...notes, ...projects]);
+---
+
+<section class="mb-16">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+    <Avatar />
+    <div>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">{profile.name}</h1>
+      <p class="text-lg text-[var(--color-muted)] mb-3">{profile.title[locale]}</p>
+      <p class="text-[var(--color-text)] max-w-xl">{profile.tagline[locale]}</p>
+      <div class="flex flex-wrap gap-3 mt-6">
+        <a
+          href={`/${locale}/projects/`}
+          class="px-5 py-2.5 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {ui.home.viewProjects}
+        </a>
+        <a
+          href={`/${locale}/blog/`}
+          class="px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+        >
+          {ui.home.readBlog}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{
+  featured.length > 0 && (
+    <section class="mb-16">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-semibold">{ui.home.featuredProjects}</h2>
+        <a href={`/${locale}/projects/`} class="text-sm text-[var(--color-primary)] hover:underline">
+          {ui.home.allProjects} →
+        </a>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {featured.map((project) => (
+          <ProjectCard project={project} locale={locale} />
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<section class="mb-16 grid gap-10 lg:grid-cols-2">
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold">{ui.home.latestPosts}</h2>
+      <a href={`/${locale}/blog/`} class="text-sm text-[var(--color-primary)] hover:underline">→</a>
+    </div>
+    <div class="space-y-4">
+      {latestPosts.map((post) => (
+        <PostCard post={post} locale={locale} />
+      ))}
+    </div>
+  </div>
+  <div>
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-xl font-semibold">{ui.home.latestNotes}</h2>
+      <a href={`/${locale}/notes/`} class="text-sm text-[var(--color-primary)] hover:underline">→</a>
+    </div>
+    <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
+      {latestNotes.map((note) => (
+        <NoteItem note={note} locale={locale} />
+      ))}
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2 class="text-xl font-semibold mb-4">{ui.home.exploreTags}</h2>
+  <TagCloud tags={allTags.slice(0, 12)} locale={locale} />
+  <div class="flex gap-4 mt-4 text-sm">
+    <a href={`/${locale}/tags/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allTags} →</a>
+    <a href={`/${locale}/categories/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allCategories} →</a>
+  </div>
+</section>

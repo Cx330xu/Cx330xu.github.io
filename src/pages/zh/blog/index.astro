@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PostCard from '../../../components/PostCard.astro';
+import CategoryTabs from '../../../components/CategoryTabs.astro';
+import { t } from '../../../i18n/ui';
+import { filterByLocale, sortByDate } from '../../../utils/content';
+
+const locale = 'zh' as const;
+const ui = t(locale);
+
+const posts = sortByDate(
+  filterByLocale(
+    await getCollection('blog', ({ data }) => !data.draft),
+    locale,
+  ),
+);
+---
+
+<BaseLayout locale={locale} title={ui.blog.title} description={ui.blog.subtitle}>
+  <header class="mb-6">
+    <h1 class="text-3xl font-bold mb-2">{ui.blog.title}</h1>
+    <p class="text-[var(--color-muted)]">{ui.blog.subtitle}</p>
+  </header>
+  <CategoryTabs locale={locale} />
+  <div class="space-y-4">
+    {posts.map((post) => (
+      <PostCard post={post} locale={locale} />
+    ))}
+  </div>
+</BaseLayout>
