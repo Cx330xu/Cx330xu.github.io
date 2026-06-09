@@ -34,8 +34,8 @@ npm run preview  # 预览构建结果
 ## Giscus 评论配置
 
 1. 在 GitHub 仓库 **Settings → General → Features** 开启 **Discussions**
-2. 访问 [giscus.app](https://giscus.app)，选择仓库 `Cx330xu/Cx330xu.github.io`
-3. 将获得的 `repoId` 和 `categoryId` 填入 `src/data/site.ts` 的 `giscus` 字段
+2. 访问 [giscus.app](https://giscus.app)，选择仓库 `Cx330xu/Cx330xu.github.io`，分类 **General**
+3. 配置已写入 `src/data/site.ts` 的 `giscus` 字段（如需更换分类，修改 `category` / `categoryId`）
 
 ## 部署
 
