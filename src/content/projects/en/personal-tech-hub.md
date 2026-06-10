@@ -5,6 +5,7 @@ date: 2026-06-10
 status: active
 featured: true
 github: https://github.com/Cx330xu/Cx330xu.github.io
+demo: https://Cx330xu.github.io/
 stack:
   - Astro
   - TypeScript
@@ -20,14 +21,22 @@ translationKey: personal-tech-hub
 
 This is **Cx330xu**'s personal tech hub, deployed on GitHub Pages.
 
-## Features
+## Background
 
-- Bilingual (ZH / EN)
-- Project showcase with stack filters
-- Blog + short notes
-- RSS, archives, dark mode, Giscus comments
+A technical brand site to showcase projects, long-form posts, and short notes for interviewers and peers.
 
-## Stack
+## Architecture
 
-- Astro 5 + TypeScript + Tailwind CSS
-- GitHub Actions CI/CD
+- Astro static site with Content Collections for bilingual content
+- GitHub Actions build and deploy to GitHub Pages
+- Pagefind static search and Giscus comments
+
+## Key decisions
+
+- Chose Astro over Hugo for TypeScript and component-driven UI iteration
+- Separate locale routes linked via `translationKey`
+
+## Outcome
+
+- Bilingual site live with RSS, search, and dark mode
+- Continuous UI and content iteration as the main technical output hub

@@ -5,6 +5,7 @@ date: 2026-06-10
 status: active
 featured: true
 github: https://github.com/Cx330xu/Cx330xu.github.io
+demo: https://Cx330xu.github.io/
 stack:
   - Astro
   - TypeScript
@@ -20,14 +21,22 @@ translationKey: personal-tech-hub
 
 这是 **Cx330xu** 的个人技术品牌站点，部署于 GitHub Pages。
 
-## 功能特性
+## 背景
 
-- 中英双语
-- 项目展示（技术栈筛选）
-- 技术博客 + 短笔记
-- RSS、归档、暗色模式、Giscus 评论
+需要一个能同时展示项目、深度文章与短笔记的技术品牌站，面向面试官与同行快速了解技术方向。
 
-## 技术栈
+## 架构
 
-- Astro 5 + TypeScript + Tailwind CSS
-- GitHub Actions 自动部署
+- Astro 静态站点 + Content Collections 管理多语言内容
+- GitHub Actions 构建并部署至 GitHub Pages
+- Pagefind 静态搜索 + Giscus 评论
+
+## 关键决策
+
+- 选用 Astro 而非 Hugo，便于 TypeScript 与组件化 UI 迭代
+- 中英双语独立路由，通过 `translationKey` 关联对应内容
+
+## 结果
+
+- 双语站点上线，支持 RSS、搜索、暗色模式
+- 持续迭代 UI 与内容，作为技术输出与项目展示入口

@@ -1,8 +1,8 @@
 export const profile = {
   name: 'Cx330xu',
   title: {
-    zh: '软件工程师 · AI 爱好者',
-    en: 'Software Engineer · AI Enthusiast',
+    zh: 'AI Agent 研发工程师',
+    en: 'AI Agent Engineer',
   },
   tagline: {
     zh: '用代码构建智能系统，用写作沉淀思考。',
@@ -11,11 +11,17 @@ export const profile = {
   email: 'cx330xu@qq.com',
   github: 'https://github.com/Cx330xu',
   avatar: 'https://github.com/Cx330xu.png',
-  ogImage: '/og-image.svg',
+  ogImage: '/og-image.png',
 } as const;
 
-/** Hero 首屏展示的核心技能标签 */
-export const heroSkills = ['Python', 'LLM', 'RAG', 'Agent', 'Astro'] as const;
+/** Hero 首屏展示的核心技能标签（tag 映射到 /tags/[tag]/ 路由） */
+export const heroSkills = [
+  { label: 'Python', tag: 'python' },
+  { label: 'LLM', tag: 'llm' },
+  { label: 'RAG', tag: 'rag' },
+  { label: 'Agent', tag: 'agent' },
+  { label: 'Astro', tag: 'astro' },
+] as const;
 
 export const giscus = {
   repo: 'Cx330xu/Cx330xu.github.io',

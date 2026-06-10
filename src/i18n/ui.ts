@@ -9,6 +9,7 @@ export const ui = {
       notes: '笔记',
       archives: '归档',
       about: '关于',
+      now: 'Now',
       search: '搜索',
     },
     home: {
@@ -27,6 +28,9 @@ export const ui = {
       ctaReadLatest: '阅读最新文章',
       ctaBrowseProjects: '浏览全部项目',
       skillsLabel: '专注方向',
+      githubActivity: 'GitHub 活跃度',
+      githubActivityAlt: 'Cx330xu 的 GitHub 贡献热力图',
+      viewOnGithub: '在 GitHub 查看',
     },
     projects: {
       title: '项目',
@@ -34,6 +38,9 @@ export const ui = {
       filterAll: '全部',
       filterFeatured: '精选',
       github: 'GitHub',
+      demo: '在线 Demo',
+      viewDetails: '查看详情',
+      lastUpdated: '最近更新',
       status: { active: '活跃', wip: '进行中', archived: '已归档' },
       empty: '暂无项目',
       emptyHint: '项目整理中，欢迎先看看博客与笔记。',
@@ -79,6 +86,11 @@ export const ui = {
     about: {
       title: '关于',
     },
+    now: {
+      title: 'Now',
+      subtitle: '当前在做与在学',
+      updated: '更新于',
+    },
     footer: {
       builtWith: '基于 Astro 构建',
     },
@@ -107,6 +119,7 @@ export const ui = {
       notes: 'Notes',
       archives: 'Archives',
       about: 'About',
+      now: 'Now',
       search: 'Search',
     },
     home: {
@@ -125,6 +138,9 @@ export const ui = {
       ctaReadLatest: 'Read latest post',
       ctaBrowseProjects: 'Browse all projects',
       skillsLabel: 'Focus areas',
+      githubActivity: 'GitHub Activity',
+      githubActivityAlt: 'GitHub contribution chart for Cx330xu',
+      viewOnGithub: 'View on GitHub',
     },
     projects: {
       title: 'Projects',
@@ -132,6 +148,9 @@ export const ui = {
       filterAll: 'All',
       filterFeatured: 'Featured',
       github: 'GitHub',
+      demo: 'Live Demo',
+      viewDetails: 'View details',
+      lastUpdated: 'Last updated',
       status: { active: 'Active', wip: 'WIP', archived: 'Archived' },
       empty: 'No projects yet',
       emptyHint: 'Projects are on the way. Check the blog and notes for now.',
@@ -176,6 +195,11 @@ export const ui = {
     },
     about: {
       title: 'About',
+    },
+    now: {
+      title: 'Now',
+      subtitle: 'What I am working on and learning',
+      updated: 'Updated',
     },
     footer: {
       builtWith: 'Built with Astro',

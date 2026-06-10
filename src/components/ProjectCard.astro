@@ -1,5 +1,5 @@
 ---
-import { getSlugFromId, formatDate, formatRelativeDate, getInitials } from '../utils/content';
+import { getSlugFromId, formatDate, getInitials } from '../utils/content';
 import type { Locale } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 import { t } from '../i18n/ui';
@@ -15,6 +15,7 @@ const ui = t(locale);
 const slug = getSlugFromId(project.id);
 const initials = getInitials(project.data.title);
 const isActive = project.data.status === 'active';
+const hasDemo = Boolean(project.data.demo);
 ---
 
 <article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 card-hover">
@@ -42,7 +43,7 @@ const isActive = project.data.status === 'active';
           </div>
         )
       }
-      <div class="flex items-center gap-3 text-sm">
+      <div class="flex flex-wrap items-center gap-3 text-sm">
         <a
           href={project.data.github}
           target="_blank"
@@ -54,7 +55,21 @@ const isActive = project.data.status === 'active';
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
           </svg>
         </a>
-        <span class="text-xs text-[var(--color-muted)]">{formatDate(project.data.date, locale)}</span>
+        {
+          hasDemo && (
+            <a
+              href={project.data.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:underline"
+            >
+              {ui.projects.demo}
+            </a>
+          )
+        }
+        <span class="text-xs text-[var(--color-muted)]">
+          {ui.projects.lastUpdated}: {formatDate(project.data.date, locale)}
+        </span>
       </div>
     </div>
   </div>

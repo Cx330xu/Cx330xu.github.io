@@ -1,0 +1,63 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../i18n/ui';
+import { t } from '../i18n/ui';
+import { formatDate } from '../utils/content';
+import Chip from './Chip.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const ui = t(locale);
+const isActive = project.data.status === 'active';
+const hasDemo = Boolean(project.data.demo);
+---
+
+<div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 mb-8">
+  <div class="flex flex-wrap items-center gap-3 mb-4">
+    <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)]">
+      {isActive && <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />}
+      {ui.projects.status[project.data.status]}
+    </span>
+    <time datetime={project.data.date.toISOString()} class="text-xs text-[var(--color-muted)]">
+      {ui.projects.lastUpdated}: {formatDate(project.data.date, locale)}
+    </time>
+  </div>
+  {
+    project.data.stack.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-4">
+        {project.data.stack.map((s) => (
+          <Chip label={s} prefixHash={false} />
+        ))}
+      </div>
+    )
+  }
+  <div class="flex flex-wrap gap-3">
+    <a
+      href={project.data.github}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+    >
+      {ui.projects.github}
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+      </svg>
+    </a>
+    {
+      hasDemo && (
+        <a
+          href={project.data.demo}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+        >
+          {ui.projects.demo}
+        </a>
+      )
+    }
+  </div>
+</div>

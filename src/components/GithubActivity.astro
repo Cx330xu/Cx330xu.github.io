@@ -1,0 +1,46 @@
+---
+import { profile } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const chartUrl = 'https://ghchart.rshah.org/6366f1/Cx330xu';
+---
+
+<section class="mb-16">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-xl font-semibold">{ui.home.githubActivity}</h2>
+    <a
+      href={profile.github}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="text-sm text-[var(--color-primary)] hover:underline"
+    >
+      {ui.home.viewOnGithub} →
+    </a>
+  </div>
+  <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 overflow-x-auto">
+    <img
+      src={chartUrl}
+      alt={ui.home.githubActivityAlt}
+      class="github-chart w-full max-w-4xl mx-auto h-auto"
+      loading="lazy"
+      width="824"
+      height="118"
+    />
+  </div>
+</section>
+
+<style>
+  .github-chart {
+    filter: none;
+  }
+
+  :global(.dark) .github-chart {
+    filter: invert(0.85) hue-rotate(180deg) brightness(0.95);
+  }
+</style>

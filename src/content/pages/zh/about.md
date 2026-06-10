@@ -5,7 +5,7 @@ description: 关于 Cx330xu 与这个站点
 
 ## 我是谁
 
-我是 **Cx330xu**，从事计算机行业，关注 AI、Agent、RAG 与开源实践。
+我是 **Cx330xu**，AI Agent 研发工程师，关注 LLM、Agent、RAG 与开源实践。
 
 ## 这个站点
 

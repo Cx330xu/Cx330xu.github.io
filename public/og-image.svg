@@ -6,7 +6,7 @@
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#bg)"/>
-  <text x="100" y="280" fill="#ffffff" font-family="system-ui,sans-serif" font-size="72" font-weight="700">Cx330xu</text>
-  <text x="100" y="360" fill="#e0e7ff" font-family="system-ui,sans-serif" font-size="36">Personal Tech Hub</text>
-  <text x="100" y="430" fill="#c7d2fe" font-family="system-ui,sans-serif" font-size="28">AI � Agent � Open Source � Astro</text>
+  <text x="100" y="260" fill="#ffffff" font-family="system-ui,sans-serif" font-size="72" font-weight="700">Cx330xu</text>
+  <text x="100" y="340" fill="#e0e7ff" font-family="system-ui,sans-serif" font-size="40">AI Agent 研发工程师</text>
+  <text x="100" y="410" fill="#c7d2fe" font-family="system-ui,sans-serif" font-size="28">LLM · RAG · Agent · Open Source</text>
 </svg>

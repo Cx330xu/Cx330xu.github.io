@@ -1,0 +1,96 @@
+---
+import { getSlugFromId, formatDate, getInitials } from '../utils/content';
+import type { Locale } from '../i18n/ui';
+import type { CollectionEntry } from 'astro:content';
+import { t } from '../i18n/ui';
+import Chip from './Chip.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const ui = t(locale);
+const slug = getSlugFromId(project.id);
+const initials = getInitials(project.data.title);
+const isActive = project.data.status === 'active';
+const hasDemo = Boolean(project.data.demo);
+const cover = project.data.cover;
+---
+
+<article class="group rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden card-hover">
+  <div class="flex flex-col md:flex-row">
+    <div class="md:w-2/5 shrink-0 bg-[var(--color-bg)] border-b md:border-b-0 md:border-r border-[var(--color-border)]">
+      {
+        cover ? (
+          <img
+            src={cover}
+            alt={project.data.title}
+            class="w-full h-48 md:h-full min-h-[12rem] object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div class="w-full h-48 md:h-full min-h-[12rem] flex items-center justify-center bg-gradient-to-br from-[var(--color-primary)]/15 to-[var(--color-primary)]/5">
+            <span class="text-5xl font-bold text-[var(--color-primary)]/80">{initials}</span>
+          </div>
+        )
+      }
+    </div>
+    <div class="flex-1 p-6 md:p-8">
+      <div class="flex items-start justify-between gap-3 mb-3">
+        <h3 class="text-2xl font-bold group-hover:text-[var(--color-primary)] transition-colors">
+          <a href={`/${locale}/projects/${slug}/`}>{project.data.title}</a>
+        </h3>
+        <span class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] shrink-0">
+          {isActive && <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />}
+          {ui.projects.status[project.data.status]}
+        </span>
+      </div>
+      <p class="text-[var(--color-muted)] mb-4 leading-relaxed">{project.data.description}</p>
+      {
+        project.data.stack.length > 0 && (
+          <div class="flex flex-wrap gap-2 mb-5">
+            {project.data.stack.map((s) => (
+              <Chip label={s} prefixHash={false} />
+            ))}
+          </div>
+        )
+      }
+      <div class="flex flex-wrap items-center gap-3">
+        <a
+          href={project.data.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {ui.projects.github}
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        {
+          hasDemo && (
+            <a
+              href={project.data.demo}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+            >
+              {ui.projects.demo}
+            </a>
+          )
+        }
+        <a
+          href={`/${locale}/projects/${slug}/`}
+          class="text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors"
+        >
+          {ui.projects.viewDetails} →
+        </a>
+      </div>
+      <p class="text-xs text-[var(--color-muted)] mt-4">
+        {ui.projects.lastUpdated}: {formatDate(project.data.date, locale)}
+      </p>
+    </div>
+  </div>
+</article>

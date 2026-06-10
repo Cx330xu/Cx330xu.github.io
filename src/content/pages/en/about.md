@@ -5,7 +5,7 @@ description: About Cx330xu and this site
 
 ## Who I am
 
-I'm **Cx330xu**, working in the computer industry with interests in AI, Agents, RAG, and open source.
+I'm **Cx330xu**, an AI Agent Engineer focused on LLM, Agents, RAG, and open source.
 
 ## This site
 
