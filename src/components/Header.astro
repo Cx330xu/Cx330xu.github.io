@@ -34,10 +34,12 @@ function isHome(path: string) {
     <a
       href={`/${locale}/`}
       class:list={[
-        'font-semibold transition-colors shrink-0',
+        'inline-flex items-center gap-2 font-semibold transition-colors shrink-0 py-1 pr-1 -ml-1 rounded-md',
         isHome(currentPath) ? 'text-[var(--color-primary)]' : 'text-[var(--color-text)] hover:text-[var(--color-primary)]',
       ]}
+      aria-label={ui.nav.home}
     >
+      <img src="/favicon.svg" alt="" width="22" height="22" class="rounded-md shrink-0" aria-hidden="true" />
       {profile.name}
     </a>
 

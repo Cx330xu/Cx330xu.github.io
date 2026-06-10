@@ -11,6 +11,12 @@ const ui = t(locale);
 const pagefindLang = getPagefindLanguage(locale);
 const base = `/${locale}`;
 const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
+const typeFilters = [
+  { key: '', label: ui.search.typeAll },
+  { key: 'blog', label: ui.search.types.blog },
+  { key: 'project', label: ui.search.types.project },
+  { key: 'note', label: ui.search.types.note },
+] as const;
 ---
 
 <header class="mb-6">
@@ -61,16 +67,103 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
   </div>
 </div>
 
+<div class="mb-5">
+  <p class="text-xs text-[var(--color-muted)] mb-2">{ui.search.typeFilterLabel}</p>
+  <div class="flex flex-wrap gap-2" role="group" aria-label={ui.search.typeFilterLabel}>
+    {
+      typeFilters.map((item, index) => (
+        <button
+          type="button"
+          class:list={[
+            'search-type-filter text-xs px-3 py-1.5 rounded-full border transition-colors',
+            index === 0
+              ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10 text-[var(--color-primary)]'
+              : 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-muted)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]',
+          ]}
+          data-type={item.key}
+          aria-pressed={index === 0 ? 'true' : 'false'}
+        >
+          {item.label}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
 <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
 <div id="search" class="pagefind-search"></div>
 
 <script src="/pagefind/pagefind-ui.js" is:inline></script>
 <script is:inline define:vars={{ pagefindLang, placeholder: ui.search.placeholder, emptyText: ui.search.empty }}>
+  const typePatterns = {
+    blog: '/blog/',
+    project: '/projects/',
+    note: '/notes/',
+  };
+
+  let activeType = '';
+  let typeObserver = null;
+
+  function applyTypeFilter(root, type) {
+    activeType = type;
+    const pattern = typePatterns[type];
+    root.querySelectorAll('.pagefind-ui__result').forEach((result) => {
+      if (!pattern) {
+        result.style.display = '';
+        return;
+      }
+      const href = result.querySelector('a')?.getAttribute('href') ?? '';
+      result.style.display = href.includes(pattern) ? '' : 'none';
+    });
+  }
+
+  function bindTypeFilters(root) {
+    document.querySelectorAll('.search-type-filter').forEach((btn) => {
+      if (btn.dataset.bound === 'true') return;
+      btn.dataset.bound = 'true';
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.search-type-filter').forEach((peer) => {
+          const selected = peer === btn;
+          peer.setAttribute('aria-pressed', selected ? 'true' : 'false');
+          peer.classList.toggle('border-[var(--color-primary)]', selected);
+          peer.classList.toggle('bg-[var(--color-primary)]/10', selected);
+          peer.classList.toggle('text-[var(--color-primary)]', selected);
+          peer.classList.toggle('border-[var(--color-border)]', !selected);
+          peer.classList.toggle('bg-[var(--color-surface)]', !selected);
+          peer.classList.toggle('text-[var(--color-muted)]', !selected);
+        });
+        applyTypeFilter(root, btn.dataset.type ?? '');
+      });
+    });
+  }
+
+  function watchResults(root) {
+    typeObserver?.disconnect();
+    const results = root.querySelector('.pagefind-ui__results');
+    if (!results) return;
+    typeObserver = new MutationObserver(() => applyTypeFilter(root, activeType));
+    typeObserver.observe(results, { childList: true, subtree: true });
+  }
+
+  function hideLanguageFilter(root) {
+    root.querySelectorAll('.pagefind-ui__filter-block').forEach((block) => {
+      const name = block.querySelector('.pagefind-ui__filter-name')?.textContent?.toLowerCase() ?? '';
+      if (name.includes('language')) block.remove();
+    });
+    const panel = root.querySelector('.pagefind-ui__filter-panel');
+    if (panel && panel.querySelectorAll('.pagefind-ui__filter-block').length === 0) {
+      panel.remove();
+    }
+  }
+
   function initSearch() {
     if (typeof PagefindUI === 'undefined') return;
     const el = document.getElementById('search');
     if (!el) return;
     el.innerHTML = '';
+    typeObserver?.disconnect();
+    activeType = '';
+
     new PagefindUI({
       element: '#search',
       bundlePath: '/pagefind/',
@@ -84,6 +177,10 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
     });
 
     window.setTimeout(() => {
+      hideLanguageFilter(el);
+      watchResults(el);
+      bindTypeFilters(el);
+
       const input = el.querySelector('.pagefind-ui__search-input');
       if (!(input instanceof HTMLInputElement)) return;
 
@@ -128,17 +225,23 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
     --pagefind-ui-font: var(--font-sans);
   }
 
+  .pagefind-search .pagefind-ui__filter-panel {
+    display: none !important;
+  }
+
   .pagefind-search .pagefind-ui__form {
     margin-bottom: 1.25rem;
   }
 
   .pagefind-search .pagefind-ui__search-input {
     border-radius: 0.75rem;
-    padding: 0.875rem 1rem;
+    padding: 0.875rem 1rem 0.875rem 2.75rem;
     font-size: 1rem;
+    font-weight: 500;
     border: 1px solid var(--color-border);
     background: var(--color-surface);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    height: auto;
   }
 
   .pagefind-search .pagefind-ui__search-input:focus {
@@ -154,6 +257,7 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
     margin-bottom: 0.75rem;
     background: var(--color-surface);
     transition: border-color 0.2s;
+    border-top: 1px solid var(--color-border);
   }
 
   .pagefind-search .pagefind-ui__result:hover {
@@ -171,6 +275,7 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
     line-height: 1.6;
     color: var(--color-muted);
     margin-top: 0.375rem;
+    min-width: 0;
   }
 
   .pagefind-search .pagefind-ui__result-tags {
@@ -199,5 +304,6 @@ const quickTerms = ['docker', 'agent', 'rag', 'prompt'];
     font-size: 0.875rem;
     padding: 2rem 0;
     text-align: center;
+    font-weight: 500;
   }
 </style>

@@ -24,17 +24,19 @@ const isHome = title === ui.nav.home || title.includes('Personal Tech Hub');
 const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu`;
 const pathname = Astro.url.pathname;
 
-function getPagefindContentType(path: string): string | undefined {
-  if (/\/blog\/[^/]+\/?$/.test(path) && !path.includes('csdn-archive')) return ui.search.types.blog;
-  if (/\/projects\/[^/]+\/?$/.test(path)) return ui.search.types.project;
-  if (/\/notes\/[^/]+\/?$/.test(path)) return ui.search.types.note;
-  if (/\/tags\//.test(path)) return ui.search.types.tag;
-  if (/\/categories\//.test(path)) return ui.search.types.category;
+function getPagefindContentTypeKey(path: string): 'blog' | 'project' | 'note' | 'tag' | 'category' | undefined {
+  if (/\/blog\/[^/]+\/?$/.test(path) && !path.includes('csdn-archive')) return 'blog';
+  if (/\/projects\/[^/]+\/?$/.test(path)) return 'project';
+  if (/\/notes\/[^/]+\/?$/.test(path)) return 'note';
+  if (/\/tags\//.test(path)) return 'tag';
+  if (/\/categories\//.test(path)) return 'category';
   return undefined;
 }
 
-const pagefindContentType = getPagefindContentType(pathname);
-const pagefindMeta = pagefindContentType ? `type:${pagefindContentType}` : undefined;
+const pagefindTypeKey = getPagefindContentTypeKey(pathname);
+const pagefindTypeLabel = pagefindTypeKey ? ui.search.types[pagefindTypeKey] : undefined;
+const pagefindFilter = pagefindTypeKey ? `type[${pagefindTypeKey}]` : undefined;
+const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined;
 ---
 
 <!doctype html>
@@ -56,6 +58,7 @@ const pagefindMeta = pagefindContentType ? `type:${pagefindContentType}` : undef
     <main
       class="relative z-[1] flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10"
       data-pagefind-body
+      {...(pagefindFilter ? { 'data-pagefind-filter': pagefindFilter } : {})}
       {...(pagefindMeta ? { 'data-pagefind-meta': pagefindMeta } : {})}
     >
       <slot />

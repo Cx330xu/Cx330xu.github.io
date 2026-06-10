@@ -19,7 +19,8 @@ const latestSlug = latestPost ? getSlugFromId(latestPost.id) : null;
 
 <aside class="hidden lg:block">
   <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-sm p-5 sticky top-24">
-    <p class="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide mb-4">{ui.home.snapshotTitle}</p>
+    <p class="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide mb-1">{ui.home.snapshotTitle}</p>
+    <p class="text-xs text-[var(--color-primary)] mb-4">{ui.home.snapshotTagline}</p>
     <dl class="grid grid-cols-3 gap-3 mb-5 text-center">
       <div>
         <dd class="text-xl font-bold text-[var(--color-primary)]">{projectCount}</dd>

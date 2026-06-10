@@ -30,10 +30,9 @@ export const ui = {
       skillsLabel: '专注方向',
       githubActivity: 'GitHub 活跃度',
       githubActivityAlt: 'Cx330xu 的 GitHub 贡献热力图',
-      githubActivityNote: '数据来自 GitHub 公开贡献记录。空白格表示该时段无公开 commit——功能正常，反映当前账号活跃度较低。',
-      githubActivityLow: '贡献较少时属正常现象，可在 GitHub 持续提交后自动更新。',
       viewOnGithub: '在 GitHub 查看',
       snapshotTitle: '站点概览',
+      snapshotTagline: 'AI Agent · LLM 工程实践',
       viewNow: '当前动态',
     },
     projects: {
@@ -91,6 +90,8 @@ export const ui = {
       tip: '适合快速了解技术栈与项目细节——可搜 Docker、Agent、RAG 等关键词，或从下方入口浏览。',
       browseLabel: '按栏目浏览',
       tryLabel: '试试这些关键词',
+      typeFilterLabel: '按类型筛选',
+      typeAll: '全部',
       empty: '未找到相关内容，换个关键词或浏览下方栏目试试。',
       types: {
         blog: '博客',
@@ -168,10 +169,9 @@ export const ui = {
       skillsLabel: 'Focus areas',
       githubActivity: 'GitHub Activity',
       githubActivityAlt: 'GitHub contribution chart for Cx330xu',
-      githubActivityNote: 'Sourced from public GitHub contribution data. Empty cells mean no public commits — the chart works; activity is just low on this account.',
-      githubActivityLow: 'This is normal with few commits. The chart updates automatically as you contribute on GitHub.',
       viewOnGithub: 'View on GitHub',
       snapshotTitle: 'Site snapshot',
+      snapshotTagline: 'AI Agent · LLM engineering',
       viewNow: 'Now',
     },
     projects: {
@@ -229,6 +229,8 @@ export const ui = {
       tip: 'Quick way to explore my stack and projects — search for Docker, Agent, RAG, or browse by section below.',
       browseLabel: 'Browse by section',
       tryLabel: 'Try these keywords',
+      typeFilterLabel: 'Filter by type',
+      typeAll: 'All',
       empty: 'No results found. Try another keyword or browse the sections below.',
       types: {
         blog: 'Blog',
