@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import NoteItem from '../../../components/NoteItem.astro';
+import EmptyState from '../../../components/EmptyState.astro';
 import { t } from '../../../i18n/ui';
 import { filterByLocale, sortByDate } from '../../../utils/content';
 
@@ -23,7 +24,7 @@ const notes = sortByDate(
   </header>
   {
     notes.length === 0 ? (
-      <p class="text-[var(--color-muted)]">{ui.notes.empty}</p>
+      <EmptyState locale={locale} message={ui.notes.empty} hint={ui.notes.emptyHint} />
     ) : (
       <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
         {notes.map((note) => (

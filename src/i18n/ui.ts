@@ -9,6 +9,7 @@ export const ui = {
       notes: '笔记',
       archives: '归档',
       about: '关于',
+      search: '搜索',
     },
     home: {
       viewProjects: '查看项目',
@@ -17,9 +18,14 @@ export const ui = {
       allProjects: '查看全部项目',
       latestPosts: '最新文章',
       latestNotes: '最新笔记',
+      recentlyUpdated: '最近更新',
+      viewAllNotes: '查看全部笔记',
       exploreTags: '探索标签',
       allTags: '全部标签',
       allCategories: '全部分类',
+      ctaTitle: '想深入了解？',
+      ctaReadLatest: '阅读最新文章',
+      ctaBrowseProjects: '浏览全部项目',
     },
     projects: {
       title: '项目',
@@ -29,6 +35,7 @@ export const ui = {
       github: 'GitHub',
       status: { active: '活跃', wip: '进行中', archived: '已归档' },
       empty: '暂无项目',
+      emptyHint: '项目整理中，欢迎先看看博客与笔记。',
     },
     blog: {
       title: '博客',
@@ -36,11 +43,17 @@ export const ui = {
       all: '全部',
       readMore: '阅读全文',
       minRead: '分钟阅读',
+      empty: '暂无文章',
+      emptyHint: '首篇文章撰写中，欢迎关注 RSS。',
+      prev: '上一篇',
+      next: '下一篇',
+      toc: '目录',
     },
     notes: {
       title: '笔记',
       subtitle: '短笔记、测试记录与灵感',
       empty: '暂无笔记',
+      emptyHint: '短笔记即将更新，敬请期待。',
     },
     archives: {
       title: '归档',
@@ -56,6 +69,11 @@ export const ui = {
       title: '分类',
       subtitle: '按类别浏览文章',
     },
+    search: {
+      title: '搜索',
+      subtitle: '搜索文章、项目与笔记',
+      placeholder: '输入关键词…',
+    },
     about: {
       title: '关于',
     },
@@ -70,6 +88,13 @@ export const ui = {
     comments: '评论',
     relatedTags: '相关标签',
     translationPending: '译文待补充',
+    breadcrumb: {
+      home: '首页',
+    },
+    empty: {
+      viewAbout: '了解关于页',
+      viewGithub: '访问 GitHub',
+    },
   },
   en: {
     nav: {
@@ -79,6 +104,7 @@ export const ui = {
       notes: 'Notes',
       archives: 'Archives',
       about: 'About',
+      search: 'Search',
     },
     home: {
       viewProjects: 'View Projects',
@@ -87,9 +113,14 @@ export const ui = {
       allProjects: 'View All Projects',
       latestPosts: 'Latest Posts',
       latestNotes: 'Latest Notes',
+      recentlyUpdated: 'Recently updated',
+      viewAllNotes: 'View all notes',
       exploreTags: 'Explore Tags',
       allTags: 'All Tags',
       allCategories: 'All Categories',
+      ctaTitle: 'Want to dig deeper?',
+      ctaReadLatest: 'Read latest post',
+      ctaBrowseProjects: 'Browse all projects',
     },
     projects: {
       title: 'Projects',
@@ -99,6 +130,7 @@ export const ui = {
       github: 'GitHub',
       status: { active: 'Active', wip: 'WIP', archived: 'Archived' },
       empty: 'No projects yet',
+      emptyHint: 'Projects are on the way. Check the blog and notes for now.',
     },
     blog: {
       title: 'Blog',
@@ -106,11 +138,17 @@ export const ui = {
       all: 'All',
       readMore: 'Read more',
       minRead: 'min read',
+      empty: 'No posts yet',
+      emptyHint: 'First post coming soon. Subscribe via RSS.',
+      prev: 'Previous',
+      next: 'Next',
+      toc: 'On this page',
     },
     notes: {
       title: 'Notes',
       subtitle: 'Short notes, tests, and ideas',
       empty: 'No notes yet',
+      emptyHint: 'Short notes will appear here soon.',
     },
     archives: {
       title: 'Archives',
@@ -126,6 +164,11 @@ export const ui = {
       title: 'Categories',
       subtitle: 'Browse posts by category',
     },
+    search: {
+      title: 'Search',
+      subtitle: 'Search posts, projects, and notes',
+      placeholder: 'Type to search…',
+    },
     about: {
       title: 'About',
     },
@@ -140,6 +183,13 @@ export const ui = {
     comments: 'Comments',
     relatedTags: 'Related Tags',
     translationPending: 'Translation pending',
+    breadcrumb: {
+      home: 'Home',
+    },
+    empty: {
+      viewAbout: 'About page',
+      viewGithub: 'Visit GitHub',
+    },
   },
 } as const;
 

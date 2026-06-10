@@ -4,20 +4,26 @@ import { categories } from '../data/site';
 import type { Locale } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 import { t } from '../i18n/ui';
+import Chip from './Chip.astro';
 
 interface Props {
   post: CollectionEntry<'blog'>;
   locale: Locale;
+  variant?: 'full' | 'compact';
 }
 
-const { post, locale } = Astro.props;
+const { post, locale, variant = 'full' } = Astro.props;
 const ui = t(locale);
 const slug = getSlugFromId(post.id);
 const cat = categories.find((c) => c.id === post.data.category);
 const minutes = readingTime(post.body);
+const isCompact = variant === 'compact';
 ---
 
-<article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)] transition-colors">
+<article class:list={[
+  'group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] card-hover',
+  isCompact ? 'p-4' : 'p-5',
+]}>
   <div class="flex items-center gap-2 text-xs text-[var(--color-muted)] mb-2">
     {
       cat && (
@@ -31,19 +37,23 @@ const minutes = readingTime(post.body);
     <span>·</span>
     <span>{minutes} {ui.blog.minRead}</span>
   </div>
-  <h3 class="font-semibold text-lg mb-2 group-hover:text-[var(--color-primary)] transition-colors">
+  <h3 class:list={['font-semibold group-hover:text-[var(--color-primary)] transition-colors', isCompact ? 'text-base mb-0' : 'text-lg mb-2']}>
     <a href={`/${locale}/blog/${slug}/`}>{post.data.title}</a>
   </h3>
-  <p class="text-sm text-[var(--color-muted)] mb-3 line-clamp-2">{post.data.description}</p>
   {
-    post.data.tags.length > 0 && (
-      <div class="flex flex-wrap gap-1.5">
-        {post.data.tags.map((tag) => (
-          <a href={`/${locale}/tags/${tag.toLowerCase()}/`} class="text-xs px-2 py-0.5 rounded-md bg-[var(--color-bg)] text-[var(--color-muted)] hover:text-[var(--color-primary)]">
-            #{tag}
-          </a>
-        ))}
-      </div>
+    !isCompact && (
+      <>
+        <p class="text-sm text-[var(--color-muted)] mb-3 line-clamp-2">{post.data.description}</p>
+        {
+          post.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-1.5">
+              {post.data.tags.map((tag) => (
+                <Chip label={tag} href={`/${locale}/tags/${tag.toLowerCase()}/`} />
+              ))}
+            </div>
+          )
+        }
+      </>
     )
   }
 </article>

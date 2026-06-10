@@ -1,8 +1,9 @@
 ---
-import { getSlugFromId, formatDate } from '../utils/content';
+import { getSlugFromId, formatDate, formatRelativeDate, getInitials } from '../utils/content';
 import type { Locale } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 import { t } from '../i18n/ui';
+import Chip from './Chip.astro';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -12,38 +13,49 @@ interface Props {
 const { project, locale } = Astro.props;
 const ui = t(locale);
 const slug = getSlugFromId(project.id);
+const initials = getInitials(project.data.title);
+const isActive = project.data.status === 'active';
 ---
 
-<article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 hover:border-[var(--color-primary)] transition-colors">
-  <div class="flex items-start justify-between gap-3 mb-2">
-    <h3 class="font-semibold text-lg group-hover:text-[var(--color-primary)] transition-colors">
-      <a href={`/${locale}/projects/${slug}/`}>{project.data.title}</a>
-    </h3>
-    <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] shrink-0">
-      {ui.projects.status[project.data.status]}
-    </span>
-  </div>
-  <p class="text-sm text-[var(--color-muted)] mb-3 line-clamp-2">{project.data.description}</p>
-  {
-    project.data.stack.length > 0 && (
-      <div class="flex flex-wrap gap-1.5 mb-3">
-        {project.data.stack.map((s) => (
-          <span class="text-xs px-2 py-0.5 rounded-md bg-[var(--color-bg)] text-[var(--color-muted)] border border-[var(--color-border)]">
-            {s}
-          </span>
-        ))}
+<article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 card-hover">
+  <div class="flex gap-4">
+    <div class="shrink-0 w-11 h-11 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-sm flex items-center justify-center border border-[var(--color-primary)]/20">
+      {initials}
+    </div>
+    <div class="min-w-0 flex-1">
+      <div class="flex items-start justify-between gap-3 mb-2">
+        <h3 class="font-semibold text-lg group-hover:text-[var(--color-primary)] transition-colors">
+          <a href={`/${locale}/projects/${slug}/`}>{project.data.title}</a>
+        </h3>
+        <span class="inline-flex items-center gap-1.5 text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] shrink-0">
+          {isActive && <span class="w-1.5 h-1.5 rounded-full bg-[var(--color-success)]" />}
+          {ui.projects.status[project.data.status]}
+        </span>
       </div>
-    )
-  }
-  <div class="flex items-center gap-3 text-sm">
-    <a
-      href={project.data.github}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="text-[var(--color-primary)] hover:underline"
-    >
-      {ui.projects.github} →
-    </a>
-    <span class="text-xs text-[var(--color-muted)]">{formatDate(project.data.date, locale)}</span>
+      <p class="text-sm text-[var(--color-muted)] mb-3 line-clamp-2">{project.data.description}</p>
+      {
+        project.data.stack.length > 0 && (
+          <div class="flex flex-wrap gap-1.5 mb-3">
+            {project.data.stack.map((s) => (
+              <Chip label={s} prefixHash={false} />
+            ))}
+          </div>
+        )
+      }
+      <div class="flex items-center gap-3 text-sm">
+        <a
+          href={project.data.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1 text-[var(--color-primary)] hover:underline"
+        >
+          {ui.projects.github}
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+        <span class="text-xs text-[var(--color-muted)]">{formatDate(project.data.date, locale)}</span>
+      </div>
+    </div>
   </div>
 </article>

@@ -1,22 +1,23 @@
 ---
-import { getSlugFromId, formatDate } from '../utils/content';
+import { getSlugFromId, formatRelativeDate } from '../utils/content';
 import type { Locale } from '../i18n/ui';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   note: CollectionEntry<'notes'>;
   locale: Locale;
+  showRelative?: boolean;
 }
 
-const { note, locale } = Astro.props;
+const { note, locale, showRelative = false } = Astro.props;
 const slug = getSlugFromId(note.id);
 const preview = note.body.replace(/\n+/g, ' ').trim().slice(0, 120);
 const title = note.data.title ?? preview + (preview.length >= 120 ? '…' : '');
 ---
 
 <article class="group flex gap-4 py-3 border-b border-[var(--color-border)] last:border-0">
-  <time datetime={note.data.date.toISOString()} class="text-xs text-[var(--color-muted)] shrink-0 w-24 pt-0.5">
-    {formatDate(note.data.date, locale)}
+  <time datetime={note.data.date.toISOString()} class="text-xs text-[var(--color-muted)] shrink-0 w-24 pt-0.5" title={note.data.date.toISOString()}>
+    {showRelative ? formatRelativeDate(note.data.date, locale) : note.data.date.toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'en-US', { month: 'short', day: 'numeric' })}
   </time>
   <div class="min-w-0 flex-1">
     <a href={`/${locale}/notes/${slug}/`} class="text-sm font-medium hover:text-[var(--color-primary)] transition-colors line-clamp-2">

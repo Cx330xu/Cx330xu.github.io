@@ -28,15 +28,29 @@ const featured = projects.filter((p) => p.data.featured).slice(0, 3);
 const latestPosts = posts.slice(0, 3);
 const latestNotes = notes.slice(0, 5);
 const allTags = collectTags([...posts, ...notes, ...projects]);
+
+const featuredGridClass =
+  featured.length === 1
+    ? 'grid gap-4 max-w-2xl'
+    : featured.length === 2
+      ? 'grid gap-4 sm:grid-cols-2'
+      : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
 ---
 
 <section class="mb-16">
   <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6">
     <Avatar />
     <div>
-      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-2">{profile.name}</h1>
-      <p class="text-lg text-[var(--color-muted)] mb-3">{profile.title[locale]}</p>
-      <p class="text-[var(--color-text)] max-w-xl">{profile.tagline[locale]}</p>
+      <h1 class="text-3xl sm:text-4xl font-bold tracking-tight mb-3 max-w-2xl">{profile.tagline[locale]}</h1>
+      <p class="text-lg text-[var(--color-muted)] mb-2">{profile.title[locale]}</p>
+      <a
+        href={profile.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors"
+      >
+        github.com/Cx330xu
+      </a>
       <div class="flex flex-wrap gap-3 mt-6">
         <a
           href={`/${locale}/projects/`}
@@ -64,7 +78,7 @@ const allTags = collectTags([...posts, ...notes, ...projects]);
           {ui.home.allProjects} →
         </a>
       </div>
-      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div class={featuredGridClass}>
         {featured.map((project) => (
           <ProjectCard project={project} locale={locale} />
         ))}
@@ -77,32 +91,65 @@ const allTags = collectTags([...posts, ...notes, ...projects]);
   <div>
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl font-semibold">{ui.home.latestPosts}</h2>
-      <a href={`/${locale}/blog/`} class="text-sm text-[var(--color-primary)] hover:underline">→</a>
+      <a href={`/${locale}/blog/`} class="text-sm text-[var(--color-primary)] hover:underline">{ui.home.readBlog} →</a>
     </div>
-    <div class="space-y-4">
+    <div class="space-y-3">
       {latestPosts.map((post) => (
-        <PostCard post={post} locale={locale} />
+        <PostCard post={post} locale={locale} variant="compact" />
       ))}
     </div>
   </div>
   <div>
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-xl font-semibold">{ui.home.latestNotes}</h2>
-      <a href={`/${locale}/notes/`} class="text-sm text-[var(--color-primary)] hover:underline">→</a>
+      <div class="flex items-center gap-2">
+        <h2 class="text-xl font-semibold">{ui.home.latestNotes}</h2>
+        <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+          {ui.home.recentlyUpdated}
+        </span>
+      </div>
     </div>
     <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
       {latestNotes.map((note) => (
-        <NoteItem note={note} locale={locale} />
+        <NoteItem note={note} locale={locale} showRelative />
       ))}
     </div>
+    <a href={`/${locale}/notes/`} class="inline-block mt-3 text-sm text-[var(--color-primary)] hover:underline">
+      {ui.home.viewAllNotes} →
+    </a>
   </div>
 </section>
 
-<section>
-  <h2 class="text-xl font-semibold mb-4">{ui.home.exploreTags}</h2>
-  <TagCloud tags={allTags.slice(0, 12)} locale={locale} />
-  <div class="flex gap-4 mt-4 text-sm">
-    <a href={`/${locale}/tags/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allTags} →</a>
-    <a href={`/${locale}/categories/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allCategories} →</a>
+{
+  allTags.length >= 5 ? (
+    <section class="mb-16">
+      <h2 class="text-xl font-semibold mb-4">{ui.home.exploreTags}</h2>
+      <TagCloud tags={allTags.slice(0, 12)} locale={locale} />
+      <div class="flex gap-4 mt-4 text-sm">
+        <a href={`/${locale}/tags/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allTags} →</a>
+        <a href={`/${locale}/categories/`} class="text-[var(--color-primary)] hover:underline">{ui.home.allCategories} →</a>
+      </div>
+    </section>
+  ) : null
+}
+
+<section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 text-center">
+  <h2 class="text-lg font-semibold mb-4">{ui.home.ctaTitle}</h2>
+  <div class="flex flex-wrap justify-center gap-3">
+    {
+      latestPosts[0] && (
+        <a
+          href={`/${locale}/blog/${latestPosts[0].id.replace(/^(zh|en)\//, '')}/`}
+          class="px-5 py-2.5 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {ui.home.ctaReadLatest}
+        </a>
+      )
+    }
+    <a
+      href={`/${locale}/projects/`}
+      class="px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+    >
+      {ui.home.ctaBrowseProjects}
+    </a>
   </div>
 </section>

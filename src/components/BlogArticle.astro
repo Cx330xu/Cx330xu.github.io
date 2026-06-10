@@ -1,0 +1,91 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../i18n/ui';
+import { categories } from '../data/site';
+import { t } from '../i18n/ui';
+import { getSlugFromId, formatDate, readingTime } from '../utils/content';
+import Breadcrumbs from './Breadcrumbs.astro';
+import TableOfContents from './TableOfContents.astro';
+import Chip from './Chip.astro';
+import Giscus from './Giscus.astro';
+
+interface Props {
+  locale: Locale;
+  post: CollectionEntry<'blog'>;
+  prevPost?: CollectionEntry<'blog'>;
+  nextPost?: CollectionEntry<'blog'>;
+  Content: Awaited<ReturnType<typeof import('astro:content').render>>['Content'];
+}
+
+const { locale, post, prevPost, nextPost, Content } = Astro.props;
+const ui = t(locale);
+const cat = categories.find((c) => c.id === post.data.category);
+const minutes = readingTime(post.body);
+const slug = getSlugFromId(post.id);
+---
+
+<Breadcrumbs
+  locale={locale}
+  items={[
+    { label: ui.nav.blog, href: `/${locale}/blog/` },
+    ...(cat ? [{ label: cat.label[locale], href: `/${locale}/categories/${cat.id}/` }] : []),
+    { label: post.data.title },
+  ]}
+/>
+
+<article>
+  <header class="mb-8">
+    <div class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-muted)] mb-3">
+      {cat && <span class="text-[var(--color-primary)]">{cat.label[locale]}</span>}
+      <span>·</span>
+      <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, locale)}</time>
+      <span>·</span>
+      <span>{minutes} {ui.blog.minRead}</span>
+    </div>
+    <h1 class="text-3xl font-bold mb-3">{post.data.title}</h1>
+    <p class="text-[var(--color-muted)]">{post.data.description}</p>
+    {
+      post.data.tags.length > 0 && (
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-xs text-[var(--color-muted)] self-center">{ui.relatedTags}:</span>
+          {post.data.tags.map((tag) => (
+            <Chip label={tag} href={`/${locale}/tags/${tag.toLowerCase()}/`} variant="primary" />
+          ))}
+        </div>
+      )
+    }
+  </header>
+
+  <TableOfContents locale={locale} />
+
+  <div class="prose">
+    <Content />
+  </div>
+
+  {
+    (prevPost || nextPost) && (
+      <nav class="mt-12 pt-8 border-t border-[var(--color-border)] grid gap-4 sm:grid-cols-2">
+        {
+          prevPost ? (
+            <a href={`/${locale}/blog/${getSlugFromId(prevPost.id)}/`} class="group rounded-xl border border-[var(--color-border)] p-4 card-hover">
+              <span class="text-xs text-[var(--color-muted)]">{ui.blog.prev}</span>
+              <p class="font-medium group-hover:text-[var(--color-primary)] transition-colors mt-1">{prevPost.data.title}</p>
+            </a>
+          ) : (
+            <div />
+          )
+        }
+        {
+          nextPost && (
+            <a href={`/${locale}/blog/${getSlugFromId(nextPost.id)}/`} class="group rounded-xl border border-[var(--color-border)] p-4 card-hover sm:text-right">
+              <span class="text-xs text-[var(--color-muted)]">{ui.blog.next}</span>
+              <p class="font-medium group-hover:text-[var(--color-primary)] transition-colors mt-1">{nextPost.data.title}</p>
+            </a>
+          )
+        }
+      </nav>
+    )
+  }
+
+  <Giscus locale={locale} />
+</article>

@@ -14,23 +14,30 @@ const ui = t(locale);
 const base = `/${locale}`;
 
 const links = [
-  { href: `${base}/`, label: ui.nav.home },
   { href: `${base}/projects/`, label: ui.nav.projects },
   { href: `${base}/blog/`, label: ui.nav.blog },
   { href: `${base}/notes/`, label: ui.nav.notes },
-  { href: `${base}/archives/`, label: ui.nav.archives },
   { href: `${base}/about/`, label: ui.nav.about },
 ];
 
 function isActive(href: string) {
-  if (href === `${base}/`) return currentPath === `${base}/` || currentPath === base;
   return currentPath.startsWith(href);
+}
+
+function isHome(path: string) {
+  return path === `${base}/` || path === base;
 }
 ---
 
 <header class="sticky top-0 z-50 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur-md">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
-    <a href={`/${locale}/`} class="font-semibold text-[var(--color-text)] hover:text-[var(--color-primary)] transition-colors shrink-0">
+    <a
+      href={`/${locale}/`}
+      class:list={[
+        'font-semibold transition-colors shrink-0',
+        isHome(currentPath) ? 'text-[var(--color-primary)]' : 'text-[var(--color-text)] hover:text-[var(--color-primary)]',
+      ]}
+    >
       {profile.name}
     </a>
 
@@ -53,6 +60,16 @@ function isActive(href: string) {
     </nav>
 
     <div class="flex items-center gap-2 shrink-0">
+      <a
+        href={`/${locale}/search/`}
+        class="p-1.5 rounded-md text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors"
+        title={ui.nav.search}
+        aria-label={ui.nav.search}
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </a>
       <a
         href={`/${locale}/rss.xml`}
         class="hidden sm:inline text-xs text-[var(--color-muted)] hover:text-[var(--color-primary)]"

@@ -1,54 +1,33 @@
 ---
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import Giscus from '../../../components/Giscus.astro';
-import { categories } from '../../../data/site';
-import { t } from '../../../i18n/ui';
-import { getSlugFromId, formatDate, readingTime } from '../../../utils/content';
+import BlogArticle from '../../../components/BlogArticle.astro';
+import { filterByLocale, sortByDate, getSlugFromId } from '../../../utils/content';
 
 export async function getStaticPaths() {
-  const items = await getCollection('blog', ({ id, data }) => id.startsWith('en/') && !data.draft);
-  return items.map((post) => ({
+  const locale = 'en';
+  const posts = sortByDate(
+    filterByLocale(
+      await getCollection('blog', ({ data }) => !data.draft),
+      locale,
+    ),
+  );
+
+  return posts.map((post, index) => ({
     params: { slug: getSlugFromId(post.id) },
-    props: { post },
+    props: {
+      post,
+      prevPost: posts[index + 1],
+      nextPost: posts[index - 1],
+    },
   }));
 }
 
 const locale = 'en' as const;
-const { post } = Astro.props;
-const ui = t(locale);
+const { post, prevPost, nextPost } = Astro.props;
 const { Content } = await render(post);
-const cat = categories.find((c) => c.id === post.data.category);
-const minutes = readingTime(post.body);
 ---
 
 <BaseLayout locale={locale} title={post.data.title} description={post.data.description}>
-  <article>
-    <header class="mb-8">
-      <div class="flex flex-wrap items-center gap-2 text-sm text-[var(--color-muted)] mb-3">
-        {cat && <span class="text-[var(--color-primary)]">{cat.label[locale]}</span>}
-        <span>·</span>
-        <time datetime={post.data.date.toISOString()}>{formatDate(post.data.date, locale)}</time>
-        <span>·</span>
-        <span>{minutes} {ui.blog.minRead}</span>
-      </div>
-      <h1 class="text-3xl font-bold mb-3">{post.data.title}</h1>
-      <p class="text-[var(--color-muted)]">{post.data.description}</p>
-      {
-        post.data.tags.length > 0 && (
-          <div class="flex flex-wrap gap-2 mt-4">
-            {post.data.tags.map((tag) => (
-              <a href={`/${locale}/tags/${tag.toLowerCase()}/`} class="text-xs px-2 py-1 rounded-md bg-[var(--color-surface)] border border-[var(--color-border)] hover:text-[var(--color-primary)]">
-                #{tag}
-              </a>
-            ))}
-          </div>
-        )
-      }
-    </header>
-    <div class="prose">
-      <Content />
-    </div>
-    <Giscus locale={locale} />
-  </article>
+  <BlogArticle locale={locale} post={post} prevPost={prevPost} nextPost={nextPost} Content={Content} />
 </BaseLayout>

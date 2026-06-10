@@ -13,12 +13,18 @@ const year = new Date().getFullYear();
 
 <footer class="border-t border-[var(--color-border)] mt-auto">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[var(--color-muted)]">
-    <div class="flex items-center gap-4">
+    <div class="flex flex-wrap items-center justify-center gap-4">
       <a href={profile.github} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-primary)] transition-colors">
         GitHub
       </a>
       <a href={`mailto:${profile.email}`} class="hover:text-[var(--color-primary)] transition-colors">
         {profile.email}
+      </a>
+      <a href={`/${locale}/archives/`} class="hover:text-[var(--color-primary)] transition-colors">
+        {ui.nav.archives}
+      </a>
+      <a href={`/${locale}/search/`} class="hover:text-[var(--color-primary)] transition-colors">
+        {ui.nav.search}
       </a>
       <a href={`/${locale}/rss.xml`} class="hover:text-[var(--color-primary)] transition-colors">
         RSS

@@ -41,8 +41,17 @@ npm run preview  # 预览构建结果
 
 1. 创建仓库 `Cx330xu/Cx330xu.github.io`
 2. 推送本目录到 `main` 分支
-3. **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**
-4. 首次 push 后等待 Actions 完成，访问 https://Cx330xu.github.io/
+3. **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**（⚠️ 不要选 Deploy from a branch）
+4. 在 Actions 页确认运行的是 **Deploy to GitHub Pages**（Astro 构建），而不是 **pages build and deployment**（Jekyll）
+5. 首次 push 后等待 Actions 完成，访问 https://Cx330xu.github.io/
+
+### 部署报错排查
+
+| 现象 | 原因 | 处理 |
+|------|------|------|
+| 日志出现 `jekyll v3.10.0` | Pages 源设成了分支部署，GitHub 用 Jekyll 构建 | Settings → Pages → Source 改为 **GitHub Actions** |
+| 运行的是 `pages build and deployment` | 同上，内置 Jekyll 工作流 | 改 Source 后，手动运行 **Deploy to GitHub Pages** |
+| 运行的是 `Deploy to GitHub Pages` 但失败 | Astro 构建问题 | 查看 build 步骤日志，本地 `npm run build` 复现 |
 
 ## 隐私
 

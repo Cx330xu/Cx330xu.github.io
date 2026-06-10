@@ -1,0 +1,26 @@
+---
+interface Props {
+  label: string;
+  href?: string;
+  variant?: 'neutral' | 'primary';
+  prefixHash?: boolean;
+}
+
+const { label, href, variant = 'neutral', prefixHash = true } = Astro.props;
+const display = prefixHash && !label.startsWith('#') ? `#${label}` : label;
+
+const className =
+  variant === 'primary'
+    ? 'text-xs px-2 py-0.5 rounded-full border border-[var(--color-primary)]/30 text-[var(--color-primary)] hover:bg-[var(--color-primary)]/10 transition-colors'
+    : 'text-xs px-2 py-0.5 rounded-full bg-[var(--color-bg)] text-[var(--color-muted)] border border-[var(--color-border)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)]/40 transition-colors';
+---
+
+{
+  href ? (
+    <a href={href} class={className}>
+      {display}
+    </a>
+  ) : (
+    <span class={className}>{display}</span>
+  )
+}

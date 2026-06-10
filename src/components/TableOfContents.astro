@@ -1,0 +1,66 @@
+---
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  minWords?: number;
+}
+
+const { locale, minWords = 600 } = Astro.props;
+const ui = t(locale);
+---
+
+<aside id="article-toc" class="hidden mb-8 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+  <h2 class="text-sm font-semibold mb-3">{ui.blog.toc}</h2>
+  <nav id="article-toc-nav" class="text-sm space-y-2 text-[var(--color-muted)]"></nav>
+</aside>
+
+<script define:vars={{ minWords, locale }}>
+  function slugify(text) {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\u4e00-\u9fff\s-]/g, '')
+      .replace(/\s+/g, '-');
+  }
+
+  function setupToc() {
+    const prose = document.querySelector('.prose');
+    const toc = document.getElementById('article-toc');
+    const nav = document.getElementById('article-toc-nav');
+    if (!prose || !toc || !nav) return;
+
+    const text = prose.textContent || '';
+    const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+    if (wordCount < minWords) {
+      toc.classList.add('hidden');
+      return;
+    }
+
+    const headings = prose.querySelectorAll('h2, h3');
+    if (headings.length < 2) {
+      toc.classList.add('hidden');
+      return;
+    }
+
+    nav.innerHTML = '';
+    headings.forEach((heading) => {
+      if (!heading.id) {
+        heading.id = slugify(heading.textContent || 'section');
+      }
+      const link = document.createElement('a');
+      link.href = `#${heading.id}`;
+      link.textContent = heading.textContent || '';
+      link.className =
+        heading.tagName === 'H3'
+          ? 'block pl-3 hover:text-[var(--color-primary)] transition-colors'
+          : 'block hover:text-[var(--color-primary)] transition-colors';
+      nav.appendChild(link);
+    });
+
+    toc.classList.remove('hidden');
+  }
+
+  setupToc();
+  document.addEventListener('astro:after-swap', setupToc);
+</script>
