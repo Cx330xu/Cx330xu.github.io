@@ -30,6 +30,7 @@ export const ui = {
       skillsLabel: '专注方向',
       githubActivity: 'GitHub 活跃度',
       githubActivityAlt: 'Cx330xu 的 GitHub 贡献热力图',
+      githubActivityNote: '数据来自 GitHub 公开贡献记录（ghchart.rshah.org），反映真实 commit 活跃度；空白表示该时段无公开贡献。',
       viewOnGithub: '在 GitHub 查看',
     },
     projects: {
@@ -140,6 +141,7 @@ export const ui = {
       skillsLabel: 'Focus areas',
       githubActivity: 'GitHub Activity',
       githubActivityAlt: 'GitHub contribution chart for Cx330xu',
+      githubActivityNote: 'Sourced from public GitHub contribution data (ghchart.rshah.org). Empty cells mean no public commits in that period.',
       viewOnGithub: 'View on GitHub',
     },
     projects: {

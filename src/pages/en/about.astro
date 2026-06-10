@@ -19,6 +19,7 @@ const { Content } = await render(page);
       <p class="text-lg text-[var(--color-muted)] mb-4">{profile.title[locale]}</p>
       <div class="flex flex-wrap gap-4 text-sm">
         <a href={profile.github} target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">GitHub</a>
+        <a href={profile.csdn} target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">CSDN</a>
         <a href={`mailto:${profile.email}`} class="text-[var(--color-primary)] hover:underline">{profile.email}</a>
       </div>
     </div>

@@ -3,7 +3,7 @@ title: Personal Tech Hub
 description: 基于 Astro 构建的中英双语个人技术站点
 date: 2026-06-10
 status: active
-featured: true
+featured: false
 github: https://github.com/Cx330xu/Cx330xu.github.io
 demo: https://Cx330xu.github.io/
 stack:

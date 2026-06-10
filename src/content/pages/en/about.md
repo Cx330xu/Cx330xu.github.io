@@ -18,6 +18,7 @@ Personal Tech Hub is my technical home on the web:
 ## Contact
 
 - GitHub: [github.com/Cx330xu](https://github.com/Cx330xu)
+- CSDN: [Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog) (18 original posts — [archive index](/en/blog/csdn-archive/))
 - Email: cx330xu@qq.com
 
 ## Privacy
