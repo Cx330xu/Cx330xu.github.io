@@ -1,18 +1,37 @@
 ---
 import { profile } from '../data/site';
+
+interface Props {
+  size?: 'sm' | 'lg';
+}
+
+const { size = 'sm' } = Astro.props;
+
+const sizeClass =
+  size === 'lg' ? 'w-24 h-24 sm:w-28 sm:h-28' : 'w-20 h-20';
+const px = size === 'lg' ? 112 : 80;
+const fallbackText = size === 'lg' ? 'text-3xl' : 'text-2xl';
 ---
 
 <div class="relative shrink-0">
   <img
     src={profile.avatar}
     alt={profile.name}
-    width="80"
-    height="80"
-    class="w-20 h-20 rounded-full border-2 border-[var(--color-border)] bg-[var(--color-surface)] object-cover"
+    width={px}
+    height={px}
+    class:list={[
+      sizeClass,
+      'rounded-full border-2 border-[var(--color-border)] bg-[var(--color-surface)] object-cover',
+      size === 'lg' && 'ring-4 ring-[var(--color-primary)]/10',
+    ]}
     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"
   />
   <div
-    class="w-20 h-20 rounded-full border-2 border-[var(--color-border)] bg-[var(--color-primary)] text-white items-center justify-center text-2xl font-bold hidden"
+    class:list={[
+      sizeClass,
+      fallbackText,
+      'rounded-full border-2 border-[var(--color-border)] bg-[var(--color-primary)] text-white items-center justify-center font-bold hidden',
+    ]}
     aria-hidden="true"
   >
     C
