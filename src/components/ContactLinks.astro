@@ -1,6 +1,7 @@
 ---
 import { csdn, profile } from '../data/site';
 import type { Locale } from '../i18n/ui';
+import EmailLink from './EmailLink.astro';
 
 interface Props {
   locale: Locale;
@@ -9,7 +10,7 @@ interface Props {
 const { locale: _locale } = Astro.props;
 ---
 
-<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+<div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
   <a
     href={profile.github}
     target="_blank"
@@ -26,7 +27,5 @@ const { locale: _locale } = Astro.props;
   >
     CSDN
   </a>
-  <a href={`mailto:${profile.email}`} class="text-[var(--color-primary)] hover:underline">
-    {profile.email}
-  </a>
+  <EmailLink locale={_locale} variant="inline" />
 </div>

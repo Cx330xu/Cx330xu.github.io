@@ -1,0 +1,59 @@
+---
+import { csdn } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+import { getSlugFromId } from '../utils/content';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  locale: Locale;
+  projectCount: number;
+  postCount: number;
+  noteCount: number;
+  latestPost?: CollectionEntry<'blog'>;
+}
+
+const { locale, projectCount, postCount, noteCount, latestPost } = Astro.props;
+const ui = t(locale);
+const latestSlug = latestPost ? getSlugFromId(latestPost.id) : null;
+---
+
+<aside class="hidden lg:block">
+  <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/90 backdrop-blur-sm p-5 sticky top-24">
+    <p class="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide mb-4">{ui.home.snapshotTitle}</p>
+    <dl class="grid grid-cols-3 gap-3 mb-5 text-center">
+      <div>
+        <dd class="text-xl font-bold text-[var(--color-primary)]">{projectCount}</dd>
+        <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.projects}</dt>
+      </div>
+      <div>
+        <dd class="text-xl font-bold text-[var(--color-primary)]">{postCount}</dd>
+        <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.blog}</dt>
+      </div>
+      <div>
+        <dd class="text-xl font-bold text-[var(--color-primary)]">{noteCount}</dd>
+        <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.notes}</dt>
+      </div>
+    </dl>
+    {
+      latestPost && latestSlug && (
+        <div class="mb-4 pb-4 border-b border-[var(--color-border)]">
+          <p class="text-xs text-[var(--color-muted)] mb-1">{ui.home.latestPosts}</p>
+          <a
+            href={`/${locale}/blog/${latestSlug}/`}
+            class="text-sm font-medium line-clamp-2 hover:text-[var(--color-primary)] transition-colors"
+          >
+            {latestPost.data.title}
+          </a>
+        </div>
+      )
+    }
+    <div class="space-y-2 text-sm">
+      <a href={`/${locale}/now/`} class="block text-[var(--color-primary)] hover:underline">
+        {ui.home.viewNow} →
+      </a>
+      <a href={csdn.url} target="_blank" rel="noopener noreferrer" class="block text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
+        CSDN · {csdn.username}
+      </a>
+    </div>
+  </div>
+</aside>

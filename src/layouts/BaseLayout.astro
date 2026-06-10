@@ -7,6 +7,7 @@ import CopyCode from '../components/CopyCode.astro';
 import LangFallbackToast from '../components/LangFallbackToast.astro';
 import BackgroundGlow from '../components/BackgroundGlow.astro';
 import { t, type Locale } from '../i18n/ui';
+import { getPagefindLanguage } from '../utils/content';
 
 interface Props {
   locale: Locale;
@@ -17,12 +18,13 @@ interface Props {
 
 const { locale, title, description, image } = Astro.props;
 const ui = t(locale);
+const pagefindLang = getPagefindLanguage(locale);
 const isHome = title === ui.nav.home || title.includes('Personal Tech Hub');
 const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu`;
 ---
 
 <!doctype html>
-<html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-meta={`language:${locale}`}>
+<html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-meta={`language:${pagefindLang}`}>
   <head>
     <SEO title={fullTitle} description={description} locale={locale} image={image} />
     <script is:inline>

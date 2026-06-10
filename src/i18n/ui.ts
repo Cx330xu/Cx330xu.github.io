@@ -30,8 +30,11 @@ export const ui = {
       skillsLabel: '专注方向',
       githubActivity: 'GitHub 活跃度',
       githubActivityAlt: 'Cx330xu 的 GitHub 贡献热力图',
-      githubActivityNote: '数据来自 GitHub 公开贡献记录（ghchart.rshah.org），反映真实 commit 活跃度；空白表示该时段无公开贡献。',
+      githubActivityNote: '数据来自 GitHub 公开贡献记录。空白格表示该时段无公开 commit——功能正常，反映当前账号活跃度较低。',
+      githubActivityLow: '贡献较少时属正常现象，可在 GitHub 持续提交后自动更新。',
       viewOnGithub: '在 GitHub 查看',
+      snapshotTitle: '站点概览',
+      viewNow: '当前动态',
     },
     projects: {
       title: '项目',
@@ -83,6 +86,13 @@ export const ui = {
       title: '搜索',
       subtitle: '搜索文章、项目与笔记',
       placeholder: '输入关键词…',
+      scopeNote: '当前仅搜索中文内容（/zh/ 路由）',
+    },
+    contact: {
+      copyEmail: '复制',
+      copied: '已复制',
+      sendEmail: '发邮件',
+      openMailClient: '打开系统默认邮件客户端（需已配置 Outlook 等）',
     },
     about: {
       title: '关于',
@@ -145,8 +155,11 @@ export const ui = {
       skillsLabel: 'Focus areas',
       githubActivity: 'GitHub Activity',
       githubActivityAlt: 'GitHub contribution chart for Cx330xu',
-      githubActivityNote: 'Sourced from public GitHub contribution data (ghchart.rshah.org). Empty cells mean no public commits in that period.',
+      githubActivityNote: 'Sourced from public GitHub contribution data. Empty cells mean no public commits — the chart works; activity is just low on this account.',
+      githubActivityLow: 'This is normal with few commits. The chart updates automatically as you contribute on GitHub.',
       viewOnGithub: 'View on GitHub',
+      snapshotTitle: 'Site snapshot',
+      viewNow: 'Now',
     },
     projects: {
       title: 'Projects',
@@ -198,6 +211,13 @@ export const ui = {
       title: 'Search',
       subtitle: 'Search posts, projects, and notes',
       placeholder: 'Type to search…',
+      scopeNote: 'Searching English content only (/en/ routes)',
+    },
+    contact: {
+      copyEmail: 'Copy',
+      copied: 'Copied',
+      sendEmail: 'Send email',
+      openMailClient: 'Open your default mail app (requires Outlook or similar)',
     },
     about: {
       title: 'About',

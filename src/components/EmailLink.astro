@@ -1,0 +1,77 @@
+---
+import { profile } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  variant?: 'inline' | 'card';
+}
+
+const { locale, variant = 'inline' } = Astro.props;
+const ui = t(locale);
+---
+
+{
+  variant === 'card' ? (
+    <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover">
+      <p class="font-medium mb-1">Email</p>
+      <p class="text-sm text-[var(--color-muted)] break-all mb-3">{profile.email}</p>
+      <div class="flex flex-wrap gap-2">
+        <button
+          type="button"
+          class="email-copy-btn text-xs px-2.5 py-1 rounded-md border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
+          data-email={profile.email}
+          data-label-default={ui.contact.copyEmail}
+          data-label-done={ui.contact.copied}
+        >
+          {ui.contact.copyEmail}
+        </button>
+        <a
+          href={`mailto:${profile.email}`}
+          title={ui.contact.openMailClient}
+          class="text-xs px-2.5 py-1 rounded-md text-[var(--color-primary)] hover:underline"
+        >
+          {ui.contact.sendEmail}
+        </a>
+      </div>
+    </div>
+  ) : (
+    <span class="inline-flex items-center gap-2 flex-wrap">
+      <span class="text-[var(--color-muted)]">{profile.email}</span>
+      <button
+        type="button"
+        class="email-copy-btn text-xs px-2 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-colors"
+        data-email={profile.email}
+        data-label-default={ui.contact.copyEmail}
+        data-label-done={ui.contact.copied}
+      >
+        {ui.contact.copyEmail}
+      </button>
+    </span>
+  )
+}
+
+<script>
+  function bindEmailCopy() {
+    document.querySelectorAll<HTMLButtonElement>('.email-copy-btn').forEach((btn) => {
+      if (btn.dataset.bound === 'true') return;
+      btn.dataset.bound = 'true';
+      btn.addEventListener('click', async () => {
+        const email = btn.dataset.email ?? '';
+        const done = btn.dataset.labelDone ?? 'Copied';
+        const defaults = btn.dataset.labelDefault ?? 'Copy';
+        try {
+          await navigator.clipboard.writeText(email);
+          btn.textContent = done;
+          setTimeout(() => {
+            btn.textContent = defaults;
+          }, 1500);
+        } catch {
+          window.prompt('Email:', email);
+        }
+      });
+    });
+  }
+  bindEmailCopy();
+  document.addEventListener('astro:after-swap', bindEmailCopy);
+</script>

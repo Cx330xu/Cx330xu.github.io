@@ -1,4 +1,5 @@
 ---
+import EmailLink from './EmailLink.astro';
 import { csdn, profile } from '../data/site';
 import { t, type Locale } from '../i18n/ui';
 
@@ -34,13 +35,7 @@ const archivePath = `/${locale}/blog/csdn-archive/`;
         {ui.about.csdnPosts.replace('{count}', String(csdn.postCount))}
       </p>
     </a>
-    <a
-      href={`mailto:${profile.email}`}
-      class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover transition-colors hover:border-[var(--color-primary)]"
-    >
-      <p class="font-medium mb-1">Email</p>
-      <p class="text-sm text-[var(--color-muted)] break-all">{profile.email}</p>
-    </a>
+    <EmailLink locale={locale} variant="card" />
   </div>
   <div class="mt-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/80 px-4 py-3 text-sm text-[var(--color-muted)] leading-relaxed">
     <p>{csdn.syncPolicy[locale]}</p>

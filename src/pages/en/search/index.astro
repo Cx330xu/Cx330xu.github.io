@@ -1,20 +1,23 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { t } from '../../../i18n/ui';
+import { getPagefindLanguage } from '../../../utils/content';
 
 const locale = 'en' as const;
 const ui = t(locale);
+const pagefindLang = getPagefindLanguage(locale);
 ---
 
 <BaseLayout locale={locale} title={ui.search.title} description={ui.search.subtitle}>
   <header class="mb-8">
     <h1 class="text-3xl font-bold mb-2">{ui.search.title}</h1>
     <p class="text-[var(--color-muted)]">{ui.search.subtitle}</p>
+    <p class="text-sm text-[var(--color-muted)] mt-2">{ui.search.scopeNote}</p>
   </header>
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <div id="search" data-pagefind-filter={`language[${locale}]`} class="pagefind-search"></div>
+  <div id="search" class="pagefind-search"></div>
   <script src="/pagefind/pagefind-ui.js" is:inline></script>
-  <script is:inline define:vars={{ locale }}>
+  <script is:inline define:vars={{ pagefindLang }}>
     function initSearch() {
       if (typeof PagefindUI === 'undefined') return;
       const el = document.getElementById('search');
@@ -24,6 +27,8 @@ const ui = t(locale);
         element: '#search',
         bundlePath: '/pagefind/',
         showSubResults: true,
+        excludeFilters: ['language'],
+        filters: { language: pagefindLang },
       });
     }
     if (document.readyState === 'loading') {
