@@ -1,0 +1,131 @@
+---
+import { profile } from '../data/site';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const lines = profile.typingLines[locale];
+const fallback = lines[0];
+---
+
+<p class="typing-tagline text-base sm:text-lg leading-relaxed max-w-2xl mb-4">
+  <span class="sr-only">{fallback}</span>
+  <span
+    class="typing-tagline-text inline text-[var(--color-primary)] font-medium"
+    aria-hidden="true"
+    data-fallback={fallback}
+  />
+  <span class="typing-cursor inline-block w-[2px] ml-0.5 text-[var(--color-primary)] font-normal" aria-hidden="true">
+    |
+  </span>
+</p>
+
+<style>
+  .typing-tagline {
+    min-height: 1.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .typing-tagline {
+      min-height: 2rem;
+    }
+  }
+
+  .typing-cursor {
+    animation: typing-blink 1s step-end infinite;
+  }
+
+  @keyframes typing-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .typing-cursor {
+      display: none;
+      animation: none;
+    }
+  }
+</style>
+
+<script define:vars={{ lines }}>
+  function initTypingTagline() {
+    const textEl = document.querySelector('.typing-tagline-text');
+    const cursorEl = document.querySelector('.typing-cursor');
+    if (!textEl) return;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fallbackText = textEl.dataset.fallback ?? lines[0];
+
+    if (reduced) {
+      textEl.textContent = fallbackText;
+      cursorEl?.remove();
+      return;
+    }
+
+    let lineIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+    let timer = 0;
+
+    const typeMs = 90;
+    const deleteMs = 48;
+    const pauseEndMs = 2200;
+    const pauseStartMs = 600;
+
+    function clearTimer() {
+      if (timer) window.clearTimeout(timer);
+    }
+
+    function tick() {
+      const current = lines[lineIndex] ?? fallbackText;
+
+      if (!deleting) {
+        textEl.textContent = current.slice(0, charIndex + 1);
+        charIndex += 1;
+        if (charIndex >= current.length) {
+          deleting = true;
+          timer = window.setTimeout(tick, pauseEndMs);
+          return;
+        }
+        timer = window.setTimeout(tick, typeMs);
+        return;
+      }
+
+      textEl.textContent = current.slice(0, charIndex - 1);
+      charIndex -= 1;
+      if (charIndex <= 0) {
+        deleting = false;
+        lineIndex = (lineIndex + 1) % lines.length;
+        timer = window.setTimeout(tick, pauseStartMs);
+        return;
+      }
+      timer = window.setTimeout(tick, deleteMs);
+    }
+
+    clearTimer();
+    textEl.textContent = '';
+    charIndex = 0;
+    deleting = false;
+    lineIndex = 0;
+    tick();
+
+    return clearTimer;
+  }
+
+  let cleanup = initTypingTagline();
+  document.addEventListener('astro:before-swap', () => {
+    cleanup?.();
+  });
+  document.addEventListener('astro:after-swap', () => {
+    cleanup = initTypingTagline();
+  });
+</script>

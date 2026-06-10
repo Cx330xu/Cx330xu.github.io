@@ -8,6 +8,19 @@ export const profile = {
     zh: '用代码构建智能系统，用写作沉淀思考。',
     en: 'Building intelligent systems with code and clarity.',
   },
+  /** Hero 打字机轮播文案（参考 readme-typing-svg 效果） */
+  typingLines: {
+    zh: [
+      '用代码构建智能系统，用写作沉淀思考。',
+      '探索 LLM · RAG · Agent 工程实践',
+      '开源分享，持续迭代个人技术品牌',
+    ],
+    en: [
+      'Building intelligent systems with code and clarity.',
+      'Exploring LLM · RAG · Agent engineering',
+      'Open source · Iterating my personal tech brand',
+    ],
+  },
   email: 'cx330xu@qq.com',
   github: 'https://github.com/Cx330xu',
   csdn: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',
