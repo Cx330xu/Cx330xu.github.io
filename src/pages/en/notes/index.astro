@@ -21,6 +21,7 @@ const notes = sortByDate(
   <header class="mb-8">
     <h1 class="text-3xl font-bold mb-2">{ui.notes.title}</h1>
     <p class="text-[var(--color-muted)]">{ui.notes.subtitle}</p>
+    <p class="text-sm text-[var(--color-muted)] mt-2 opacity-80">{ui.notes.vsBlog}</p>
   </header>
   {
     notes.length === 0 ? (

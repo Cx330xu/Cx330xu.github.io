@@ -28,6 +28,6 @@ const { post, prevPost, nextPost } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BaseLayout locale={locale} title={post.data.title} description={post.data.description}>
+<BaseLayout locale={locale} title={post.data.title} description={post.data.description} image={post.data.cover}>
   <BlogArticle locale={locale} post={post} prevPost={prevPost} nextPost={nextPost} Content={Content} />
 </BaseLayout>

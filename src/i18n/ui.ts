@@ -26,6 +26,7 @@ export const ui = {
       ctaTitle: '想深入了解？',
       ctaReadLatest: '阅读最新文章',
       ctaBrowseProjects: '浏览全部项目',
+      skillsLabel: '专注方向',
     },
     projects: {
       title: '项目',
@@ -54,6 +55,7 @@ export const ui = {
       subtitle: '短笔记、测试记录与灵感',
       empty: '暂无笔记',
       emptyHint: '短笔记即将更新，敬请期待。',
+      vsBlog: '短更新与测试记录；深度文章请查看博客。',
     },
     archives: {
       title: '归档',
@@ -88,6 +90,7 @@ export const ui = {
     comments: '评论',
     relatedTags: '相关标签',
     translationPending: '译文待补充',
+    langFallback: '该页面暂无对应语言版本，已跳转到首页',
     breadcrumb: {
       home: '首页',
     },
@@ -121,6 +124,7 @@ export const ui = {
       ctaTitle: 'Want to dig deeper?',
       ctaReadLatest: 'Read latest post',
       ctaBrowseProjects: 'Browse all projects',
+      skillsLabel: 'Focus areas',
     },
     projects: {
       title: 'Projects',
@@ -149,6 +153,7 @@ export const ui = {
       subtitle: 'Short notes, tests, and ideas',
       empty: 'No notes yet',
       emptyHint: 'Short notes will appear here soon.',
+      vsBlog: 'Quick updates and tests; see the blog for long-form posts.',
     },
     archives: {
       title: 'Archives',
@@ -183,6 +188,7 @@ export const ui = {
     comments: 'Comments',
     relatedTags: 'Related Tags',
     translationPending: 'Translation pending',
+    langFallback: 'This page is not available in that language yet. Redirected to home.',
     breadcrumb: {
       home: 'Home',
     },

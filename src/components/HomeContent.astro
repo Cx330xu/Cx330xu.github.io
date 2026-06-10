@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
-import { profile } from '../data/site';
+import { profile, heroSkills } from '../data/site';
+import Chip from './Chip.astro';
 import { t, type Locale } from '../i18n/ui';
 import { filterByLocale, sortByDate, collectTags } from '../utils/content';
 import Avatar from './Avatar.astro';
@@ -51,6 +52,14 @@ const featuredGridClass =
       >
         github.com/Cx330xu
       </a>
+      <div class="mt-4">
+        <p class="text-xs text-[var(--color-muted)] mb-2">{ui.home.skillsLabel}</p>
+        <div class="flex flex-wrap gap-2">
+          {heroSkills.map((skill) => (
+            <Chip label={skill} prefixHash={false} />
+          ))}
+        </div>
+      </div>
       <div class="flex flex-wrap gap-3 mt-6">
         <a
           href={`/${locale}/projects/`}

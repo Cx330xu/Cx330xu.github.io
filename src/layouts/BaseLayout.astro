@@ -4,15 +4,17 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
 import CopyCode from '../components/CopyCode.astro';
+import LangFallbackToast from '../components/LangFallbackToast.astro';
 import { t, type Locale } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
   title: string;
   description?: string;
+  image?: string;
 }
 
-const { locale, title, description } = Astro.props;
+const { locale, title, description, image } = Astro.props;
 const ui = t(locale);
 const isHome = title === ui.nav.home || title.includes('Personal Tech Hub');
 const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu`;
@@ -21,7 +23,7 @@ const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu
 <!doctype html>
 <html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-meta={`language:${locale}`}>
   <head>
-    <SEO title={fullTitle} description={description} locale={locale} />
+    <SEO title={fullTitle} description={description} locale={locale} image={image} />
     <script is:inline>
       (function () {
         const stored = localStorage.getItem('theme');
@@ -38,5 +40,6 @@ const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu
     </main>
     <Footer locale={locale} />
     <CopyCode />
+    <LangFallbackToast locale={locale} />
   </body>
 </html>

@@ -1,20 +1,25 @@
 ---
 import { giscus } from '../data/site';
-import type { Locale } from '../i18n/ui';
+import { t, type Locale } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
 }
 
 const { locale } = Astro.props;
+const ui = t(locale);
 const enabled = !giscus.repoId.includes('REPLACE');
+const lang = locale === 'zh' ? 'zh-CN' : 'en';
 ---
 
 {
   enabled ? (
     <section class="mt-12 pt-8 border-t border-[var(--color-border)]">
-      <div
-        class="giscus"
+      <h2 class="text-lg font-semibold mb-4">{ui.comments}</h2>
+      <div class="giscus" />
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
         data-repo={giscus.repo}
         data-repo-id={giscus.repoId}
         data-category={giscus.category}
@@ -25,12 +30,14 @@ const enabled = !giscus.repoId.includes('REPLACE');
         data-emit-metadata={giscus.emitMetadata}
         data-input-position={giscus.inputPosition}
         data-theme="preferred_color_scheme"
-        data-lang={locale === 'zh' ? 'zh-CN' : 'en'}
+        data-lang={lang}
+        crossorigin="anonymous"
+        async
       />
-      <script src="https://giscus.app/client.js" async crossorigin="anonymous" />
     </section>
   ) : (
     <section class="mt-12 pt-8 border-t border-[var(--color-border)] text-sm text-[var(--color-muted)]">
+      <h2 class="text-lg font-semibold mb-2 text-[var(--color-text)]">{ui.comments}</h2>
       <p>
         {locale === 'zh'
           ? '评论功能待配置：请在 GitHub 开启 Discussions 后，于 giscus.app 获取 repoId 与 categoryId，填入 src/data/site.ts。'
@@ -40,14 +47,29 @@ const enabled = !giscus.repoId.includes('REPLACE');
   )
 }
 
-<script>
-  document.addEventListener('astro:after-swap', () => {
-    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
-    if (iframe) iframe.remove();
+<script define:vars={{ giscus, lang, enabled }}>
+  function loadGiscus() {
+    if (!enabled) return;
+    document.querySelector('iframe.giscus-frame')?.remove();
+    document.querySelector('script[src="https://giscus.app/client.js"]')?.remove();
+
     const script = document.createElement('script');
     script.src = 'https://giscus.app/client.js';
     script.async = true;
     script.crossOrigin = 'anonymous';
+    script.setAttribute('data-repo', giscus.repo);
+    script.setAttribute('data-repo-id', giscus.repoId);
+    script.setAttribute('data-category', giscus.category);
+    script.setAttribute('data-category-id', giscus.categoryId);
+    script.setAttribute('data-mapping', giscus.mapping);
+    script.setAttribute('data-strict', giscus.strict);
+    script.setAttribute('data-reactions-enabled', giscus.reactionsEnabled);
+    script.setAttribute('data-emit-metadata', giscus.emitMetadata);
+    script.setAttribute('data-input-position', giscus.inputPosition);
+    script.setAttribute('data-theme', 'preferred_color_scheme');
+    script.setAttribute('data-lang', lang);
     document.body.appendChild(script);
-  });
+  }
+
+  document.addEventListener('astro:after-swap', loadGiscus);
 </script>

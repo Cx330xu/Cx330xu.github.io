@@ -1,0 +1,32 @@
+---
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const message = t(locale).langFallback;
+---
+
+<div
+  id="lang-fallback-toast"
+  class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] hidden max-w-md px-4 py-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] shadow-lg"
+  role="status"
+>
+  {message}
+</div>
+
+<script define:vars={{ message }}>
+  function showLangFallbackToast() {
+    if (sessionStorage.getItem('lang-fallback') !== '1') return;
+    sessionStorage.removeItem('lang-fallback');
+    const toast = document.getElementById('lang-fallback-toast');
+    if (!toast) return;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 4500);
+  }
+
+  showLangFallbackToast();
+  document.addEventListener('astro:after-swap', showLangFallbackToast);
+</script>

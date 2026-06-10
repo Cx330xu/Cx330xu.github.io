@@ -11,7 +11,11 @@ export const profile = {
   email: 'cx330xu@qq.com',
   github: 'https://github.com/Cx330xu',
   avatar: 'https://github.com/Cx330xu.png',
+  ogImage: '/og-image.svg',
 } as const;
+
+/** Hero 首屏展示的核心技能标签 */
+export const heroSkills = ['Python', 'LLM', 'RAG', 'Agent', 'Astro'] as const;
 
 export const giscus = {
   repo: 'Cx330xu/Cx330xu.github.io',
