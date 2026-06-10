@@ -15,6 +15,18 @@ export const profile = {
   ogImage: '/og-image.png',
 } as const;
 
+/** CSDN 渠道配置（更新文章数或同步策略时只改此处） */
+export const csdn = {
+  url: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',
+  username: 'Xu_youyaxianshen',
+  /** CSDN 已发布原创总数，有新文同步后递增 */
+  postCount: 19,
+  syncPolicy: {
+    zh: '本站技术文章会同步发布至 CSDN；历史文章可在归档索引中查阅，新文章以本站为准。',
+    en: 'Technical posts are mirrored on CSDN. See the archive for older articles; this site is the canonical source for new posts.',
+  },
+} as const;
+
 /** Hero 首屏展示的核心技能标签（tag 映射到 /tags/[tag]/ 路由） */
 export const heroSkills = [
   { label: 'Python', tag: 'python' },

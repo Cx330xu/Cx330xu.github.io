@@ -86,6 +86,10 @@ export const ui = {
     },
     about: {
       title: '关于',
+      contactTitle: '联系方式',
+      csdnPosts: '已发布 {count}+ 篇原创',
+      csdnArchiveLink: 'CSDN 归档索引',
+      csdnVisit: '访问 CSDN 主页',
     },
     now: {
       title: 'Now',
@@ -197,6 +201,10 @@ export const ui = {
     },
     about: {
       title: 'About',
+      contactTitle: 'Contact',
+      csdnPosts: '{count}+ original posts',
+      csdnArchiveLink: 'CSDN archive index',
+      csdnVisit: 'Visit CSDN profile',
     },
     now: {
       title: 'Now',

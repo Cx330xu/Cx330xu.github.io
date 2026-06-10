@@ -1,0 +1,32 @@
+---
+import { csdn, profile } from '../data/site';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale: _locale } = Astro.props;
+---
+
+<div class="flex flex-wrap gap-x-4 gap-y-1 text-sm">
+  <a
+    href={profile.github}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-[var(--color-primary)] hover:underline"
+  >
+    GitHub
+  </a>
+  <a
+    href={csdn.url}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-[var(--color-primary)] hover:underline"
+  >
+    CSDN
+  </a>
+  <a href={`mailto:${profile.email}`} class="text-[var(--color-primary)] hover:underline">
+    {profile.email}
+  </a>
+</div>

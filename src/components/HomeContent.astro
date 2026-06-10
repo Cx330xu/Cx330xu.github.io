@@ -5,6 +5,7 @@ import Chip from './Chip.astro';
 import { t, type Locale } from '../i18n/ui';
 import { filterByLocale, sortByDate, collectTags, slugifyTag } from '../utils/content';
 import Avatar from './Avatar.astro';
+import ContactLinks from './ContactLinks.astro';
 import ProjectCard from './ProjectCard.astro';
 import FeaturedProjectHero from './FeaturedProjectHero.astro';
 import GithubActivity from './GithubActivity.astro';
@@ -52,18 +53,8 @@ const featuredGridClass =
       <p class="text-base text-[var(--color-muted)] leading-relaxed max-w-2xl mb-4">
         {profile.tagline[locale]}
       </p>
-      <div class="flex flex-wrap gap-x-4 gap-y-1 text-sm mb-5">
-        <a
-          href={profile.github}
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-[var(--color-primary)] hover:underline"
-        >
-          GitHub
-        </a>
-        <a href={`mailto:${profile.email}`} class="text-[var(--color-primary)] hover:underline">
-          {profile.email}
-        </a>
+      <div class="mb-5">
+        <ContactLinks locale={locale} />
       </div>
       <div class="mb-5">
         <p class="text-xs text-[var(--color-muted)] mb-2">{ui.home.skillsLabel}</p>

@@ -15,12 +15,6 @@ Personal Tech Hub 是我的个人技术品牌中心，用于：
 - 发布技术文章与短笔记
 - 与读者交流（Giscus 评论）
 
-## 联系方式
-
-- GitHub：[github.com/Cx330xu](https://github.com/Cx330xu)
-- CSDN：[Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog)（往期 18 篇原创，[归档索引](/zh/blog/csdn-archive/)）
-- Email：cx330xu@qq.com
-
 ## 隐私说明
 
 本站**不公开**学校、学历、电话、微信等个人信息，仅展示技术相关的内容与联系方式。

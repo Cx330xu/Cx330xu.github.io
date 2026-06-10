@@ -1,6 +1,6 @@
 ---
 title: CSDN 创作归档
-description: 往期在 CSDN（Xu_youyaxianshen）发布的 18 篇原创技术文章索引，逐步迁移至本站
+description: 往期在 CSDN（Xu_youyaxianshen）发布的原创技术文章索引，逐步迁移至本站
 date: 2026-06-11
 category: misc
 tags:
@@ -16,13 +16,14 @@ translationKey: csdn-archive
 
 | 标题 | 本站 | CSDN 首发 |
 |------|------|-----------|
+| Docker 小白极速入门笔记 | [/zh/blog/docker-quickstart/](/zh/blog/docker-quickstart/) | 2026-03 |
 | 提示工程技术文档 | [/zh/blog/prompt-engineering/](/zh/blog/prompt-engineering/) | 2025-09-17 |
 
 ## CSDN 原创文章索引
 
 ### 2026
 
-- [Docker 小白极速入门笔记](https://blog.csdn.net/Xu_youyaxianshen) — 容器、镜像、Compose 与常用命令（2026-03）
+- [Docker 小白极速入门笔记](/zh/blog/docker-quickstart/) — 已迁移至本站；[CSDN 原文](https://blog.csdn.net/Xu_youyaxianshen?type=blog)
 
 ### 2025
 
@@ -49,7 +50,7 @@ translationKey: csdn-archive
 
 ## 数据概览（CSDN 公开页）
 
-- 原创：**18 篇**
+- 原创：**19+ 篇**（见 `src/data/site.ts` 中 `csdn.postCount`，同步后递增）
 - 总阅读：约 **6.7 万+**
 - 专栏：笔记、技术文档、经验积累、知识图谱、深度学习等
 

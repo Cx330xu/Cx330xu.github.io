@@ -1,0 +1,91 @@
+<div id="bg-glow" class="bg-glow" aria-hidden="true">
+  <div class="bg-glow-orb bg-glow-orb-a"></div>
+  <div class="bg-glow-orb bg-glow-orb-b"></div>
+</div>
+
+<style>
+  .bg-glow {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .bg-glow-orb {
+    position: absolute;
+    width: min(42vw, 520px);
+    height: min(42vw, 520px);
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.45;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.3s ease;
+    will-change: left, top;
+  }
+
+  .bg-glow-orb-a {
+    background: radial-gradient(circle, rgba(79, 70, 229, 0.35) 0%, transparent 70%);
+  }
+
+  .bg-glow-orb-b {
+    background: radial-gradient(circle, rgba(14, 165, 233, 0.22) 0%, transparent 70%);
+  }
+
+  :global(.dark) .bg-glow-orb-a {
+    background: radial-gradient(circle, rgba(129, 140, 248, 0.28) 0%, transparent 70%);
+  }
+
+  :global(.dark) .bg-glow-orb-b {
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.18) 0%, transparent 70%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-glow {
+      display: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .bg-glow-orb {
+      opacity: 0.28;
+      filter: blur(64px);
+    }
+  }
+</style>
+
+<script>
+  const glow = document.getElementById('bg-glow');
+  if (glow && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const orbA = glow.querySelector<HTMLElement>('.bg-glow-orb-a');
+    const orbB = glow.querySelector<HTMLElement>('.bg-glow-orb-b');
+    if (orbA && orbB) {
+      let targetX = window.innerWidth * 0.3;
+      let targetY = window.innerHeight * 0.2;
+      let ax = targetX;
+      let ay = targetY;
+      let bx = window.innerWidth * 0.7;
+      let by = window.innerHeight * 0.55;
+
+      const onMove = (e: MouseEvent) => {
+        targetX = e.clientX;
+        targetY = e.clientY;
+      };
+
+      const tick = () => {
+        ax += (targetX - ax) * 0.04;
+        ay += (targetY - ay) * 0.04;
+        bx += (targetX - bx) * 0.02;
+        by += (targetY - by) * 0.02;
+        orbA.style.left = `${ax}px`;
+        orbA.style.top = `${ay}px`;
+        orbB.style.left = `${bx + 80}px`;
+        orbB.style.top = `${by - 40}px`;
+        requestAnimationFrame(tick);
+      };
+
+      window.addEventListener('mousemove', onMove, { passive: true });
+      requestAnimationFrame(tick);
+    }
+  }
+</script>

@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
 import CopyCode from '../components/CopyCode.astro';
 import LangFallbackToast from '../components/LangFallbackToast.astro';
+import BackgroundGlow from '../components/BackgroundGlow.astro';
 import { t, type Locale } from '../i18n/ui';
 
 interface Props {
@@ -33,9 +34,10 @@ const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu
       })();
     </script>
   </head>
-  <body class="min-h-screen flex flex-col antialiased">
+  <body class="min-h-screen flex flex-col antialiased relative">
+    <BackgroundGlow />
     <Header locale={locale} currentPath={Astro.url.pathname} />
-    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10" data-pagefind-body>
+    <main class="relative z-[1] flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10" data-pagefind-body>
       <slot />
     </main>
     <Footer locale={locale} />

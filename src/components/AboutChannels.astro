@@ -1,0 +1,55 @@
+---
+import { csdn, profile } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const ui = t(locale);
+const archivePath = `/${locale}/blog/csdn-archive/`;
+---
+
+<section class="not-prose mb-10">
+  <h2 class="text-xl font-semibold mb-4">{ui.about.contactTitle}</h2>
+  <div class="grid gap-3 sm:grid-cols-3">
+    <a
+      href={profile.github}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover transition-colors hover:border-[var(--color-primary)]"
+    >
+      <p class="font-medium mb-1">GitHub</p>
+      <p class="text-sm text-[var(--color-muted)]">github.com/Cx330xu</p>
+    </a>
+    <a
+      href={csdn.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover transition-colors hover:border-[var(--color-primary)]"
+    >
+      <p class="font-medium mb-1">CSDN · {csdn.username}</p>
+      <p class="text-sm text-[var(--color-muted)]">
+        {ui.about.csdnPosts.replace('{count}', String(csdn.postCount))}
+      </p>
+    </a>
+    <a
+      href={`mailto:${profile.email}`}
+      class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover transition-colors hover:border-[var(--color-primary)]"
+    >
+      <p class="font-medium mb-1">Email</p>
+      <p class="text-sm text-[var(--color-muted)] break-all">{profile.email}</p>
+    </a>
+  </div>
+  <div class="mt-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/80 px-4 py-3 text-sm text-[var(--color-muted)] leading-relaxed">
+    <p>{csdn.syncPolicy[locale]}</p>
+    <p class="mt-2">
+      <a href={archivePath} class="text-[var(--color-primary)] hover:underline">{ui.about.csdnArchiveLink}</a>
+      <span class="mx-2">·</span>
+      <a href={csdn.url} target="_blank" rel="noopener noreferrer" class="text-[var(--color-primary)] hover:underline">
+        {ui.about.csdnVisit}
+      </a>
+    </p>
+  </div>
+</section>
