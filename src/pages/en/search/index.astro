@@ -1,52 +1,12 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import SearchPanel from '../../../components/SearchPanel.astro';
 import { t } from '../../../i18n/ui';
-import { getPagefindLanguage } from '../../../utils/content';
 
 const locale = 'en' as const;
 const ui = t(locale);
-const pagefindLang = getPagefindLanguage(locale);
 ---
 
 <BaseLayout locale={locale} title={ui.search.title} description={ui.search.subtitle}>
-  <header class="mb-8">
-    <h1 class="text-3xl font-bold mb-2">{ui.search.title}</h1>
-    <p class="text-[var(--color-muted)]">{ui.search.subtitle}</p>
-    <p class="text-sm text-[var(--color-muted)] mt-2">{ui.search.scopeNote}</p>
-  </header>
-  <link href="/pagefind/pagefind-ui.css" rel="stylesheet" />
-  <div id="search" class="pagefind-search"></div>
-  <script src="/pagefind/pagefind-ui.js" is:inline></script>
-  <script is:inline define:vars={{ pagefindLang }}>
-    function initSearch() {
-      if (typeof PagefindUI === 'undefined') return;
-      const el = document.getElementById('search');
-      if (!el) return;
-      el.innerHTML = '';
-      new PagefindUI({
-        element: '#search',
-        bundlePath: '/pagefind/',
-        showSubResults: true,
-        excludeFilters: ['language'],
-        filters: { language: pagefindLang },
-      });
-    }
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initSearch);
-    } else {
-      initSearch();
-    }
-    document.addEventListener('astro:after-swap', initSearch);
-  </script>
+  <SearchPanel locale={locale} />
 </BaseLayout>
-
-<style>
-  .pagefind-search {
-    --pagefind-ui-scale: 1;
-    --pagefind-ui-primary: var(--color-primary);
-    --pagefind-ui-text: var(--color-text);
-    --pagefind-ui-background: var(--color-surface);
-    --pagefind-ui-border: var(--color-border);
-    --pagefind-ui-tag: var(--color-bg);
-  }
-</style>

@@ -120,7 +120,14 @@ body {
   border-color: var(--color-primary);
 }
 
-.code-copy-btn.is-copied {
-  color: var(--color-success);
-  border-color: var(--color-success);
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
 }

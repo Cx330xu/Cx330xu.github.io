@@ -1,6 +1,7 @@
 ---
 import { csdn, profile } from '../data/site';
 import { t, type Locale } from '../i18n/ui';
+import EmailLink from './EmailLink.astro';
 
 interface Props {
   locale: Locale;
@@ -20,9 +21,7 @@ const year = new Date().getFullYear();
       <a href={csdn.url} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-primary)] transition-colors">
         CSDN
       </a>
-      <a href={`mailto:${profile.email}`} class="hover:text-[var(--color-primary)] transition-colors">
-        {profile.email}
-      </a>
+      <EmailLink locale={locale} variant="inline" showIcon={false} />
       <a href={`/${locale}/archives/`} class="hover:text-[var(--color-primary)] transition-colors">
         {ui.nav.archives}
       </a>

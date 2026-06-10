@@ -4,7 +4,7 @@ export function getLocaleFromId(id: string): Locale {
   return id.startsWith('en/') ? 'en' : 'zh';
 }
 
-/** Pagefind 索引语言键（与 html lang 及 data-pagefind-meta 一致） */
+/** Pagefind 索引语言键（与 html lang 及 data-pagefind-filter 一致） */
 export function getPagefindLanguage(locale: Locale): 'zh-cn' | 'en' {
   return locale === 'zh' ? 'zh-cn' : 'en';
 }

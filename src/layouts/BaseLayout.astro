@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import SEO from '../components/SEO.astro';
 import CopyCode from '../components/CopyCode.astro';
 import LangFallbackToast from '../components/LangFallbackToast.astro';
+import CopyToast from '../components/CopyToast.astro';
 import BackgroundGlow from '../components/BackgroundGlow.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPagefindLanguage } from '../utils/content';
@@ -21,10 +22,23 @@ const ui = t(locale);
 const pagefindLang = getPagefindLanguage(locale);
 const isHome = title === ui.nav.home || title.includes('Personal Tech Hub');
 const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu`;
+const pathname = Astro.url.pathname;
+
+function getPagefindContentType(path: string): string | undefined {
+  if (/\/blog\/[^/]+\/?$/.test(path) && !path.includes('csdn-archive')) return ui.search.types.blog;
+  if (/\/projects\/[^/]+\/?$/.test(path)) return ui.search.types.project;
+  if (/\/notes\/[^/]+\/?$/.test(path)) return ui.search.types.note;
+  if (/\/tags\//.test(path)) return ui.search.types.tag;
+  if (/\/categories\//.test(path)) return ui.search.types.category;
+  return undefined;
+}
+
+const pagefindContentType = getPagefindContentType(pathname);
+const pagefindMeta = pagefindContentType ? `type:${pagefindContentType}` : undefined;
 ---
 
 <!doctype html>
-<html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-meta={`language:${pagefindLang}`}>
+<html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-filter={`language[${pagefindLang}]`}>
   <head>
     <SEO title={fullTitle} description={description} locale={locale} image={image} />
     <script is:inline>
@@ -39,11 +53,16 @@ const fullTitle = isHome ? 'Cx330xu · Personal Tech Hub' : `${title} · Cx330xu
   <body class="min-h-screen flex flex-col antialiased relative">
     <BackgroundGlow />
     <Header locale={locale} currentPath={Astro.url.pathname} />
-    <main class="relative z-[1] flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10" data-pagefind-body>
+    <main
+      class="relative z-[1] flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10"
+      data-pagefind-body
+      {...(pagefindMeta ? { 'data-pagefind-meta': pagefindMeta } : {})}
+    >
       <slot />
     </main>
     <Footer locale={locale} />
     <CopyCode />
     <LangFallbackToast locale={locale} />
+    <CopyToast />
   </body>
 </html>

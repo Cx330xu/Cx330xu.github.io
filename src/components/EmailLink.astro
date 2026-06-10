@@ -5,9 +5,10 @@ import { t, type Locale } from '../i18n/ui';
 interface Props {
   locale: Locale;
   variant?: 'inline' | 'card';
+  showIcon?: boolean;
 }
 
-const { locale, variant = 'inline' } = Astro.props;
+const { locale, variant = 'inline', showIcon = true } = Astro.props;
 const ui = t(locale);
 ---
 
@@ -15,63 +16,73 @@ const ui = t(locale);
   variant === 'card' ? (
     <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover">
       <p class="font-medium mb-1">Email</p>
-      <p class="text-sm text-[var(--color-muted)] break-all mb-3">{profile.email}</p>
-      <div class="flex flex-wrap gap-2">
-        <button
-          type="button"
-          class="email-copy-btn text-xs px-2.5 py-1 rounded-md border border-[var(--color-border)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
-          data-email={profile.email}
-          data-label-default={ui.contact.copyEmail}
-          data-label-done={ui.contact.copied}
-        >
-          {ui.contact.copyEmail}
-        </button>
-        <a
-          href={`mailto:${profile.email}`}
-          title={ui.contact.openMailClient}
-          class="text-xs px-2.5 py-1 rounded-md text-[var(--color-primary)] hover:underline"
-        >
-          {ui.contact.sendEmail}
-        </a>
-      </div>
-    </div>
-  ) : (
-    <span class="inline-flex items-center gap-2 flex-wrap">
-      <span class="text-[var(--color-muted)]">{profile.email}</span>
       <button
         type="button"
-        class="email-copy-btn text-xs px-2 py-0.5 rounded border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] transition-colors"
+        class="email-copy-trigger text-sm text-[var(--color-primary)] break-all mb-3 text-left hover:underline cursor-pointer"
         data-email={profile.email}
-        data-label-default={ui.contact.copyEmail}
-        data-label-done={ui.contact.copied}
+        data-toast={ui.contact.copied}
+        title={ui.contact.clickToCopy}
       >
-        {ui.contact.copyEmail}
+        {profile.email}
       </button>
-    </span>
+      <a
+        href={`mailto:${profile.email}`}
+        title={ui.contact.openMailClient}
+        class="text-xs px-2.5 py-1 rounded-md text-[var(--color-muted)] hover:text-[var(--color-primary)] hover:underline inline-block"
+      >
+        {ui.contact.sendEmail}
+      </a>
+    </div>
+  ) : (
+    <button
+      type="button"
+      class="email-copy-trigger inline-flex items-center gap-1.5 text-[var(--color-primary)] font-medium hover:underline cursor-pointer transition-opacity hover:opacity-80"
+      data-email={profile.email}
+      data-toast={ui.contact.copied}
+      title={ui.contact.clickToCopy}
+      aria-label={`${ui.contact.clickToCopy}: ${profile.email}`}
+    >
+      {
+        showIcon && (
+          <svg class="w-4 h-4 shrink-0 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+            />
+          </svg>
+        )
+      }
+      {profile.email}
+    </button>
   )
 }
 
 <script>
+  async function copyEmail(email, toastMessage) {
+    try {
+      await navigator.clipboard.writeText(email);
+      if (typeof window.showCopyToast === 'function') {
+        window.showCopyToast(toastMessage);
+      }
+    } catch {
+      window.prompt('Email:', email);
+    }
+  }
+
   function bindEmailCopy() {
-    document.querySelectorAll<HTMLButtonElement>('.email-copy-btn').forEach((btn) => {
-      if (btn.dataset.bound === 'true') return;
-      btn.dataset.bound = 'true';
-      btn.addEventListener('click', async () => {
-        const email = btn.dataset.email ?? '';
-        const done = btn.dataset.labelDone ?? 'Copied';
-        const defaults = btn.dataset.labelDefault ?? 'Copy';
-        try {
-          await navigator.clipboard.writeText(email);
-          btn.textContent = done;
-          setTimeout(() => {
-            btn.textContent = defaults;
-          }, 1500);
-        } catch {
-          window.prompt('Email:', email);
-        }
+    document.querySelectorAll('.email-copy-trigger').forEach((el) => {
+      if (el.dataset.bound === 'true') return;
+      el.dataset.bound = 'true';
+      el.addEventListener('click', () => {
+        const email = el.dataset.email ?? '';
+        const toast = el.dataset.toast ?? 'Copied';
+        copyEmail(email, toast);
       });
     });
   }
+
   bindEmailCopy();
   document.addEventListener('astro:after-swap', bindEmailCopy);
 </script>
