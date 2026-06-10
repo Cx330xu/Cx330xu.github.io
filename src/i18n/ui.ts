@@ -11,6 +11,7 @@ export const ui = {
       about: '关于',
       now: '当前动态',
       search: '搜索',
+      searchShortcut: '搜索 (/)',
     },
     home: {
       viewProjects: '查看项目',
@@ -92,6 +93,7 @@ export const ui = {
       tryLabel: '试试这些关键词',
       typeFilterLabel: '按类型筛选',
       typeAll: '全部',
+      shortcutHint: '任意页面按 / 键可快速打开搜索',
       empty: '未找到相关内容，换个关键词或浏览下方栏目试试。',
       types: {
         blog: '博客',
@@ -150,6 +152,7 @@ export const ui = {
       about: 'About',
       now: 'Now',
       search: 'Search',
+      searchShortcut: 'Search (/)',
     },
     home: {
       viewProjects: 'View Projects',
@@ -231,6 +234,7 @@ export const ui = {
       tryLabel: 'Try these keywords',
       typeFilterLabel: 'Filter by type',
       typeAll: 'All',
+      shortcutHint: 'Press / on any page to open search',
       empty: 'No results found. Try another keyword or browse the sections below.',
       types: {
         blog: 'Blog',

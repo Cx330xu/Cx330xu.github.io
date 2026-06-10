@@ -1,5 +1,5 @@
 ---
-import { csdn } from '../data/site';
+import { csdn, profile } from '../data/site';
 import { t, type Locale } from '../i18n/ui';
 import { getSlugFromId } from '../utils/content';
 import type { CollectionEntry } from 'astro:content';
@@ -10,9 +10,10 @@ interface Props {
   postCount: number;
   noteCount: number;
   latestPost?: CollectionEntry<'blog'>;
+  showGithubLink?: boolean;
 }
 
-const { locale, projectCount, postCount, noteCount, latestPost } = Astro.props;
+const { locale, projectCount, postCount, noteCount, latestPost, showGithubLink = false } = Astro.props;
 const ui = t(locale);
 const latestSlug = latestPost ? getSlugFromId(latestPost.id) : null;
 ---
@@ -49,6 +50,18 @@ const latestSlug = latestPost ? getSlugFromId(latestPost.id) : null;
       )
     }
     <div class="space-y-2 text-sm">
+      {
+        showGithubLink && (
+          <a
+            href={profile.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="block text-[var(--color-primary)] hover:underline"
+          >
+            GitHub →
+          </a>
+        )
+      }
       <a href={`/${locale}/now/`} class="block text-[var(--color-primary)] hover:underline">
         {ui.home.viewNow} →
       </a>

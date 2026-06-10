@@ -7,6 +7,7 @@ import CopyCode from '../components/CopyCode.astro';
 import LangFallbackToast from '../components/LangFallbackToast.astro';
 import CopyToast from '../components/CopyToast.astro';
 import BackgroundGlow from '../components/BackgroundGlow.astro';
+import SearchShortcut from '../components/SearchShortcut.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPagefindLanguage } from '../utils/content';
 
@@ -67,5 +68,6 @@ const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined
     <CopyCode />
     <LangFallbackToast locale={locale} />
     <CopyToast />
+    <SearchShortcut locale={locale} />
   </body>
 </html>

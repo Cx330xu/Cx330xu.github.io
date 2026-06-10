@@ -1,0 +1,29 @@
+---
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const searchPath = `/${locale}/search/`;
+---
+
+<script define:vars={{ searchPath }}>
+  function isTypingTarget(el) {
+    if (!el || !(el instanceof HTMLElement)) return false;
+    const tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || el.isContentEditable;
+  }
+
+  function bindSearchShortcut() {
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== '/' || e.metaKey || e.ctrlKey || e.altKey) return;
+      if (isTypingTarget(document.activeElement)) return;
+      e.preventDefault();
+      window.location.assign(searchPath);
+    });
+  }
+
+  bindSearchShortcut();
+</script>

@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { profile, heroSkills } from '../data/site';
+import { profile, heroSkills, githubActivity } from '../data/site';
 import Chip from './Chip.astro';
 import { t, type Locale } from '../i18n/ui';
 import { filterByLocale, sortByDate, collectTags, slugifyTag } from '../utils/content';
@@ -91,6 +91,7 @@ const featuredGridClass =
       postCount={posts.length}
       noteCount={notes.length}
       latestPost={latestPosts[0]}
+      showGithubLink={!githubActivity.showOnHome}
     />
   </div>
 </section>
@@ -164,7 +165,9 @@ const featuredGridClass =
   ) : null
 }
 
-<GithubActivity locale={locale} />
+{
+  githubActivity.showOnHome ? <GithubActivity locale={locale} /> : null
+}
 
 <section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 text-center">
   <h2 class="text-xl font-semibold mb-4">{ui.home.ctaTitle}</h2>

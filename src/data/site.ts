@@ -28,6 +28,11 @@ export const profile = {
   ogImage: '/og-image.png',
 } as const;
 
+/** 首页 GitHub 贡献热力图（贡献较少时可关闭，About / 侧栏仍保留 GitHub 链接） */
+export const githubActivity = {
+  showOnHome: false,
+} as const;
+
 /** CSDN 渠道配置（更新文章数或同步策略时只改此处） */
 export const csdn = {
   url: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',
