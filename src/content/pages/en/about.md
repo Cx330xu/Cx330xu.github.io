@@ -32,13 +32,6 @@ See the full [project list](/en/projects/).
 
 I'm iterating on Agent engineering practice and this site. See [Now](/en/now/) for what I'm working on.
 
-## Contact
-
-- GitHub: [github.com/Cx330xu](https://github.com/Cx330xu)
-- Gitee: [gitee.com/cx330xu_youyaxiansheng](https://gitee.com/cx330xu_youyaxiansheng)
-- Email: cx330xu@qq.com (click to copy on the homepage)
-- CSDN: [blog.csdn.net/Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog)
-
 ## Privacy
 
 This site does **not** publish school, degree, phone, or WeChat details—only technical content and contact info. For hiring or collaboration, email me and I can share additional project context and repository links.

@@ -10,8 +10,8 @@ interface Props {
 const { locale, variant = 'compact' } = Astro.props;
 
 const labels = locale === 'zh'
-  ? { clean: '壁纸', gallery: '映像', hint: '切换壁纸模式', refresh: '换一张', tip: '点击切换简洁模式' }
-  : { clean: 'Wallpaper', gallery: 'Gallery', hint: 'Toggle wallpaper mode', refresh: 'Refresh', tip: 'Click for clean mode' };
+  ? { clean: '壁纸', gallery: '映像', hint: '切换壁纸模式 | 双击换一张', refresh: '换一张', tip: '点击切换简洁模式 · 双击换壁纸' }
+  : { clean: 'WP', gallery: 'Gallery', hint: 'Toggle wallpaper | Double-click to cycle', refresh: 'Refresh', tip: 'Click for clean · Double-click to cycle' };
 ---
 
 <button
@@ -42,21 +42,22 @@ const labels = locale === 'zh'
   }
 </button>
 
+{/* Refresh button: shown next to toggle when wallpaper is active */}
+<button
+  type="button"
+  class="wallpaper-refresh-btn hidden ml-1 p-1 rounded text-[var(--color-muted)]/40 hover:text-[var(--color-primary)] transition-colors cursor-pointer bg-transparent border-0"
+  title={labels.refresh}
+  aria-label={labels.refresh}
+>
+  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+  </svg>
+</button>
+
+{/* Hint text (full variant only, shown below the controls) */}
 {
   variant === 'full' && (
-    <>
-      <span class="wallpaper-hint text-[11px] text-[var(--color-muted)]/60 ml-1 hidden" aria-live="polite"></span>
-      <button
-        type="button"
-        class="wallpaper-refresh-btn hidden ml-1 p-1 rounded text-[var(--color-muted)]/50 hover:text-[var(--color-primary)] transition-colors cursor-pointer bg-transparent border-0"
-        title={labels.refresh}
-        aria-label={labels.refresh}
-      >
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-        </svg>
-      </button>
-    </>
+    <span class="wallpaper-hint text-[11px] text-[var(--color-muted)]/50 ml-1 hidden" aria-live="polite"></span>
   )
 }
 
@@ -67,13 +68,17 @@ const labels = locale === 'zh'
       const variant = btn.dataset.variant;
       const labelClean = btn.dataset.labelClean ?? 'Clean';
       const labelGallery = btn.dataset.labelGallery ?? 'Gallery';
-      const labelRefresh = btn.dataset.labelRefresh ?? 'Refresh';
-      const labelTip = btn.dataset.labelTip ?? 'Click for clean mode';
+      const labelTip = btn.dataset.labelTip ?? '';
 
-      // Find sibling hint and refresh button (only for full variant)
-      const parent = btn.parentElement;
-      const hint = parent?.querySelector('.wallpaper-hint') as HTMLElement | null;
-      const refreshBtn = parent?.querySelector('.wallpaper-refresh-btn') as HTMLElement | null;
+      // Find sibling refresh button and hint (next to the toggle btn)
+      const refreshBtn = btn.nextElementSibling?.classList.contains('wallpaper-refresh-btn')
+        ? (btn.nextElementSibling as HTMLElement)
+        : null;
+      const hint = refreshBtn?.nextElementSibling?.classList.contains('wallpaper-hint')
+        ? (refreshBtn.nextElementSibling as HTMLElement)
+        : null;
+
+      let doubleClickTimer: ReturnType<typeof setTimeout> | null = null;
 
       function updateUI(active: boolean) {
         const label = btn.querySelector('.wallpaper-mode-label');
@@ -83,39 +88,51 @@ const labels = locale === 'zh'
           if (dot) dot.style.transform = active ? 'translateX(8px)' : 'translateX(0)';
         }
         btn.classList.toggle('text-[var(--color-primary)]', active);
-        // Show refresh + hint only when gallery mode is active
+        // Show refresh button only when gallery mode is active
+        if (refreshBtn) refreshBtn.classList.toggle('hidden', !active);
         if (hint) {
           hint.textContent = active ? labelTip : '';
           hint.classList.toggle('hidden', !active);
         }
-        if (refreshBtn) {
-          refreshBtn.classList.toggle('hidden', !active);
-        }
       }
 
-      // Check if there are multiple wallpapers to cycle
-      const count = (window as any).__wallpaperCount ?? 0;
-      if (refreshBtn && count <= 1) {
-        refreshBtn.classList.add('!hidden');
-      }
+      // Check wallpaper count — hide refresh if only 1
+      const count = typeof (window as any).__wallpaperCount === 'function'
+        ? (window as any).__wallpaperCount()
+        : 0;
+      if (refreshBtn && count <= 1) refreshBtn.classList.add('!hidden');
 
-      // read initial state — default to gallery
+      // Init state — default to gallery
       const stored = localStorage.getItem('wallpaper-mode');
-      let active = stored !== 'clean'; // null or 'gallery' → active
+      let active = stored !== 'clean';
       updateUI(active);
 
+      // ── Click: toggle on/off ──
       btn.addEventListener('click', () => {
+        // Detect double-click for cycling
+        if (doubleClickTimer) {
+          clearTimeout(doubleClickTimer);
+          doubleClickTimer = null;
+          // Double-click: cycle wallpaper (only when active)
+          if (active) {
+            window.dispatchEvent(new CustomEvent('wallpaper-cycle'));
+          }
+          return;
+        }
+        doubleClickTimer = setTimeout(() => { doubleClickTimer = null; }, 300);
+
+        // Single click: toggle
         active = !active;
         localStorage.setItem('wallpaper-mode', active ? 'gallery' : 'clean');
         updateUI(active);
         window.dispatchEvent(new CustomEvent('wallpaper-change', { detail: { active } }));
       });
 
-      // Refresh button: cycle to next wallpaper
+      // ── Refresh button: fetch fresh from Bing ──
       if (refreshBtn) {
         refreshBtn.addEventListener('click', (e) => {
           e.stopPropagation();
-          window.dispatchEvent(new CustomEvent('wallpaper-cycle'));
+          window.dispatchEvent(new CustomEvent('wallpaper-refresh'));
         });
       }
     });

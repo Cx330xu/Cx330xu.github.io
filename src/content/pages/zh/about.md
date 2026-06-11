@@ -32,13 +32,6 @@ description: 关于 Cx330xu 与这个站点
 
 我正在持续迭代 Agent 相关实践与个人站点工程，最新动态见 [Now 页](/zh/now/)。
 
-## 联系方式
-
-- GitHub：[github.com/Cx330xu](https://github.com/Cx330xu)
-- Gitee：[gitee.com/cx330xu_youyaxiansheng](https://gitee.com/cx330xu_youyaxiansheng)
-- 邮箱：cx330xu@qq.com（首页点击即可复制）
-- CSDN：[blog.csdn.net/Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog)
-
 ## 隐私说明
 
 本站**不公开**学校、学历、电话、微信等个人信息，仅展示技术相关的内容与联系方式。若您来自招聘或合作场景，欢迎通过邮箱联系，我会提供进一步的项目说明与代码仓库链接。

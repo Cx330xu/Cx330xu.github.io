@@ -1,11 +1,10 @@
 ---
-// Fetch Bing daily wallpapers at build time (no CORS in Node.js).
-// We fetch the last 8 days so users can cycle through them.
+// Build-time: fetch 8 Bing wallpapers as fallback (no CORS in Node.js).
 interface BingImage {
   url: string;
   copyright?: string;
 }
-let wallpapers: BingImage[] = [];
+let prebuiltWallpapers: BingImage[] = [];
 try {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
@@ -16,45 +15,73 @@ try {
   clearTimeout(timeout);
   if (res.ok) {
     const data: any = await res.json();
-    wallpapers = (data.images ?? []).map((img: any) => ({
+    prebuiltWallpapers = (data.images ?? []).map((img: any) => ({
       url: 'https://www.bing.com' + (img.url ?? ''),
       copyright: img.copyright ?? '',
     }));
   }
-} catch {
-  // Silently keep empty — wallpaper will be unavailable
-}
-const wallpapersJson = JSON.stringify(wallpapers);
+} catch { /* keep empty — runtime fetch will try */ }
+const prebuiltJson = JSON.stringify(prebuiltWallpapers);
 ---
 
-{/* Hidden element carries pre-fetched wallpaper URLs to the client script */}
-<span id="bing-wallpaper-data" data-wallpapers={wallpapersJson} aria-hidden="true" hidden></span>
+<span id="bing-wallpaper-data" data-prebuilt={prebuiltJson} aria-hidden="true" hidden></span>
 
 <script>
-  const WALLPAPER_DATA = document.getElementById('bing-wallpaper-data');
+  // ── Runtime wallpaper loader with CORS proxy fallback ──
+  const BING_API =
+    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN';
+  const CORS_PROXY = 'https://corsproxy.io/?';
+
+  const dataEl = document.getElementById('bing-wallpaper-data');
   const PREBUILT: { url: string; copyright?: string }[] = (() => {
-    try {
-      return JSON.parse(WALLPAPER_DATA?.dataset.wallpapers ?? '[]');
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(dataEl?.dataset.prebuilt ?? '[]'); } catch { return []; }
   })();
 
   const STORAGE_KEY = 'wallpaper-mode';
   const INDEX_KEY = 'wallpaper-index';
+  const CACHE_KEY = 'bing-wallpapers';
+  const CACHE_DATE = 'bing-wallpaper-date';
 
   let currentUrl: string | null = null;
+
+  // ── helpers ──
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+  function loadCachedWallpapers(): { url: string; copyright?: string }[] | null {
+    const date = localStorage.getItem(CACHE_DATE);
+    if (date !== todayStr()) return null;
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+
+  function saveCachedWallpapers(list: { url: string; copyright?: string }[]) {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(list));
+    localStorage.setItem(CACHE_DATE, todayStr());
+  }
 
   function getActiveIndex(): number {
     const stored = localStorage.getItem(INDEX_KEY);
     const idx = stored ? parseInt(stored, 10) : 0;
-    return Number.isFinite(idx) && idx >= 0 && idx < PREBUILT.length ? idx : 0;
+    const list = loadCachedWallpapers() ?? PREBUILT;
+    return Number.isFinite(idx) && idx >= 0 && idx < list.length ? idx : 0;
   }
 
-  function setActiveIndex(idx: number) {
-    localStorage.setItem(INDEX_KEY, String(idx));
+  function setActiveIndex(idx: number) { localStorage.setItem(INDEX_KEY, String(idx)); }
+
+  function activeList(): { url: string; copyright?: string }[] {
+    return loadCachedWallpapers() ?? PREBUILT;
   }
 
+  function getWallpaperUrl(): string | null {
+    const list = activeList();
+    if (list.length === 0) return null;
+    const idx = getActiveIndex();
+    return list[idx]?.url ?? list[0]?.url ?? null;
+  }
+
+  // ── apply / remove ──
   function applyWallpaper(url: string | null) {
     if (url) {
       currentUrl = url;
@@ -80,54 +107,104 @@ const wallpapersJson = JSON.stringify(wallpapers);
     document.body.classList.remove('wallpaper-active');
   }
 
-  function getWallpaperUrl(): string | null {
-    if (PREBUILT.length === 0) return null;
-    const idx = getActiveIndex();
-    return PREBUILT[idx]?.url ?? PREBUILT[0]?.url ?? null;
+  // ── runtime fetch (called on page load if no today-cache) ──
+  async function fetchFreshWallpapers(): Promise<{ url: string; copyright?: string }[] | null> {
+    // 1) Try direct fetch
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(BING_API, { signal: controller.signal });
+      clearTimeout(t);
+      if (res.ok) {
+        const data = await res.json();
+        const images = data.images ?? [];
+        return images.map((img: any) => ({
+          url: 'https://www.bing.com' + (img.url ?? ''),
+          copyright: img.copyright ?? '',
+        }));
+      }
+    } catch { /* CORS or network error — try proxy */ }
+
+    // 2) Try CORS proxy
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 8000);
+      const proxyUrl = CORS_PROXY + encodeURIComponent(BING_API);
+      const res = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(t);
+      if (res.ok) {
+        const data = await res.json();
+        const images = data.images ?? [];
+        return images.map((img: any) => ({
+          url: 'https://www.bing.com' + (img.url ?? ''),
+          copyright: img.copyright ?? '',
+        }));
+      }
+    } catch { /* proxy also failed */ }
+
+    return null;
   }
 
-  async function setMode(active: boolean) {
+  // ── public API ──
+  async function refreshWallpapers(): Promise<boolean> {
+    const fresh = await fetchFreshWallpapers();
+    if (fresh && fresh.length > 0) {
+      saveCachedWallpapers(fresh);
+      setActiveIndex(0);
+      applyWallpaper(fresh[0].url);
+      window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } }));
+      return true;
+    }
+    return false;
+  }
+
+  function cycleWallpaper(): boolean {
+    const list = activeList();
+    if (list.length <= 1) return false;
+    const nextIdx = (getActiveIndex() + 1) % list.length;
+    setActiveIndex(nextIdx);
+    const url = list[nextIdx]?.url ?? null;
+    if (url) applyWallpaper(url);
+    window.dispatchEvent(new CustomEvent('wallpaper-cycled', { detail: { index: nextIdx, url, total: list.length } }));
+    return true;
+  }
+
+  (window as any).__wallpaperCycle = cycleWallpaper;
+  (window as any).__wallpaperRefresh = refreshWallpapers;
+  (window as any).__wallpaperCount = () => activeList().length;
+
+  // ── init ──
+  async function init() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored === null) localStorage.setItem(STORAGE_KEY, 'gallery');
+    if ((stored ?? 'gallery') !== 'gallery') return;
+
+    // Try runtime fetch for fresh wallpapers
+    const cached = loadCachedWallpapers();
+    if (!cached) {
+      const fresh = await fetchFreshWallpapers();
+      if (fresh && fresh.length > 0) {
+        saveCachedWallpapers(fresh);
+      }
+    }
+
+    const url = getWallpaperUrl();
+    applyWallpaper(url);
+  }
+
+  init();
+
+  // ── event listeners ──
+  window.addEventListener('wallpaper-change', (e: Event) => {
+    const { active } = (e as CustomEvent).detail;
     if (active) {
       const url = getWallpaperUrl();
       applyWallpaper(url);
     } else {
       removeWallpaper();
     }
-  }
-
-  // Public API exposed on window for other components
-  function cycleWallpaper(): string | null {
-    if (PREBUILT.length <= 1) return null;
-    const nextIdx = (getActiveIndex() + 1) % PREBUILT.length;
-    setActiveIndex(nextIdx);
-    const url = PREBUILT[nextIdx]?.url ?? null;
-    if (url) applyWallpaper(url);
-    // Dispatch event so toggles can update their UI
-    window.dispatchEvent(new CustomEvent('wallpaper-cycled', { detail: { index: nextIdx, url } }));
-    return url;
-  }
-
-  (window as any).__wallpaperCycle = cycleWallpaper;
-  (window as any).__wallpaperCount = PREBUILT.length;
-
-  // Init
-  const stored = localStorage.getItem(STORAGE_KEY);
-  // Default to gallery mode on first visit
-  if (stored === null) {
-    localStorage.setItem(STORAGE_KEY, 'gallery');
-  }
-  if ((stored ?? 'gallery') === 'gallery') {
-    setMode(true);
-  }
-
-  // Listen for toggle events from WallpaperToggle
-  window.addEventListener('wallpaper-change', (e: Event) => {
-    const { active } = (e as CustomEvent).detail;
-    setMode(active);
   });
 
-  // Listen for cycle requests
-  window.addEventListener('wallpaper-cycle', () => {
-    cycleWallpaper();
-  });
+  window.addEventListener('wallpaper-cycle', () => { cycleWallpaper(); });
+  window.addEventListener('wallpaper-refresh', async () => { await refreshWallpapers(); });
 </script>
