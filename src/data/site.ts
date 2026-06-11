@@ -4,6 +4,11 @@ export const profile = {
     zh: 'AI Agent 研发工程师',
     en: 'AI Agent Engineer',
   },
+  /** Hero 区差异化价值主张：一句话说明你解决了什么独特问题 */
+  valueProposition: {
+    zh: '帮助团队将 LLM 原型加速落地为生产级 Agent 系统 — 从提示词管理到 RAG 管道全覆盖',
+    en: 'Turning LLM prototypes into production-grade Agent systems — from prompt infrastructure to RAG pipelines',
+  },
   tagline: {
     zh: '用代码构建智能系统，用写作沉淀思考。',
     en: 'Building intelligent systems with code and clarity.',
@@ -56,15 +61,6 @@ export const csdn = {
   },
 } as const;
 
-/** Hero 首屏展示的核心技能标签（tag 映射到 /tags/[tag]/ 路由） */
-export const heroSkills = [
-  { label: 'Python', tag: 'python' },
-  { label: 'LLM', tag: 'llm' },
-  { label: 'RAG', tag: 'rag' },
-  { label: 'Agent', tag: 'agent' },
-  { label: 'Astro', tag: 'astro' },
-] as const;
-
 export const giscus = {
   repo: 'Cx330xu/Cx330xu.github.io',
   repoId: 'R_kgDOPxfaJg',
@@ -78,16 +74,20 @@ export const giscus = {
   lang: 'zh-CN',
 } as const;
 
+/** 统一技能栈。featured: true 的项在 Hero 首屏展示（原 heroSkills） */
 export const stacks = [
-  { id: 'python', label: 'Python' },
-  { id: 'typescript', label: 'TypeScript' },
-  { id: 'llm', label: 'LLM' },
-  { id: 'rag', label: 'RAG' },
-  { id: 'agent', label: 'Agent' },
-  { id: 'web', label: 'Web' },
-  { id: 'astro', label: 'Astro' },
-  { id: 'devops', label: 'DevOps' },
+  { id: 'python', label: 'Python', featured: true },
+  { id: 'typescript', label: 'TypeScript', featured: false },
+  { id: 'llm', label: 'LLM', featured: true },
+  { id: 'rag', label: 'RAG', featured: true },
+  { id: 'agent', label: 'Agent', featured: true },
+  { id: 'web', label: 'Web', featured: false },
+  { id: 'astro', label: 'Astro', featured: true },
+  { id: 'devops', label: 'DevOps', featured: false },
 ] as const;
+
+/** Hero 区展示的精选技能（从 stacks 派生） */
+export const heroSkills = stacks.filter(s => s.featured);
 
 export const categories = [
   { id: 'ai', label: { zh: '人工智能', en: 'AI' } },

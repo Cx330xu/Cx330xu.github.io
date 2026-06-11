@@ -4,6 +4,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 import Avatar from '../../components/Avatar.astro';
 import AboutChannels from '../../components/AboutChannels.astro';
 import ContactLinks from '../../components/ContactLinks.astro';
+import Timeline from '../../components/Timeline.astro';
 import { profile } from '../../data/site';
 import { t } from '../../i18n/ui';
 
@@ -23,6 +24,7 @@ const { Content } = await render(page);
     </div>
   </div>
   <AboutChannels locale={locale} />
+  <Timeline locale={locale} />
   <div class="prose">
     <Content />
   </div>

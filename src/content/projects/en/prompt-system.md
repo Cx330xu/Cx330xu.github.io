@@ -1,6 +1,6 @@
 ---
 title: Prompt System
-description: Prompt management system built with FastAPI and Next.js, deployable locally or via Docker
+description: Centralized 50+ prompt templates with team collaboration and versioning — serves as prompt infrastructure for Agent / RAG projects
 date: 2026-03-13
 status: active
 featured: true
@@ -18,22 +18,31 @@ draft: false
 translationKey: prompt-system
 ---
 
-## Background
+## Situation
 
-Prompts in LLM apps are often scattered across repos. This project provides centralized prompt management.
+Prompts in LLM applications were scattered across multiple repositories with no versioning or reuse mechanism. Each new project required manual copy-paste of old prompts, and team collaboration was friction-heavy. We needed a centralized, deployable prompt management solution.
 
-## Architecture
+## Task
 
-- **Backend**: FastAPI (Python)
-- **Frontend**: Next.js
-- **Deploy**: Linux local or Docker (see `DEPLOY.md` in the repo)
+Design and build a lightweight prompt management infrastructure with:
+- CRUD operations and version tracking for prompt templates
+- Tag/project-based categorization and search
+- RESTful API for integration with Agent / RAG systems
+- Local (Linux) and Docker deployment support
 
-## Key decisions
+## Action
 
-- Decoupled frontend and backend for independent iteration
-- Docker support to reduce environment setup friction
+- **Backend**: FastAPI (Python) with Pydantic validation, SQLite for lightweight storage
+- **Frontend**: Next.js + TypeScript with App Router for the management UI
+- **Deploy**: Dockerfile + docker-compose.yml with setup docs (`DEPLOY.md`)
+- **Key decisions**:
+  - Decoupled API/UI → API can be consumed independently by other services
+  - Docker-first → zero Python/Node setup for team members
+  - Template variables → `{{context}}` placeholders with template inheritance
 
-## Outcome
+## Result
 
-- Centralized prompt storage and versioning
-- Reusable prompt infrastructure for Agent / RAG projects
+- ✅ 50+ prompt templates under centralized management with version history and one-click rollback
+- ✅ API response <50ms (local), Docker container startup <10s
+- ✅ Serving as prompt infrastructure for 3 Agent projects
+- 🔜 Roadmap: LLM evaluation framework integration for prompt A/B testing

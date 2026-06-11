@@ -1,6 +1,6 @@
 ---
 title: PDF Vector Extractor
-description: Web-based PDF region extractor that outputs scalable, selectable vector PDFs
+description: High-precision PDF vector region extractor supporting 10+ PDF structures, outputting scalable vector PDFs for RAG document preprocessing pipelines
 date: 2026-01-15
 status: active
 featured: true

@@ -1,0 +1,55 @@
+---
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const ui = {
+  zh: {
+    title: '订阅更新',
+    description: '新文章发布时通过邮件通知你，无垃圾邮件，随时可退订。',
+    placeholder: '输入你的邮箱地址',
+    button: '订阅',
+    privacy: '不会分享你的邮箱，每篇文章最多一封邮件。',
+  },
+  en: {
+    title: 'Stay Updated',
+    description: 'Get notified when new articles are published. No spam, unsubscribe anytime.',
+    placeholder: 'Enter your email',
+    button: 'Subscribe',
+    privacy: 'Your email will never be shared. One email per post, max.',
+  },
+}[locale];
+
+// Change this to your actual newsletter service URL (Buttondown, ConvertKit, etc.)
+const newsletterAction = 'https://buttondown.email/api/emails/embed-subscribe/your-username';
+---
+
+<section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
+  <h3 class="font-semibold text-lg mb-1">{ui.title}</h3>
+  <p class="text-sm text-[var(--color-muted)] mb-4">{ui.description}</p>
+  <form
+    action={newsletterAction}
+    method="post"
+    target="_blank"
+    class="flex flex-col sm:flex-row gap-2"
+  >
+    <input
+      type="email"
+      name="email"
+      placeholder={ui.placeholder}
+      required
+      class="flex-1 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:outline-none focus:border-[var(--color-primary)]"
+    />
+    <button
+      type="submit"
+      class="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity shrink-0"
+    >
+      {ui.button}
+    </button>
+  </form>
+  <p class="text-xs text-[var(--color-muted)] mt-3">{ui.privacy}</p>
+</section>

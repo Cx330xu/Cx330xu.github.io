@@ -4,6 +4,8 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
 import CategoryTabs from '../../../components/CategoryTabs.astro';
 import EmptyState from '../../../components/EmptyState.astro';
+import Newsletter from '../../../components/Newsletter.astro';
+import FadeIn from '../../../components/FadeIn.astro';
 import { t } from '../../../i18n/ui';
 import { filterByLocale, sortByDate } from '../../../utils/content';
 
@@ -33,9 +35,14 @@ const posts = sortByDate(
     ) : (
       <div class="space-y-4">
         {posts.map((post) => (
-          <PostCard post={post} locale={locale} />
+          <FadeIn>
+            <PostCard post={post} locale={locale} />
+          </FadeIn>
         ))}
       </div>
     )
   }
+  <div class="mt-12">
+    <Newsletter locale={locale} />
+  </div>
 </BaseLayout>

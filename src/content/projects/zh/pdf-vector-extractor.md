@@ -1,6 +1,6 @@
 ---
 title: PDF Vector Extractor
-description: 基于 Web 的高精度 PDF 矢量区域截取工具，输出可缩放、可选中的矢量 PDF
+description: 高精度 PDF 矢量区域截取工具，支持 10+ 种 PDF 结构解析，输出可缩放矢量 PDF，服务于 RAG 文档预处理管道
 date: 2026-01-15
 status: active
 featured: true

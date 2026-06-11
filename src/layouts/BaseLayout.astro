@@ -8,6 +8,8 @@ import LangFallbackToast from '../components/LangFallbackToast.astro';
 import CopyToast from '../components/CopyToast.astro';
 import BackgroundGlow from '../components/BackgroundGlow.astro';
 import SearchShortcut from '../components/SearchShortcut.astro';
+import ReadingProgress from '../components/ReadingProgress.astro';
+import BackToTop from '../components/BackToTop.astro';
 import Analytics from '../components/Analytics.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPagefindLanguage } from '../utils/content';
@@ -56,9 +58,18 @@ const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined
     </script>
   </head>
   <body class="min-h-screen flex flex-col antialiased relative">
+    <!-- Skip to content (accessibility) -->
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-[var(--color-primary)] focus:text-white focus:text-sm focus:font-medium focus:outline-none"
+    >
+      {locale === 'zh' ? '跳到主要内容' : 'Skip to content'}
+    </a>
+    <ReadingProgress />
     <BackgroundGlow />
     <Header locale={locale} currentPath={Astro.url.pathname} />
     <main
+      id="main-content"
       class="relative z-[1] flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-10"
       data-pagefind-body
       {...(pagefindFilter ? { 'data-pagefind-filter': pagefindFilter } : {})}
@@ -71,5 +82,6 @@ const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined
     <LangFallbackToast locale={locale} />
     <CopyToast />
     <SearchShortcut locale={locale} />
+    <BackToTop />
   </body>
 </html>

@@ -18,6 +18,8 @@ import PostCard from './PostCard.astro';
 import NoteItem from './NoteItem.astro';
 import TagCloud from './TagCloud.astro';
 import EmailLink from './EmailLink.astro';
+import ResumeDownload from './ResumeDownload.astro';
+import FadeIn from './FadeIn.astro';
 
 interface Props {
   locale: Locale;
@@ -63,7 +65,10 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
       <Avatar size="lg" />
       <div class="min-w-0 flex-1 pt-0.5 sm:pt-1">
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">{profile.name}</h1>
-        <p class="text-lg font-medium text-[var(--color-primary)] mb-3">{profile.title[locale]}</p>
+        <p class="text-lg font-medium text-[var(--color-primary)] mb-2">{profile.title[locale]}</p>
+        <p class="text-sm text-[var(--color-muted)] max-w-xl mb-3 leading-relaxed">
+          {profile.valueProposition[locale]}
+        </p>
         <TypingTagline locale={locale} />
         <SocialProofBar
           locale={locale}
@@ -79,7 +84,7 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
             {heroSkills.map((skill) => (
               <Chip
                 label={skill.label}
-                href={`/${locale}/tags/${slugifyTag(skill.tag)}/`}
+                href={`/${locale}/tags/${slugifyTag(skill.id)}/`}
                 prefixHash={false}
               />
             ))}
@@ -98,6 +103,16 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
           >
             {ui.home.readBlog}
           </a>
+          <a
+            href={`mailto:${profile.email}?subject=${locale === 'zh' ? '[合作/面试邀约]' : '[Collaboration/Interview]'} Cx330xu`}
+            class="px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors inline-flex items-center gap-1.5"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            {ui.home.ctaContact}
+          </a>
+          <ResumeDownload locale={locale} variant="button" />
         </div>
       </div>
     </div>
@@ -137,11 +152,13 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
         ) : (
           <div class={featuredGridClass}>
             {featured.map((project) => (
-              <ProjectCard
-                project={project}
-                locale={locale}
-                starCount={repoStars.get(project.data.github)}
-              />
+              <FadeIn>
+                <ProjectCard
+                  project={project}
+                  locale={locale}
+                  starCount={repoStars.get(project.data.github)}
+                />
+              </FadeIn>
             ))}
           </div>
         )
@@ -158,7 +175,9 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
     </div>
     <div class="space-y-3">
       {latestPosts.map((post) => (
-        <PostCard post={post} locale={locale} variant="compact" />
+        <FadeIn>
+          <PostCard post={post} locale={locale} variant="compact" />
+        </FadeIn>
       ))}
     </div>
     <a href={csdnArchivePath} class="inline-block mt-3 text-sm text-[var(--color-primary)] hover:underline">
@@ -177,7 +196,9 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
     </div>
     <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
       {latestNotes.map((note) => (
-        <NoteItem note={note} locale={locale} showRelative />
+        <FadeIn>
+          <NoteItem note={note} locale={locale} showRelative />
+        </FadeIn>
       ))}
     </div>
   </div>
@@ -201,7 +222,12 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
 }
 
 <section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 text-center">
-  <h2 class="text-xl font-semibold mb-4">{ui.home.ctaTitle}</h2>
+  <h2 class="text-xl font-semibold mb-2">{ui.home.ctaTitle}</h2>
+  <p class="text-sm text-[var(--color-muted)] mb-5 max-w-md mx-auto">
+    {locale === 'zh'
+      ? '对 AI Agent / RAG 方向感兴趣？欢迎通过邮箱联系，我会提供详细项目说明。'
+      : 'Interested in AI Agent / RAG? Reach out via email — I am happy to share detailed project context.'}
+  </p>
   <div class="flex flex-col items-center gap-3">
     {
       latestPostSlug && (
@@ -217,7 +243,12 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
       <a href={`/${locale}/projects/`} class="text-[var(--color-primary)] hover:underline">
         {ui.home.ctaOrBrowseProjects}
       </a>
-      <EmailLink locale={locale} variant="inline" showIcon={false} />
+      <a href={`mailto:${profile.email}?subject=${locale === 'zh' ? '[合作/面试邀约]' : '[Collaboration/Interview]'} Cx330xu`} class="inline-flex items-center gap-1 text-[var(--color-primary)] font-medium hover:underline">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+        </svg>
+        {profile.email}
+      </a>
     </div>
   </div>
 </section>

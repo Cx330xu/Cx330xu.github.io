@@ -43,6 +43,7 @@ function isHome(path: string) {
       {profile.name}
     </a>
 
+    <!-- Desktop nav -->
     <nav class="hidden md:flex items-center gap-1 text-sm">
       {
         links.map((link) => (
@@ -84,22 +85,107 @@ function isHome(path: string) {
       </a>
       <LangSwitch locale={locale} currentPath={currentPath} />
       <ThemeToggle locale={locale} />
+      <!-- Hamburger button (mobile only) -->
+      <button
+        id="mobile-menu-btn"
+        type="button"
+        class="md:hidden p-1.5 rounded-md text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
+        aria-label={locale === 'zh' ? '打开菜单' : 'Open menu'}
+        aria-expanded="false"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
     </div>
   </div>
 
-  <nav class="md:hidden flex overflow-x-auto gap-1 px-4 pb-2 text-sm border-t border-[var(--color-border)]">
-    {
-      links.map((link) => (
-        <a
-          href={link.href}
-          class:list={[
-            'px-3 py-1.5 rounded-md whitespace-nowrap shrink-0',
-            isActive(link.href) ? 'text-[var(--color-primary)] font-medium' : 'text-[var(--color-muted)]',
-          ]}
-        >
-          {link.label}
-        </a>
-      ))
-    }
+  <!-- Mobile drawer overlay -->
+  <div id="mobile-drawer-overlay" class="fixed inset-0 bg-black/40 z-40 hidden md:hidden" aria-hidden="true"></div>
+  <!-- Mobile drawer -->
+  <nav
+    id="mobile-drawer"
+    class="fixed top-0 right-0 h-full w-64 max-w-[80vw] bg-[var(--color-bg)] border-l border-[var(--color-border)] z-50 shadow-2xl translate-x-full transition-transform duration-300 ease-in-out md:hidden"
+    aria-label={locale === 'zh' ? '移动端导航' : 'Mobile navigation'}
+  >
+    <div class="flex items-center justify-between px-4 h-14 border-b border-[var(--color-border)]">
+      <span class="font-semibold text-sm text-[var(--color-muted)]">
+        {locale === 'zh' ? '导航' : 'Menu'}
+      </span>
+      <button
+        id="mobile-drawer-close"
+        type="button"
+        class="p-1.5 rounded-md text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
+        aria-label={locale === 'zh' ? '关闭菜单' : 'Close menu'}
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    <div class="flex flex-col p-4 gap-1">
+      {
+        links.map((link) => (
+          <a
+            href={link.href}
+            class:list={[
+              'px-3 py-2.5 rounded-lg text-base transition-colors',
+              isActive(link.href)
+                ? 'text-[var(--color-primary)] bg-[var(--color-surface)] font-medium'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]',
+            ]}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+    </div>
   </nav>
 </header>
+
+<script>
+  function setupMobileMenu() {
+    const btn = document.getElementById('mobile-menu-btn');
+    const drawer = document.getElementById('mobile-drawer');
+    const overlay = document.getElementById('mobile-drawer-overlay');
+    const closeBtn = document.getElementById('mobile-drawer-close');
+    if (!btn || !drawer || !overlay || !closeBtn) return;
+
+    function open() {
+      drawer.classList.remove('translate-x-full');
+      overlay.classList.remove('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+      closeBtn.focus();
+    }
+
+    function close() {
+      drawer.classList.add('translate-x-full');
+      overlay.classList.add('hidden');
+      btn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+      btn.focus();
+    }
+
+    btn.addEventListener('click', open);
+    closeBtn.addEventListener('click', close);
+    overlay.addEventListener('click', close);
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !drawer.classList.contains('translate-x-full')) {
+        close();
+      }
+    });
+
+    // Close on nav link click
+    drawer.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => {
+        setTimeout(close, 100);
+      });
+    });
+  }
+
+  setupMobileMenu();
+  document.addEventListener('astro:after-swap', setupMobileMenu);
+</script>
