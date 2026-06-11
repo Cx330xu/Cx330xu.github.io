@@ -141,4 +141,27 @@ const labels = locale === 'zh'
   }
   initToggle();
   document.addEventListener('astro:after-swap', initToggle);
+
+  // Sync all toggle instances when wallpaper changes from any one of them
+  window.addEventListener('wallpaper-change', (e: Event) => {
+    const { active } = (e as CustomEvent).detail ?? {};
+    if (typeof active !== 'boolean') return;
+    document.querySelectorAll('.wallpaper-toggle[data-bound]').forEach((btn) => {
+      const variant = (btn as HTMLElement).dataset.variant;
+      const labelClean = (btn as HTMLElement).dataset.labelClean ?? 'Clean';
+      const labelGallery = (btn as HTMLElement).dataset.labelGallery ?? 'Gallery';
+      const lbl = btn.querySelector('.wallpaper-mode-label');
+      if (lbl) lbl.textContent = active ? labelGallery : labelClean;
+      if (variant === 'full') {
+        const dot = btn.querySelector('.wallpaper-switch-dot') as HTMLElement;
+        if (dot) dot.style.transform = active ? 'translateX(8px)' : 'translateX(0)';
+      }
+      btn.classList.toggle('text-[var(--color-primary)]', active);
+      btn.setAttribute('aria-pressed', String(active));
+    });
+    // Also sync refresh-button visibility
+    document.querySelectorAll('.wallpaper-refresh-btn').forEach((b) => {
+      b.classList.toggle('hidden', !active);
+    });
+  });
 </script>
