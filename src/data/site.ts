@@ -28,9 +28,14 @@ export const profile = {
   ogImage: '/og-image.png',
 } as const;
 
-/** 首页 GitHub 贡献热力图（贡献较少时可关闭，About / 侧栏仍保留 GitHub 链接） */
+/** 首页 GitHub 贡献热力图：近 windowDays 天 commit ≥ minCommits 时自动显示 */
 export const githubActivity = {
-  showOnHome: false,
+  username: 'Cx330xu',
+  profileUrl: 'https://github.com/Cx330xu',
+  windowDays: 90,
+  minCommits: 5,
+  /** 调试：true 强制显示，false 强制隐藏，null 按 commit 数自动判断 */
+  override: null as boolean | null,
 } as const;
 
 /** CSDN 渠道配置（更新文章数或同步策略时只改此处） */
