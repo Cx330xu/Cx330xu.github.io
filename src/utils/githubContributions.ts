@@ -37,34 +37,39 @@ async function fetchCommitCountGraphql(username: string, from: Date, to: Date): 
     }
   `;
 
-  const res = await fetch('https://api.github.com/graphql', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      'User-Agent': 'Cx330xu-github-io',
-    },
-    body: JSON.stringify({
-      query,
-      variables: {
-        login: username,
-        from: from.toISOString(),
-        to: to.toISOString(),
+  try {
+    const res = await fetch('https://api.github.com/graphql', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+        'User-Agent': 'Cx330xu-github-io',
       },
-    }),
-  });
+      body: JSON.stringify({
+        query,
+        variables: {
+          login: username,
+          from: from.toISOString(),
+          to: to.toISOString(),
+        },
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
 
-  if (!res.ok) return null;
+    if (!res.ok) return null;
 
-  const json = (await res.json()) as {
-    data?: { user?: { contributionsCollection?: { totalCommitContributions?: number } } };
-    errors?: unknown[];
-  };
+    const json = (await res.json()) as {
+      data?: { user?: { contributionsCollection?: { totalCommitContributions?: number } } };
+      errors?: unknown[];
+    };
 
-  if (json.errors?.length) return null;
+    if (json.errors?.length) return null;
 
-  const count = json.data?.user?.contributionsCollection?.totalCommitContributions;
-  return typeof count === 'number' ? count : null;
+    const count = json.data?.user?.contributionsCollection?.totalCommitContributions;
+    return typeof count === 'number' ? count : null;
+  } catch {
+    return null;
+  }
 }
 
 async function fetchCommitCountEvents(username: string, since: Date): Promise<number | null> {
@@ -73,38 +78,43 @@ async function fetchCommitCountEvents(username: string, since: Date): Promise<nu
   let reachedOlderEvents = false;
 
   while (page <= 10 && !reachedOlderEvents) {
-    const res = await fetch(
-      `https://api.github.com/users/${username}/events/public?per_page=100&page=${page}`,
-      {
-        headers: {
-          Accept: 'application/vnd.github+json',
-          'User-Agent': 'Cx330xu-github-io',
+    try {
+      const res = await fetch(
+        `https://api.github.com/users/${username}/events/public?per_page=100&page=${page}`,
+        {
+          headers: {
+            Accept: 'application/vnd.github+json',
+            'User-Agent': 'Cx330xu-github-io',
+          },
+          signal: AbortSignal.timeout(8000),
         },
-      },
-    );
+      );
 
-    if (!res.ok) return null;
+      if (!res.ok) return null;
 
-    const events = (await res.json()) as Array<{
-      type: string;
-      created_at: string;
-      payload?: { commits?: unknown[] };
-    }>;
+      const events = (await res.json()) as Array<{
+        type: string;
+        created_at: string;
+        payload?: { commits?: unknown[] };
+      }>;
 
-    if (!events.length) break;
+      if (!events.length) break;
 
-    for (const event of events) {
-      const created = new Date(event.created_at);
-      if (created < since) {
-        reachedOlderEvents = true;
-        continue;
+      for (const event of events) {
+        const created = new Date(event.created_at);
+        if (created < since) {
+          reachedOlderEvents = true;
+          continue;
+        }
+        if (event.type === 'PushEvent' && Array.isArray(event.payload?.commits)) {
+          total += event.payload.commits.length;
+        }
       }
-      if (event.type === 'PushEvent' && Array.isArray(event.payload?.commits)) {
-        total += event.payload.commits.length;
-      }
+
+      page += 1;
+    } catch {
+      return null;
     }
-
-    page += 1;
   }
 
   return total;
