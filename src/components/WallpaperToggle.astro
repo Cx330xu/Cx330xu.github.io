@@ -43,7 +43,7 @@ const labels = locale === 'zh'
 </button>
 
 <script>
-  (function initToggle() {
+  function initToggle() {
     document.querySelectorAll('.wallpaper-toggle:not([data-bound])').forEach((btn) => {
       btn.dataset.bound = 'true';
       const variant = btn.dataset.variant;
@@ -74,6 +74,7 @@ const labels = locale === 'zh'
         window.dispatchEvent(new CustomEvent('wallpaper-change', { detail: { active } }));
       });
     });
-  })();
+  }
+  initToggle();
   document.addEventListener('astro:after-swap', initToggle);
 </script>

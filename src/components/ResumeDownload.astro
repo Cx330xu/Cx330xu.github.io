@@ -120,13 +120,13 @@ const ending = ENDING[locale] ?? ENDING.en;
 
 <div id="resume-toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse gap-2 pointer-events-none" aria-live="polite"></div>
 
-<style>
+<style is:global>
   .resume-toast {
     pointer-events: auto;
     animation: rt-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   }
-  :global(.dark) .resume-toast {
+  .dark .resume-toast {
     box-shadow: 0 4px 20px rgba(0,0,0,0.35);
   }
   .resume-toast.removing {
@@ -143,7 +143,7 @@ const ending = ENDING[locale] ?? ENDING.en;
 </style>
 
 <script>
-  (function initResume() {
+  function initResume() {
     const btns = document.querySelectorAll('.resume-btn[data-resume-bound]');
     if (btns.length) return; // already bound via astro:after-swap guard
     document.querySelectorAll('.resume-btn:not([data-resume-bound])').forEach((btn) => {
@@ -202,6 +202,7 @@ const ending = ENDING[locale] ?? ENDING.en;
         }
       });
     });
-  })();
+  }
+  initResume();
   document.addEventListener('astro:after-swap', initResume);
 </script>
