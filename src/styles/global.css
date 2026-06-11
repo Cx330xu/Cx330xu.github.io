@@ -144,7 +144,7 @@ body.wallpaper-active::after {
 }
 
 .dark body.wallpaper-active::after {
-  background: rgba(13, 17, 23, 0.78);
+  background: rgba(13, 17, 23, 0.65);
   backdrop-filter: blur(1px);
 }
 

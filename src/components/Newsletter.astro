@@ -63,9 +63,12 @@ const isButtondown = newsletter.provider === 'buttondown' && newsletter.buttondo
           type="submit"
           class="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity shrink-0"
         >
-          {ui.subscribe}
+          {locale === 'zh' ? '订阅新文章' : 'Subscribe'}
         </button>
       </form>
+      <p class="text-[11px] text-[var(--color-muted)]/60 -mt-1 mb-4">
+        {locale === 'zh' ? '不发送垃圾邮件，随时可退订，仅用于新文章通知' : 'No spam, unsubscribe anytime. Used only for new post notifications.'}
+      </p>
     ) : (
       <p class="text-xs text-[var(--color-muted)] mb-4 opacity-70">{ui.mailComing}</p>
     )

@@ -8,6 +8,7 @@ tags:
   - Prompt Engineering
   - RAG
 featured: true
+difficulty: advanced
 draft: false
 translationKey: prompt-engineering
 ---

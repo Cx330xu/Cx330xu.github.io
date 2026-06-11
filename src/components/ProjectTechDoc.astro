@@ -1,0 +1,137 @@
+---
+interface Props {
+  locale: string;
+}
+
+const { locale = 'zh' } = Astro.props;
+
+const panels = [
+  {
+    key: 'challenges',
+    title: { zh: '技术难点', en: 'Technical Challenges' },
+    summary: { zh: '为什么做这个项目？解决了什么独特问题？', en: 'Why this project? What unique problem does it solve?' },
+  },
+  {
+    key: 'decisions',
+    title: { zh: '方案对比与决策', en: 'Solution Comparison & Decisions' },
+    summary: { zh: '关键技术选型的权衡与理由', en: 'Trade-offs and rationale behind key technical choices' },
+  },
+  {
+    key: 'architecture',
+    title: { zh: '架构设计', en: 'Architecture Design' },
+    summary: { zh: '系统架构、数据流与核心设计模式', en: 'System architecture, data flow, and core design patterns' },
+  },
+];
+---
+
+<style>
+  .tech-doc-panel {
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    background: var(--color-surface);
+  }
+  .tech-doc-panel summary {
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    user-select: none;
+    color: var(--color-text);
+    transition: color 0.15s;
+  }
+  .tech-doc-panel summary:hover {
+    color: var(--color-primary);
+  }
+  .tech-doc-panel summary::after {
+    content: '+';
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--color-muted);
+    transition: transform 0.2s;
+    width: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .tech-doc-panel[open] summary::after {
+    content: '−';
+    transform: rotate(180deg);
+  }
+  .tech-doc-panel .panel-body {
+    padding: 0 1.25rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+  .tech-doc-panel .panel-body p {
+    margin-bottom: 0.75em;
+  }
+  .tech-doc-panel .panel-body ul {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin-bottom: 0.75em;
+  }
+  .tech-doc-panel .panel-body li {
+    margin-bottom: 0.35em;
+  }
+  .tech-doc-summary-hint {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--color-muted);
+    opacity: 0.6;
+  }
+</style>
+
+<div class="mt-8 pt-6 border-t border-[var(--color-border)]">
+  <h2 class="text-lg font-semibold mb-3">
+    {locale === 'zh' ? '技术文档' : 'Technical Documentation'}
+  </h2>
+
+  {
+    panels.map((panel) => (
+      <details class="tech-doc-panel group">
+        <summary>
+          <span>{panel.title[locale as keyof typeof panel.title]}</span>
+          <span class="tech-doc-summary-hint ml-2">{panel.summary[locale as keyof typeof panel.summary]}</span>
+        </summary>
+        <div class="panel-body">
+          {
+            locale === 'zh' ? (
+              <>
+                <p><em>该项目的详细{panel.title.zh}正在撰写中。以下为占位内容，展示此组件的交互形态。</em></p>
+                <p>在实际部署版本中，此处将展示：</p>
+                <ul>
+                  <li>具体的技术挑战描述与解决路径</li>
+                  <li>关键架构决策的前因后果</li>
+                  <li>系统数据流图与核心设计模式说明</li>
+                </ul>
+                <p>此结构化文档直接面向技术面试官的评估维度，展示候选人在技术深度、工程判断力和系统思维方面的能力。</p>
+              </>
+            ) : (
+              <>
+                <p><em>Detailed {panel.title.en.toLowerCase()} documentation for this project is being written. This is placeholder content demonstrating the component's interaction pattern.</em></p>
+                <p>When populated, this section will showcase:</p>
+                <ul>
+                  <li>Specific technical challenges and solutions</li>
+                  <li>Key architectural decisions and their rationale</li>
+                  <li>System data flow and core design patterns</li>
+                </ul>
+                <p>This structured documentation directly addresses technical interviewer evaluation dimensions.</p>
+              </>
+            )
+          }
+        </div>
+      </details>
+    ))
+  }
+
+  <p class="text-xs text-[var(--color-muted)]/50 mt-4">
+    {locale === 'zh'
+      ? '💡 提示：点击每个面板展开详细内容。此组件采用 HTML5 <details> 元素，无需 JavaScript，支持键盘导航与屏幕阅读器。'
+      : '💡 Tip: Click each panel to expand. This uses native HTML5 <details> elements — no JavaScript needed, keyboard-accessible.'}
+  </p>
+</div>

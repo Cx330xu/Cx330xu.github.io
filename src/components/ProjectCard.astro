@@ -21,9 +21,22 @@ const hasDemo = Boolean(project.data.demo);
 
 <article class="group rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 card-hover">
   <div class="flex gap-4">
-    <div class="shrink-0 w-11 h-11 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-sm flex items-center justify-center border border-[var(--color-primary)]/20">
-      {initials}
-    </div>
+    {
+      project.data.cover ? (
+        <div class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-[var(--color-border)]">
+          <img
+            src={project.data.cover}
+            alt={project.data.title}
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform"
+            loading="lazy"
+          />
+        </div>
+      ) : (
+        <div class="shrink-0 w-11 h-11 rounded-lg bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold text-sm flex items-center justify-center border border-[var(--color-primary)]/20">
+          {initials}
+        </div>
+      )
+    }
     <div class="min-w-0 flex-1">
       <div class="flex items-start justify-between gap-3 mb-2">
         <h3 class="font-semibold text-lg group-hover:text-[var(--color-primary)] transition-colors">

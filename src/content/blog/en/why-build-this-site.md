@@ -6,6 +6,7 @@ category: misc
 tags:
   - Astro
   - GitHub Pages
+difficulty: beginner
 draft: false
 translationKey: why-build-this-site
 ---

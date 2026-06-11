@@ -6,6 +6,7 @@ category: misc
 tags:
   - CSDN
   - Archive
+difficulty: beginner
 draft: false
 translationKey: csdn-archive
 ---

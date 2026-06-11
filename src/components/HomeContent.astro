@@ -65,10 +65,25 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
       <Avatar size="lg" />
       <div class="min-w-0 flex-1 pt-0.5 sm:pt-1">
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">{profile.name}</h1>
-        <p class="text-lg font-medium text-[var(--color-primary)] mb-2">{profile.title[locale]}</p>
-        <p class="text-sm text-[var(--color-muted)] max-w-xl mb-3 leading-relaxed">
+        <p class="text-xl sm:text-2xl font-semibold text-[var(--color-primary)] mb-1.5">{profile.title[locale]}</p>
+        <p class="text-sm text-[var(--color-muted)] max-w-xl mb-2 leading-relaxed">
           {profile.valueProposition[locale]}
         </p>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="h-px flex-1 bg-[var(--color-border)]" aria-hidden="true"></span>
+          <span class="text-[10px] uppercase tracking-[0.15em] text-[var(--color-muted)]/60">{ui.home.skillsLabel}</span>
+          <span class="h-px flex-1 bg-[var(--color-border)]" aria-hidden="true"></span>
+        </div>
+        <div class="flex flex-wrap gap-2 mb-3">
+          {heroSkills.map((skill) => (
+            <Chip
+              label={skill.label}
+              href={`/${locale}/tags/${slugifyTag(skill.id)}/`}
+              prefixHash={false}
+              variant="primary"
+            />
+          ))}
+        </div>
         <TypingTagline locale={locale} />
         <SocialProofBar
           locale={locale}
@@ -77,18 +92,6 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
         />
         <div class="mb-5 pt-0.5">
           <ContactLinks locale={locale} />
-        </div>
-        <div class="mb-5">
-          <p class="text-xs text-[var(--color-muted)] mb-2">{ui.home.skillsLabel}</p>
-          <div class="flex flex-wrap gap-2">
-            {heroSkills.map((skill) => (
-              <Chip
-                label={skill.label}
-                href={`/${locale}/tags/${slugifyTag(skill.id)}/`}
-                prefixHash={false}
-              />
-            ))}
-          </div>
         </div>
         <div class="flex flex-wrap gap-3">
           <a

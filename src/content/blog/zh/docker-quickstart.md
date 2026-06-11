@@ -7,6 +7,7 @@ tags:
   - Docker
   - DevOps
   - Tools
+difficulty: beginner
 draft: false
 translationKey: docker-quickstart
 originalSource: https://blog.csdn.net/Xu_youyaxianshen

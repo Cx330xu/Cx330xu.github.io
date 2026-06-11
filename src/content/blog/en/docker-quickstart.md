@@ -6,6 +6,7 @@ category: engineering
 tags:
   - Docker
   - DevOps
+difficulty: beginner
 draft: false
 translationKey: docker-quickstart
 ---

@@ -9,6 +9,7 @@ tags:
   - RAG
   - Agent
 featured: true
+difficulty: advanced
 draft: false
 translationKey: prompt-engineering
 originalSource: https://blog.csdn.net/Xu_youyaxianshen
