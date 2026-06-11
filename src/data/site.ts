@@ -29,7 +29,6 @@ export const profile = {
   email: 'cx330xu@qq.com',
   github: 'https://github.com/Cx330xu',
   gitee: 'https://gitee.com/cx330xu_youyaxiansheng',
-  linkedin: 'https://www.linkedin.com/in/cx330xu',
   csdn: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',
   avatar: 'https://github.com/Cx330xu.png',
   ogImage: '/og-image.png',

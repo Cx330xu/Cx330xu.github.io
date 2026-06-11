@@ -2,7 +2,6 @@
 import { csdn, profile } from '../data/site';
 import { t, type Locale } from '../i18n/ui';
 import EmailLink from './EmailLink.astro';
-import ResumeDownload from './ResumeDownload.astro';
 import Newsletter from './Newsletter.astro';
 
 interface Props {
@@ -28,13 +27,6 @@ const analyticsEnabled = import.meta.env.PROD && Boolean(import.meta.env.PUBLIC_
       <a href={profile.gitee} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-primary)] transition-colors">
         Gitee
       </a>
-      {
-        profile.linkedin && (
-          <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-primary)] transition-colors">
-            LinkedIn
-          </a>
-        )
-      }
       <EmailLink locale={locale} variant="inline" showIcon={false} />
       <a href={`/${locale}/archives/`} class="hover:text-[var(--color-primary)] transition-colors">
         {ui.nav.archives}
@@ -48,7 +40,6 @@ const analyticsEnabled = import.meta.env.PROD && Boolean(import.meta.env.PUBLIC_
       <a href={`/${locale}/rss.xml`} class="hover:text-[var(--color-primary)] transition-colors">
         RSS
       </a>
-      <ResumeDownload locale={locale} variant="inline" />
     </div>
     <p class="text-center sm:text-right">
       © {year} {profile.name} · {ui.footer.builtWith}
