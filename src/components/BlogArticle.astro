@@ -56,10 +56,17 @@ const slug = getSlugFromId(post.id);
     }
   </header>
 
-  <TableOfContents locale={locale} />
-
-  <div class="prose">
-    <Content />
+  <div class="lg:grid lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-10">
+    <aside class="lg:col-start-2 lg:row-start-1" aria-label={ui.blog.toc}>
+      <div class="lg:sticky lg:top-24">
+        <TableOfContents locale={locale} />
+      </div>
+    </aside>
+    <div class="min-w-0 lg:col-start-1 lg:row-start-1">
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
   </div>
 
   {

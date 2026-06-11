@@ -18,7 +18,6 @@ import PostCard from './PostCard.astro';
 import NoteItem from './NoteItem.astro';
 import TagCloud from './TagCloud.astro';
 import EmailLink from './EmailLink.astro';
-import ResumeDownload from './ResumeDownload.astro';
 import FadeIn from './FadeIn.astro';
 
 interface Props {
@@ -103,16 +102,6 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
           >
             {ui.home.readBlog}
           </a>
-          <a
-            href={`mailto:${profile.email}?subject=${locale === 'zh' ? '[合作/面试邀约]' : '[Collaboration/Interview]'} Cx330xu`}
-            class="px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors inline-flex items-center gap-1.5"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-            </svg>
-            {ui.home.ctaContact}
-          </a>
-          <ResumeDownload locale={locale} variant="button" />
         </div>
       </div>
     </div>

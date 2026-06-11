@@ -5,6 +5,7 @@ date: 2026-03-13
 status: active
 featured: true
 github: https://github.com/Cx330xu/prompt_system
+cover: /project-prompt-system.png
 stack:
   - Python
   - FastAPI

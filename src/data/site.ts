@@ -29,6 +29,7 @@ export const profile = {
   email: 'cx330xu@qq.com',
   github: 'https://github.com/Cx330xu',
   gitee: 'https://gitee.com/cx330xu_youyaxiansheng',
+  linkedin: 'https://www.linkedin.com/in/cx330xu',
   csdn: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',
   avatar: 'https://github.com/Cx330xu.png',
   ogImage: '/og-image.png',
@@ -89,6 +90,13 @@ export const stacks = [
 
 /** Hero 区展示的精选技能（从 stacks 派生） */
 export const heroSkills = stacks.filter(s => s.featured);
+
+/** 邮件订阅配置。provider: 'buttondown' 启用真实表单；'rss-only' 仅显示 RSS 复制按钮 */
+export const newsletter = {
+  provider: 'buttondown' as 'buttondown' | 'rss-only',
+  /** Buttondown 用户名（provider 为 buttondown 时必填） */
+  buttondownUsername: 'cx330xu',
+} as const;
 
 export const categories = [
   { id: 'ai', label: { zh: '人工智能', en: 'AI' } },

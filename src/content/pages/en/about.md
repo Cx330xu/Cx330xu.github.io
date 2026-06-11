@@ -36,6 +36,7 @@ I'm iterating on Agent engineering practice and this site. See [Now](/en/now/) f
 
 - GitHub: [github.com/Cx330xu](https://github.com/Cx330xu)
 - Gitee: [gitee.com/cx330xu_youyaxiansheng](https://gitee.com/cx330xu_youyaxiansheng)
+- LinkedIn: [linkedin.com/in/cx330xu](https://www.linkedin.com/in/cx330xu)
 - Email: cx330xu@qq.com (click to copy on the homepage)
 - CSDN: [blog.csdn.net/Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog)
 

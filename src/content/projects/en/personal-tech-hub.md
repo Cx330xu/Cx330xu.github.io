@@ -5,6 +5,7 @@ date: 2026-06-10
 status: active
 featured: false
 github: https://github.com/Cx330xu/Cx330xu.github.io
+cover: /project-tech-hub.png
 demo: https://Cx330xu.github.io/
 stack:
   - Astro

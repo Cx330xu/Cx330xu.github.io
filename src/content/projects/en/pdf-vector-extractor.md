@@ -5,6 +5,7 @@ date: 2026-01-15
 status: active
 featured: true
 github: https://github.com/Cx330xu/pdf_vector_extractor
+cover: /project-pdf-vector.png
 stack:
   - JavaScript
   - HTML

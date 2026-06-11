@@ -1,4 +1,5 @@
 ---
+import { newsletter } from '../data/site';
 import type { Locale } from '../i18n/ui';
 
 interface Props {
@@ -11,6 +12,8 @@ const ui = {
   zh: {
     title: '订阅更新',
     description: '新文章发布时第一时间通知你。',
+    emailPlaceholder: '输入你的邮箱',
+    subscribe: '订阅',
     rssLabel: 'RSS 订阅',
     rssDesc: '通过 RSS 阅读器订阅，无需注册，随时获取最新文章。',
     rssButton: '复制 RSS 链接',
@@ -20,6 +23,8 @@ const ui = {
   en: {
     title: 'Stay Updated',
     description: 'Get notified when new articles are published.',
+    emailPlaceholder: 'Enter your email',
+    subscribe: 'Subscribe',
     rssLabel: 'RSS Feed',
     rssDesc: 'Subscribe via RSS reader — no registration needed.',
     rssButton: 'Copy RSS Link',
@@ -29,14 +34,45 @@ const ui = {
 }[locale];
 
 const rssUrl = `/${locale}/rss.xml`;
+const isButtondown = newsletter.provider === 'buttondown' && newsletter.buttondownUsername !== 'your-username';
 ---
 
 <section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6">
   <h3 class="font-semibold text-lg mb-1">{ui.title}</h3>
   <p class="text-sm text-[var(--color-muted)] mb-4">{ui.description}</p>
 
-  <!-- RSS subscription (working now) -->
-  <div class="flex flex-col sm:flex-row gap-2 mb-3">
+  {
+    isButtondown ? (
+      <form
+        action={`https://buttondown.email/api/emails/embed-subscribe/${newsletter.buttondownUsername}`}
+        method="post"
+        target="popupwindow"
+        onsubmit={`window.open('https://buttondown.email/${newsletter.buttondownUsername}', 'popupwindow')`}
+        class="flex flex-col sm:flex-row gap-2 mb-4"
+      >
+        <label for="bd-email" class="sr-only">{ui.emailPlaceholder}</label>
+        <input
+          type="email"
+          name="email"
+          id="bd-email"
+          placeholder={ui.emailPlaceholder}
+          required
+          class="flex-1 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-text)] placeholder:text-[var(--color-muted)] focus:outline-none focus:border-[var(--color-primary)] transition-colors"
+        />
+        <button
+          type="submit"
+          class="px-4 py-2 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity shrink-0"
+        >
+          {ui.subscribe}
+        </button>
+      </form>
+    ) : (
+      <p class="text-xs text-[var(--color-muted)] mb-4 opacity-70">{ui.mailComing}</p>
+    )
+  }
+
+  <!-- RSS subscription (always available) -->
+  <div class="flex flex-col sm:flex-row gap-2 mb-2">
     <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] text-sm text-[var(--color-muted)]">
       <svg class="w-4 h-4 shrink-0 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7M6 17h.01M6 5v6" />
@@ -52,8 +88,7 @@ const rssUrl = `/${locale}/rss.xml`;
       {ui.rssButton}
     </button>
   </div>
-  <p class="text-xs text-[var(--color-muted)] mb-1">{ui.rssDesc}</p>
-  <p class="text-xs text-[var(--color-muted)] opacity-70">{ui.mailComing}</p>
+  <p class="text-xs text-[var(--color-muted)]">{ui.rssDesc}</p>
 </section>
 
 <script>
