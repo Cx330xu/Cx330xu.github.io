@@ -172,3 +172,12 @@ body.wallpaper-active {
 /* Refresh button spin animation */
 @keyframes spin { to { transform: rotate(360deg); } }
 .animate-spin { animation: spin 1s linear infinite; }
+
+/* Wallpaper crossfade */
+@keyframes wallpaper-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+body.wallpaper-active::before {
+  animation: wallpaper-fade-in 0.5s ease-in-out;
+}

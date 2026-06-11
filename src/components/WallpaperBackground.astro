@@ -23,6 +23,7 @@ const prebuiltJson = JSON.stringify(prebuiltWallpapers);
   const CORS_PROXIES = [
     'https://corsproxy.io/?',
     'https://api.allorigins.win/raw?url=',
+    'https://api.codetabs.com/v1/proxy?quest=',
   ];
 
   const dataEl = document.getElementById('bing-wallpaper-data');
@@ -58,30 +59,51 @@ const prebuiltJson = JSON.stringify(prebuiltWallpapers);
   function apply(url: string | null) {
     if (url) {
       currentUrl = url;
+      // Downsample on mobile/slow-connection for performance
+      const finalUrl = maybeDownsample(url);
       const img = new Image();
-      img.onload = () => { if (currentUrl === url) { document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(url)})`); document.body.classList.add('wallpaper-active'); } };
-      img.src = url;
-      document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(url)})`);
+      img.onload = () => { if (currentUrl === url) { document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(finalUrl)})`); document.body.classList.add('wallpaper-active'); } };
+      img.src = finalUrl;
+      document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(finalUrl)})`);
       document.body.classList.add('wallpaper-active');
     } else { currentUrl = null; document.body.style.removeProperty('--wallpaper-bg'); document.body.classList.remove('wallpaper-active'); }
   }
   function remove() { currentUrl = null; document.body.style.removeProperty('--wallpaper-bg'); document.body.classList.remove('wallpaper-active'); }
 
-  // ── runtime fetch ──
-  async function fetchFresh(): Promise<{ url: string; copyright?: string }[] | null> {
+  // Replace Bing 1920×1080 with smaller variant for mobile / save-data
+  function maybeDownsample(u: string): string {
+    try {
+      const slow = (navigator as any).connection?.saveData === true;
+      const mobile = window.matchMedia('(max-width: 768px)').matches;
+      if (!slow && !mobile) return u;
+    } catch { return u; }
+    // Bing uses _1920x1080 in the filename; use 1024×576 for mobile, 640×360 for save-data
+    try {
+      const slow = (navigator as any).connection?.saveData === true;
+      return u.replace(/_(1920|1366)x(1080|768)/, slow ? '_640x360' : '_1024x576');
+    } catch { return u.replace(/_(1920|1366)x(1080|768)/, '_1024x576'); }
+  }
+
+  // ── runtime fetch (retry with exponential backoff) ──
+  async function fetchFresh(retries = 2): Promise<{ url: string; copyright?: string }[] | null> {
     for (const proxy of [null, ...CORS_PROXIES]) {
-      try {
-        const ctl = new AbortController();
-        const t = setTimeout(() => ctl.abort(), proxy ? 8000 : 6000);
-        const url = proxy ? proxy + encodeURIComponent(BING_API) : BING_API;
-        const res = await fetch(url, { signal: ctl.signal });
-        clearTimeout(t);
-        if (res.ok) {
-          const data = await res.json();
-          const imgs = (data.images ?? []) as any[];
-          if (imgs.length) return imgs.map((img: any) => ({ url: 'https://www.bing.com' + (img.url ?? ''), copyright: img.copyright ?? '' }));
-        }
-      } catch { /* try next */ }
+      for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+          const ctl = new AbortController();
+          const timeoutMs = proxy ? 10000 : 6000;
+          const t = setTimeout(() => ctl.abort(), timeoutMs);
+          const url = proxy ? proxy + encodeURIComponent(BING_API) : BING_API;
+          const res = await fetch(url, { signal: ctl.signal });
+          clearTimeout(t);
+          if (res.ok) {
+            const data = await res.json();
+            const imgs = (data.images ?? []) as any[];
+            if (imgs.length) return imgs.map((img: any) => ({ url: 'https://www.bing.com' + (img.url ?? ''), copyright: img.copyright ?? '' }));
+          }
+        } catch { /* try next attempt */ }
+        // exponential backoff: 500ms, 1000ms, 2000ms...
+        if (attempt < retries) await new Promise(r => setTimeout(r, 500 * Math.pow(2, attempt)));
+      }
     }
     return null;
   }
@@ -91,12 +113,19 @@ const prebuiltJson = JSON.stringify(prebuiltWallpapers);
     // Show spinner on all refresh buttons
     document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.add('animate-spin'));
     try {
-      const fresh = await fetchFresh();
-      if (fresh && fresh.length) { saveCache(fresh); setIdx(0); apply(fresh[0].url); window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } })); return true; }
-      // Fallback: cycle to next prebuilt
-      const ok = cycle();
-      if (ok) window.dispatchEvent(new CustomEvent('wallpaper-refresh-fallback', { detail: {} }));
-      return ok;
+      // Step 1: cycle immediately → instant visible feedback
+      const cycled = cycle();
+      // Step 2: fetch fresh in background, override cached list
+      try {
+        const fresh = await fetchFresh();
+        if (fresh && fresh.length) {
+          saveCache(fresh); setIdx(0); apply(fresh[0].url);
+          window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } }));
+          return true;
+        }
+      } catch { /* keep cycled image */ }
+      // fetch failed → cycled image stays (already visible)
+      return cycled;
     } finally {
       document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.remove('animate-spin'));
     }
