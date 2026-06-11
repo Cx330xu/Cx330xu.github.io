@@ -113,19 +113,17 @@ const prebuiltJson = JSON.stringify(prebuiltWallpapers);
     // Show spinner on all refresh buttons
     document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.add('animate-spin'));
     try {
-      // Step 1: cycle immediately → instant visible feedback
-      const cycled = cycle();
-      // Step 2: fetch fresh in background, override cached list
-      try {
-        const fresh = await fetchFresh();
-        if (fresh && fresh.length) {
-          saveCache(fresh); setIdx(0); apply(fresh[0].url);
-          window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } }));
-          return true;
-        }
-      } catch { /* keep cycled image */ }
-      // fetch failed → cycled image stays (already visible)
-      return cycled;
+      // Fetch fresh first → apply if successful (no flash-revert)
+      const fresh = await fetchFresh();
+      if (fresh && fresh.length) {
+        saveCache(fresh); setIdx(0); apply(fresh[0].url);
+        window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } }));
+        return true;
+      }
+      // All fetches failed → cycle to next prebuilt (always a visible change)
+      const ok = cycle();
+      if (ok) window.dispatchEvent(new CustomEvent('wallpaper-refresh-fallback', {}));
+      return ok;
     } finally {
       document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.remove('animate-spin'));
     }
