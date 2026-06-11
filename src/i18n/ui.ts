@@ -35,6 +35,13 @@ export const ui = {
       snapshotTitle: '站点概览',
       snapshotTagline: 'AI Agent · LLM 工程实践',
       viewNow: '当前动态',
+      socialProofCsdn: 'CSDN {count}+ 篇原创',
+      socialProofProjects: '{count} 个项目',
+      socialProofLatestPost: '最新文章 {date}',
+      csdnArchiveTeaser: 'CSDN {count}+ 篇历史文章 →',
+      ctaContact: '联系我',
+      ctaOrBrowseProjects: '或浏览全部项目',
+      githubStars: '⭐ {count}',
     },
     projects: {
       title: '项目',
@@ -124,6 +131,7 @@ export const ui = {
     },
     footer: {
       builtWith: '基于 Astro 构建',
+      analyticsNote: '本站使用隐私友好访问统计',
     },
     theme: {
       light: '浅色',
@@ -176,6 +184,13 @@ export const ui = {
       snapshotTitle: 'Site snapshot',
       snapshotTagline: 'AI Agent · LLM engineering',
       viewNow: 'Now',
+      socialProofCsdn: 'CSDN {count}+ original posts',
+      socialProofProjects: '{count} projects',
+      socialProofLatestPost: 'Latest post {date}',
+      csdnArchiveTeaser: 'CSDN {count}+ archived posts →',
+      ctaContact: 'Contact me',
+      ctaOrBrowseProjects: 'or browse all projects',
+      githubStars: '⭐ {count}',
     },
     projects: {
       title: 'Projects',
@@ -265,6 +280,7 @@ export const ui = {
     },
     footer: {
       builtWith: 'Built with Astro',
+      analyticsNote: 'Privacy-friendly analytics enabled',
     },
     theme: {
       light: 'Light',

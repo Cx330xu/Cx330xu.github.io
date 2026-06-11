@@ -38,6 +38,12 @@ export const githubActivity = {
   override: null as boolean | null,
 } as const;
 
+/** 访问统计：构建时设置 PUBLIC_PLAUSIBLE_DOMAIN（如 cx330xu.github.io）后生产环境自动加载 Plausible。
+ *  P2 复盘（启用后 2–4 周）：查 Top 页面/跳出率/英文占比，再决定是否做 STAR 案例(P2-1)、排版(P2-2)、静态标语(P2-4)、Demo 嵌入(P2-5)。 */
+export const analytics = {
+  plausibleDomainEnv: 'PUBLIC_PLAUSIBLE_DOMAIN',
+} as const;
+
 /** CSDN 渠道配置（更新文章数或同步策略时只改此处） */
 export const csdn = {
   url: 'https://blog.csdn.net/Xu_youyaxianshen?type=blog',

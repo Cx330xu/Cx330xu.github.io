@@ -1,0 +1,26 @@
+---
+import { csdn } from '../data/site';
+import { t, type Locale } from '../i18n/ui';
+import { formatDate } from '../utils/content';
+
+interface Props {
+  locale: Locale;
+  projectCount: number;
+  latestPostDate?: Date;
+}
+
+const { locale, projectCount, latestPostDate } = Astro.props;
+const ui = t(locale);
+const archivePath = `/${locale}/blog/csdn-archive/`;
+const dateLabel = latestPostDate ? formatDate(latestPostDate, locale) : '—';
+---
+
+<p class="text-sm text-[var(--color-text)]/80 leading-relaxed mb-4 flex flex-wrap items-center gap-x-1 gap-y-1">
+  <a href={archivePath} class="hover:text-[var(--color-primary)] transition-colors underline-offset-2 hover:underline">
+    {ui.home.socialProofCsdn.replace('{count}', String(csdn.postCount))}
+  </a>
+  <span class="text-[var(--color-muted)]" aria-hidden="true">·</span>
+  <span>{ui.home.socialProofProjects.replace('{count}', String(projectCount))}</span>
+  <span class="text-[var(--color-muted)]" aria-hidden="true">·</span>
+  <span>{ui.home.socialProofLatestPost.replace('{date}', dateLabel)}</span>
+</p>

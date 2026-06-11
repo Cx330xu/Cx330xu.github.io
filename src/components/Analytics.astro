@@ -1,0 +1,15 @@
+---
+/** 生产环境且配置了 PUBLIC_PLAUSIBLE_DOMAIN 时加载 Plausible */
+const domain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN as string | undefined;
+const enabled = import.meta.env.PROD && Boolean(domain?.trim());
+---
+
+{
+  enabled && (
+    <script
+      defer
+      data-domain={domain}
+      src="https://plausible.io/js/script.js"
+    />
+  )
+}

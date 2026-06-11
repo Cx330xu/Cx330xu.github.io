@@ -8,6 +8,7 @@ import LangFallbackToast from '../components/LangFallbackToast.astro';
 import CopyToast from '../components/CopyToast.astro';
 import BackgroundGlow from '../components/BackgroundGlow.astro';
 import SearchShortcut from '../components/SearchShortcut.astro';
+import Analytics from '../components/Analytics.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPagefindLanguage } from '../utils/content';
 
@@ -44,6 +45,7 @@ const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined
 <html lang={locale === 'zh' ? 'zh-CN' : 'en'} data-pagefind-filter={`language[${pagefindLang}]`}>
   <head>
     <SEO title={fullTitle} description={description} locale={locale} image={image} />
+    <Analytics />
     <script is:inline>
       (function () {
         const stored = localStorage.getItem('theme');

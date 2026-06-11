@@ -33,6 +33,8 @@ jobs:
       - name: Build
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          # 在仓库 Variables 中设置 PUBLIC_PLAUSIBLE_DOMAIN=cx330xu.github.io 以启用 Plausible
+          PUBLIC_PLAUSIBLE_DOMAIN: ${{ vars.PUBLIC_PLAUSIBLE_DOMAIN }}
         run: npm run build
 
       - name: Upload artifact

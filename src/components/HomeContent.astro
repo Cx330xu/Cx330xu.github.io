@@ -1,13 +1,15 @@
 ---
 import { getCollection } from 'astro:content';
-import { profile, heroSkills } from '../data/site';
+import { csdn, profile, heroSkills } from '../data/site';
 import Chip from './Chip.astro';
 import { t, type Locale } from '../i18n/ui';
 import { filterByLocale, sortByDate, collectTags, slugifyTag } from '../utils/content';
-import { shouldShowGithubActivity } from '../utils/githubContributions';
+import { shouldShowGithubActivity, getRepoStarsMap } from '../utils/githubContributions';
 import Avatar from './Avatar.astro';
 import ContactLinks from './ContactLinks.astro';
 import HeroAside from './HeroAside.astro';
+import HeroSnapshotMobile from './HeroSnapshotMobile.astro';
+import SocialProofBar from './SocialProofBar.astro';
 import TypingTagline from './TypingTagline.astro';
 import ProjectCard from './ProjectCard.astro';
 import FeaturedProjectHero from './FeaturedProjectHero.astro';
@@ -15,6 +17,7 @@ import GithubActivity from './GithubActivity.astro';
 import PostCard from './PostCard.astro';
 import NoteItem from './NoteItem.astro';
 import TagCloud from './TagCloud.astro';
+import EmailLink from './EmailLink.astro';
 
 interface Props {
   locale: Locale;
@@ -42,10 +45,16 @@ const latestNotes = notes.slice(0, 5);
 const allTags = collectTags([...posts, ...notes, ...projects]);
 const useSingleColumn = latestPosts.length < 2;
 
+const githubUrls = projects.map((p) => p.data.github);
+const repoStars = await getRepoStarsMap(githubUrls);
+
 const featuredGridClass =
   featured.length === 2
     ? 'grid gap-4 sm:grid-cols-2'
     : 'grid gap-4 sm:grid-cols-2 lg:grid-cols-3';
+
+const csdnArchivePath = `/${locale}/blog/csdn-archive/`;
+const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
 ---
 
 <section class="mb-16">
@@ -56,6 +65,11 @@ const featuredGridClass =
         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight mb-1">{profile.name}</h1>
         <p class="text-lg font-medium text-[var(--color-primary)] mb-3">{profile.title[locale]}</p>
         <TypingTagline locale={locale} />
+        <SocialProofBar
+          locale={locale}
+          projectCount={projects.length}
+          latestPostDate={latestPosts[0]?.data.date}
+        />
         <div class="mb-5 pt-0.5">
           <ContactLinks locale={locale} />
         </div>
@@ -96,6 +110,12 @@ const featuredGridClass =
       showGithubLink={!showGithubActivity}
     />
   </div>
+  <HeroSnapshotMobile
+    locale={locale}
+    projectCount={projects.length}
+    postCount={posts.length}
+    noteCount={notes.length}
+  />
 </section>
 
 {
@@ -109,11 +129,19 @@ const featuredGridClass =
       </div>
       {
         featured.length === 1 ? (
-          <FeaturedProjectHero project={featured[0]} locale={locale} />
+          <FeaturedProjectHero
+            project={featured[0]}
+            locale={locale}
+            starCount={repoStars.get(featured[0].data.github)}
+          />
         ) : (
           <div class={featuredGridClass}>
             {featured.map((project) => (
-              <ProjectCard project={project} locale={locale} />
+              <ProjectCard
+                project={project}
+                locale={locale}
+                starCount={repoStars.get(project.data.github)}
+              />
             ))}
           </div>
         )
@@ -124,33 +152,34 @@ const featuredGridClass =
 
 <section class:list={['mb-16', useSingleColumn ? 'space-y-10' : 'grid gap-10 lg:grid-cols-2']}>
   <div>
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between gap-3 mb-4">
       <h2 class="text-xl font-semibold">{ui.home.latestPosts}</h2>
-      <a href={`/${locale}/blog/`} class="text-sm text-[var(--color-primary)] hover:underline">{ui.home.readBlog} →</a>
+      <a href={`/${locale}/blog/`} class="text-sm text-[var(--color-primary)] hover:underline shrink-0">{ui.home.readBlog} →</a>
     </div>
     <div class="space-y-3">
       {latestPosts.map((post) => (
         <PostCard post={post} locale={locale} variant="compact" />
       ))}
     </div>
+    <a href={csdnArchivePath} class="inline-block mt-3 text-sm text-[var(--color-primary)] hover:underline">
+      {ui.home.csdnArchiveTeaser.replace('{count}', String(csdn.postCount))}
+    </a>
   </div>
   <div>
-    <div class="flex items-center justify-between mb-4">
-      <div class="flex items-center gap-2">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div class="flex items-center gap-2 min-w-0">
         <h2 class="text-xl font-semibold">{ui.home.latestNotes}</h2>
-        <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)]">
+        <span class="text-xs px-2 py-0.5 rounded-full bg-[var(--color-primary)]/10 text-[var(--color-primary)] shrink-0">
           {ui.home.recentlyUpdated}
         </span>
       </div>
+      <a href={`/${locale}/notes/`} class="text-sm text-[var(--color-primary)] hover:underline shrink-0">{ui.home.viewAllNotes} →</a>
     </div>
     <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-4">
       {latestNotes.map((note) => (
         <NoteItem note={note} locale={locale} showRelative />
       ))}
     </div>
-    <a href={`/${locale}/notes/`} class="inline-block mt-3 text-sm text-[var(--color-primary)] hover:underline">
-      {ui.home.viewAllNotes} →
-    </a>
   </div>
 </section>
 
@@ -173,22 +202,22 @@ const featuredGridClass =
 
 <section class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-6 py-8 text-center">
   <h2 class="text-xl font-semibold mb-4">{ui.home.ctaTitle}</h2>
-  <div class="flex flex-wrap justify-center gap-3">
+  <div class="flex flex-col items-center gap-3">
     {
-      latestPosts[0] && (
+      latestPostSlug && (
         <a
-          href={`/${locale}/blog/${latestPosts[0].id.replace(/^(zh|en)\//, '')}/`}
+          href={`/${locale}/blog/${latestPostSlug}/`}
           class="px-5 py-2.5 rounded-lg bg-[var(--color-primary)] text-white text-sm font-medium hover:opacity-90 transition-opacity"
         >
           {ui.home.ctaReadLatest}
         </a>
       )
     }
-    <a
-      href={`/${locale}/projects/`}
-      class="px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
-    >
-      {ui.home.ctaBrowseProjects}
-    </a>
+    <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-sm">
+      <a href={`/${locale}/projects/`} class="text-[var(--color-primary)] hover:underline">
+        {ui.home.ctaOrBrowseProjects}
+      </a>
+      <EmailLink locale={locale} variant="inline" showIcon={false} />
+    </div>
   </div>
 </section>

@@ -10,6 +10,7 @@ interface Props {
 const { locale } = Astro.props;
 const ui = t(locale);
 const year = new Date().getFullYear();
+const analyticsEnabled = import.meta.env.PROD && Boolean(import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN?.trim());
 ---
 
 <footer class="relative z-[1] border-t border-[var(--color-border)] mt-auto">
@@ -35,6 +36,14 @@ const year = new Date().getFullYear();
         RSS
       </a>
     </div>
-    <p>© {year} {profile.name} · {ui.footer.builtWith}</p>
+    <p class="text-center sm:text-right">
+      © {year} {profile.name} · {ui.footer.builtWith}
+      {analyticsEnabled && (
+        <>
+          <span class="mx-1" aria-hidden="true">·</span>
+          <span class="text-xs">{ui.footer.analyticsNote}</span>
+        </>
+      )}
+    </p>
   </div>
 </footer>

@@ -144,3 +144,60 @@ export async function shouldShowGithubActivity(): Promise<boolean> {
   if (count === null) return false;
   return count >= githubActivity.minCommits;
 }
+
+export function parseGithubRepo(url: string): string | null {
+  try {
+    const { hostname, pathname } = new URL(url);
+    if (!hostname.includes('github.com')) return null;
+    const parts = pathname.replace(/^\/+|\/+$/g, '').split('/');
+    if (parts.length < 2) return null;
+    return `${parts[0]}/${parts[1]}`;
+  } catch {
+    return null;
+  }
+}
+
+function githubHeaders(): HeadersInit {
+  const token = import.meta.env.GITHUB_TOKEN ?? process.env.GITHUB_TOKEN;
+  return {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'Cx330xu-github-io',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+let starsCache: Promise<Map<string, number>> | null = null;
+
+async function fetchRepoStar(repo: string): Promise<number | null> {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}`, {
+      headers: githubHeaders(),
+    });
+    if (!res.ok) return null;
+    const json = (await res.json()) as { stargazers_count?: number };
+    return typeof json.stargazers_count === 'number' ? json.stargazers_count : null;
+  } catch {
+    return null;
+  }
+}
+
+/** 构建时批量拉取 GitHub Star，key 为 project.data.github 原始 URL */
+export async function fetchRepoStarsMap(githubUrls: string[]): Promise<Map<string, number>> {
+  const map = new Map<string, number>();
+  const repos = [...new Set(githubUrls.map(parseGithubRepo).filter(Boolean) as string[])];
+  await Promise.all(
+    repos.map(async (repo) => {
+      const stars = await fetchRepoStar(repo);
+      if (stars === null) return;
+      for (const url of githubUrls) {
+        if (parseGithubRepo(url) === repo) map.set(url, stars);
+      }
+    }),
+  );
+  return map;
+}
+
+export async function getRepoStarsMap(githubUrls: string[]): Promise<Map<string, number>> {
+  starsCache ??= fetchRepoStarsMap(githubUrls);
+  return starsCache;
+}

@@ -1,0 +1,31 @@
+---
+import { t, type Locale } from '../i18n/ui';
+
+interface Props {
+  locale: Locale;
+  projectCount: number;
+  postCount: number;
+  noteCount: number;
+}
+
+const { locale, projectCount, postCount, noteCount } = Astro.props;
+const ui = t(locale);
+---
+
+<div class="lg:hidden mt-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)]/90 p-4">
+  <p class="text-xs font-medium text-[var(--color-muted)] uppercase tracking-wide mb-3">{ui.home.snapshotTitle}</p>
+  <dl class="grid grid-cols-3 gap-3 text-center">
+    <div>
+      <dd class="text-lg font-bold text-[var(--color-primary)]">{projectCount}</dd>
+      <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.projects}</dt>
+    </div>
+    <div>
+      <dd class="text-lg font-bold text-[var(--color-primary)]">{postCount}</dd>
+      <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.blog}</dt>
+    </div>
+    <div>
+      <dd class="text-lg font-bold text-[var(--color-primary)]">{noteCount}</dd>
+      <dt class="text-xs text-[var(--color-muted)] mt-0.5">{ui.nav.notes}</dt>
+    </div>
+  </dl>
+</div>
