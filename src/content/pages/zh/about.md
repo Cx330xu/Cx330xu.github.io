@@ -35,6 +35,7 @@ description: 关于 Cx330xu 与这个站点
 ## 联系方式
 
 - GitHub：[github.com/Cx330xu](https://github.com/Cx330xu)
+- Gitee：[gitee.com/cx330xu_youyaxiansheng](https://gitee.com/cx330xu_youyaxiansheng)
 - 邮箱：cx330xu@qq.com（首页点击即可复制）
 - CSDN：[blog.csdn.net/Xu_youyaxianshen](https://blog.csdn.net/Xu_youyaxianshen?type=blog)
 

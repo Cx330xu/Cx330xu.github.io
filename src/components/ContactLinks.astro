@@ -29,5 +29,14 @@ const { locale } = Astro.props;
     CSDN
   </a>
   <span class="text-[var(--color-border)] hidden sm:inline" aria-hidden="true">·</span>
+  <a
+    href={profile.gitee}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="text-[var(--color-primary)] font-medium hover:underline"
+  >
+    Gitee
+  </a>
+  <span class="text-[var(--color-border)] hidden sm:inline" aria-hidden="true">·</span>
   <EmailLink locale={locale} variant="inline" />
 </div>

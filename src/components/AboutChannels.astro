@@ -35,6 +35,15 @@ const archivePath = `/${locale}/blog/csdn-archive/`;
         {ui.about.csdnPosts.replace('{count}', String(csdn.postCount))}
       </p>
     </a>
+    <a
+      href={profile.gitee}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 card-hover transition-colors hover:border-[var(--color-primary)]"
+    >
+      <p class="font-medium mb-1">Gitee</p>
+      <p class="text-sm text-[var(--color-muted)]">gitee.com/cx330xu_youyaxiansheng</p>
+    </a>
     <EmailLink locale={locale} variant="card" />
   </div>
   <div class="mt-4 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/80 px-4 py-3 text-sm text-[var(--color-muted)] leading-relaxed">
