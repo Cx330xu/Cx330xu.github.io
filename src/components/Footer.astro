@@ -17,6 +17,9 @@ const analyticsEnabled = import.meta.env.PROD && Boolean(import.meta.env.PUBLIC_
 
 <footer class="relative z-[1] border-t border-[var(--color-border)] mt-auto">
   <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+    <div class="mb-6 pb-6 border-b border-[var(--color-border)] max-w-md">
+      <Newsletter locale={locale} />
+    </div>
     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[var(--color-muted)]">
     <div class="flex flex-wrap items-center justify-center gap-4">
       <a href={profile.github} target="_blank" rel="noopener noreferrer" class="hover:text-[var(--color-primary)] transition-colors">
@@ -52,9 +55,6 @@ const analyticsEnabled = import.meta.env.PROD && Boolean(import.meta.env.PUBLIC_
         </>
       )}
     </p>
-    </div>
-    <div class="mt-6 pt-6 border-t border-[var(--color-border)] max-w-md">
-      <Newsletter locale={locale} />
     </div>
   </div>
 </footer>

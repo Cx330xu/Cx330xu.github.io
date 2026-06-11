@@ -2,6 +2,7 @@
 import { csdn, profile } from '../data/site';
 import type { Locale } from '../i18n/ui';
 import EmailLink from './EmailLink.astro';
+import ResumeDownload from './ResumeDownload.astro';
 
 interface Props {
   locale: Locale;
@@ -39,4 +40,6 @@ const { locale } = Astro.props;
   </a>
   <span class="text-[var(--color-border)] hidden sm:inline" aria-hidden="true">·</span>
   <EmailLink locale={locale} variant="inline" />
+  <span class="text-[var(--color-border)] hidden sm:inline" aria-hidden="true">·</span>
+  <ResumeDownload locale={locale} variant="inline" />
 </div>

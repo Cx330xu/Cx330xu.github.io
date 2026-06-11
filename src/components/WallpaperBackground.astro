@@ -1,40 +1,43 @@
+---
+// Fetch Bing daily wallpaper URL at build time (no CORS in Node.js).
+// The URL is embedded in the static HTML so the client script never
+// needs to call the Bing API from the browser.
+let bingWallpaperUrl: string | null = null;
+try {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  const res = await fetch(
+    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN',
+    { signal: controller.signal },
+  );
+  clearTimeout(timeout);
+  if (res.ok) {
+    const data: any = await res.json();
+    const path: string | undefined = data.images?.[0]?.url;
+    if (path) bingWallpaperUrl = 'https://www.bing.com' + path;
+  }
+} catch {
+  // Silently keep null — wallpaper will be unavailable
+}
+---
+
+{/* Hidden element carries the pre-fetched wallpaper URL to the client script */}
+<span id="bing-wallpaper-data" data-url={bingWallpaperUrl ?? ''} aria-hidden="true" hidden></span>
+
 <script>
-  // Bing daily wallpaper — applied as body background when "gallery" mode is on.
-  // Works with WallpaperToggle via localStorage + custom event.
-  const BING_API = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN';
+  // Read the pre-fetched URL (baked at build time, no CORS needed).
+  const PREBUILT_URL =
+    document.getElementById('bing-wallpaper-data')?.dataset.url || null;
+
   const STORAGE_KEY = 'wallpaper-mode';
   const CACHE_KEY = 'bing-wallpaper-url';
   const CACHE_DATE = 'bing-wallpaper-date';
 
   let currentUrl: string | null = null;
 
-  async function fetchBingWallpaper(): Promise<string | null> {
-    // check cache (same day)
-    const today = new Date().toISOString().slice(0, 10);
-    const cachedDate = localStorage.getItem(CACHE_DATE);
-    const cachedUrl = localStorage.getItem(CACHE_KEY);
-    if (cachedDate === today && cachedUrl) {
-      return cachedUrl;
-    }
-
-    try {
-      const res = await fetch(BING_API);
-      if (!res.ok) return cachedUrl ?? null;
-      const data = await res.json();
-      const url = 'https://www.bing.com' + (data.images?.[0]?.url ?? '');
-      if (!url || url === 'https://www.bing.com') return cachedUrl ?? null;
-      localStorage.setItem(CACHE_KEY, url);
-      localStorage.setItem(CACHE_DATE, today);
-      return url;
-    } catch {
-      return cachedUrl ?? null;
-    }
-  }
-
   function applyWallpaper(url: string | null) {
     if (url) {
       currentUrl = url;
-      // Preload image, then apply
       const img = new Image();
       img.onload = () => {
         if (currentUrl !== url) return; // stale
@@ -42,7 +45,7 @@
         document.body.classList.add('wallpaper-active');
       };
       img.src = url;
-      // also apply immediately as the image loads in background
+      // apply immediately while image loads
       document.body.style.setProperty('--wallpaper-bg', `url(${url})`);
       document.body.classList.add('wallpaper-active');
     } else {
@@ -58,22 +61,41 @@
     document.body.classList.remove('wallpaper-active');
   }
 
+  function getWallpaperUrl(): string | null {
+    // 1) Prebuilt URL from build time (always fresh after deploy).
+    if (PREBUILT_URL) return PREBUILT_URL;
+    // 2) Fallback: same-day localStorage cache (survives view transitions).
+    const today = new Date().toISOString().slice(0, 10);
+    const cachedDate = localStorage.getItem(CACHE_DATE);
+    const cachedUrl = localStorage.getItem(CACHE_KEY);
+    if (cachedDate === today && cachedUrl) return cachedUrl;
+    return null;
+  }
+
   async function setMode(active: boolean) {
     if (active) {
-      const url = await fetchBingWallpaper();
+      const url = getWallpaperUrl();
       applyWallpaper(url);
     } else {
       removeWallpaper();
     }
   }
 
-  // init
+  // Persist prebuilt URL to cache so it survives view transitions
+  // even if the hidden <span> is no longer in the DOM.
+  if (PREBUILT_URL) {
+    const today = new Date().toISOString().slice(0, 10);
+    localStorage.setItem(CACHE_KEY, PREBUILT_URL);
+    localStorage.setItem(CACHE_DATE, today);
+  }
+
+  // Init
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === 'gallery') {
     setMode(true);
   }
 
-  // listen for toggle changes
+  // Listen for toggle events from WallpaperToggle
   window.addEventListener('wallpaper-change', (e: Event) => {
     const { active } = (e as CustomEvent).detail;
     setMode(active);

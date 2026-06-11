@@ -3,15 +3,15 @@ import type { Locale } from '../i18n/ui';
 
 interface Props {
   locale: Locale;
-  /** compact: icon-only for HeroAside; full: label + switch for mobile */
+  /** compact: icon + label for HeroAside; full: label + switch for mobile */
   variant?: 'compact' | 'full';
 }
 
 const { locale, variant = 'compact' } = Astro.props;
 
 const labels = locale === 'zh'
-  ? { clean: '简洁', gallery: '映像', hint: '切换壁纸模式' }
-  : { clean: 'Clean', gallery: 'Gallery', hint: 'Toggle wallpaper mode' };
+  ? { clean: '壁纸', gallery: '映像', hint: '切换壁纸模式' }
+  : { clean: 'Wallpaper', gallery: 'Gallery', hint: 'Toggle wallpaper mode' };
 ---
 
 <button
@@ -25,9 +25,12 @@ const labels = locale === 'zh'
 >
   {
     variant === 'compact' ? (
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-      </svg>
+      <>
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <span class="wallpaper-mode-label">{labels.clean}</span>
+      </>
     ) : (
       <>
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -51,13 +54,12 @@ const labels = locale === 'zh'
       const labelGallery = btn.dataset.labelGallery ?? 'Gallery';
 
       function updateUI(active: boolean) {
+        const label = btn.querySelector('.wallpaper-mode-label');
+        if (label) label.textContent = active ? labelGallery : labelClean;
         if (variant === 'full') {
-          const label = btn.querySelector('.wallpaper-mode-label');
           const dot = btn.querySelector('.wallpaper-switch-dot') as HTMLElement;
-          if (label) label.textContent = active ? labelGallery : labelClean;
           if (dot) dot.style.transform = active ? 'translateX(8px)' : 'translateX(0)';
         }
-        // compact variant: just toggle a class on the button itself
         btn.classList.toggle('text-[var(--color-primary)]', active);
       }
 
