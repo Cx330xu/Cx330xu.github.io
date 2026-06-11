@@ -11,6 +11,7 @@ import SearchShortcut from '../components/SearchShortcut.astro';
 import ReadingProgress from '../components/ReadingProgress.astro';
 import BackToTop from '../components/BackToTop.astro';
 import Analytics from '../components/Analytics.astro';
+import WallpaperBackground from '../components/WallpaperBackground.astro';
 import { t, type Locale } from '../i18n/ui';
 import { getPagefindLanguage } from '../utils/content';
 
@@ -58,6 +59,7 @@ const pagefindMeta = pagefindTypeLabel ? `type:${pagefindTypeLabel}` : undefined
     </script>
   </head>
   <body class="min-h-screen flex flex-col antialiased relative">
+    <WallpaperBackground />
     <!-- Skip to content (accessibility) -->
     <a
       href="#main-content"

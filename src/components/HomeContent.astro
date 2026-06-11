@@ -19,7 +19,6 @@ import NoteItem from './NoteItem.astro';
 import TagCloud from './TagCloud.astro';
 import EmailLink from './EmailLink.astro';
 import FadeIn from './FadeIn.astro';
-import WallpaperBackground from './WallpaperBackground.astro';
 import WallpaperToggle from './WallpaperToggle.astro';
 
 interface Props {
@@ -59,8 +58,6 @@ const featuredGridClass =
 const csdnArchivePath = `/${locale}/blog/csdn-archive/`;
 const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
 ---
-
-<WallpaperBackground />
 
 <section class="mb-16">
   <div class="grid lg:grid-cols-[minmax(0,1fr)_280px] gap-8 items-start">
