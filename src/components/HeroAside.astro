@@ -3,6 +3,7 @@ import { csdn, profile } from '../data/site';
 import { t, type Locale } from '../i18n/ui';
 import { getSlugFromId } from '../utils/content';
 import type { CollectionEntry } from 'astro:content';
+import WallpaperToggle from './WallpaperToggle.astro';
 
 interface Props {
   locale: Locale;
@@ -71,6 +72,8 @@ const latestSlug = latestPost ? getSlugFromId(latestPost.id) : null;
       <a href={profile.gitee} target="_blank" rel="noopener noreferrer" class="block text-[var(--color-muted)] hover:text-[var(--color-primary)] transition-colors">
         Gitee
       </a>
+      <hr class="border-[var(--color-border)]" />
+      <WallpaperToggle locale={locale} variant="compact" />
     </div>
   </div>
 </aside>

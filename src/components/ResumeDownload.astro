@@ -10,38 +10,198 @@ interface Props {
 const { locale, variant = 'button' } = Astro.props;
 
 const label = locale === 'zh' ? '索取简历' : 'Request Resume';
-const desc = locale === 'zh'
-  ? '为保护隐私，简历不公开下载。请通过邮件联系，我会根据岗位定向发送。'
-  : 'For privacy, resume is not publicly downloadable. Email me and I\'ll share a tailored version.';
-
 const subject = locale === 'zh' ? '[简历请求]' : '[Resume Request]';
-const href = `mailto:${profile.email}?subject=${encodeURIComponent(subject)} ${profile.name}`;
-
+const mailto = `mailto:${profile.email}?subject=${encodeURIComponent(subject)} ${profile.name}`;
 const isButton = variant === 'button';
+
+const POSITIVE: Record<string, string[]> = {
+  zh: [
+    '每一份简历都是一段故事的开始 📖',
+    '好的机会值得等待，就像好的代码需要打磨 ✨',
+    '你的好奇心是最大的竞争力 🚀',
+    '主动联系，就是最好的第一步 💪',
+    '技术人的真诚，是最好的简历 🌟',
+    '代码会说话，项目会发光 💻',
+    '机会总是留给有准备的人 🎯',
+    '每一次点击，都是一次可能的连接 🤝',
+    '保持好奇心，保持学习力 📚',
+    '优秀的团队，正在寻找优秀的你 🔍',
+    '简历只是一张纸，能力才是硬通货 ⚡',
+    '不着急，先看看我的项目吧 😊',
+    '技术之路，每一步都算数 👣',
+    '最好的投资是投资自己 💎',
+    '代码之外，还有沟通和信任 📬',
+  ],
+  en: [
+    'Every resume tells the start of a story 📖',
+    'Good things come to those who build ✨',
+    'Curiosity is your greatest advantage 🚀',
+    'Reaching out is the best first step 💪',
+    'Authenticity beats formatting, every time 🌟',
+    'Code speaks louder than bullet points 💻',
+    'Opportunity favors the prepared mind 🎯',
+    'Every click could be a connection 🤝',
+    'Stay curious, keep building 📚',
+    'Great teams are looking for people like you 🔍',
+    'A resume is just paper — skills are real ⚡',
+    'Browse my projects first — they tell more 😊',
+    'Every step on the tech path counts 👣',
+    'The best investment is in yourself 💎',
+    'Beyond code: communication and trust 📬',
+  ],
+};
+
+const ENDING: Record<string, string[]> = {
+  zh: [
+    '还在点呀？你也太执着了吧 😄',
+    '看来你对这份简历是认真的',
+    '别急别急，让我再想想还有什么词...',
+    '你已经点了好多次了，佩服佩服',
+    '这份好奇心值得一个大大的赞 👍',
+    '好啦好啦，真相就是：发邮件最快 →',
+    '哇，没想到你还在点击... 😂',
+    '继续点，说不定有彩蛋呢？',
+    '你的耐心已经让我印象深刻了',
+    '其实...直接发邮件会更快哦 ✉️',
+    '你是不是在想"这人到底写了多少条"',
+    '手指酸了吗？歇会儿再点 😆',
+    '每一次点击，都感谢你的好奇 ❤️',
+  ],
+  en: [
+    'Still clicking? You are persistent 😄',
+    'You must really want to see that resume',
+    'Hang on, let me think of more messages...',
+    "That is a lot of clicks — I am impressed",
+    'Your curiosity deserves a big thumbs up 👍',
+    'Alright, the truth is: just email me →',
+    'Wow, you are still going... 😂',
+    'Keep clicking, maybe there is an easter egg?',
+    'Your patience is genuinely impressive',
+    'Honestly... emailing is faster at this point ✉️',
+    'Wondering how many messages I wrote?',
+    'Fingers tired yet? Take a break 😆',
+    'Every click — still grateful for your curiosity ❤️',
+  ],
+};
+
+const positive = POSITIVE[locale] ?? POSITIVE.en;
+const ending = ENDING[locale] ?? ENDING.en;
 ---
 
 {
   isButton ? (
-    <a
-      href={href}
-      class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors"
-      title={desc}
+    <button
+      type="button"
+      class="resume-btn inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg border border-[var(--color-border)] text-sm font-medium hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] transition-colors cursor-pointer"
+      data-mailto={mailto}
+      data-positive={JSON.stringify(positive)}
+      data-ending={JSON.stringify(ending)}
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
       {label}
-    </a>
+    </button>
   ) : (
-    <a
-      href={href}
-      class="text-[var(--color-primary)] hover:underline inline-flex items-center gap-1 text-sm"
-      title={desc}
+    <button
+      type="button"
+      class="resume-btn text-[var(--color-primary)] hover:underline inline-flex items-center gap-1 text-sm cursor-pointer bg-transparent border-0 p-0"
+      data-mailto={mailto}
+      data-positive={JSON.stringify(positive)}
+      data-ending={JSON.stringify(ending)}
     >
       <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
       {label}
-    </a>
+    </button>
   )
 }
+
+<div id="resume-toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex flex-col-reverse gap-2 pointer-events-none" aria-live="polite"></div>
+
+<style>
+  .resume-toast {
+    pointer-events: auto;
+    animation: rt-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  }
+  :global(.dark) .resume-toast {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
+  }
+  .resume-toast.removing {
+    animation: rt-out 0.3s ease-in forwards;
+  }
+  @keyframes rt-in {
+    from { opacity: 0; transform: translateY(16px) scale(0.94); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes rt-out {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to   { opacity: 0; transform: translateY(-10px) scale(0.94); }
+  }
+</style>
+
+<script>
+  (function initResume() {
+    const btns = document.querySelectorAll('.resume-btn[data-resume-bound]');
+    if (btns.length) return; // already bound via astro:after-swap guard
+    document.querySelectorAll('.resume-btn:not([data-resume-bound])').forEach((btn) => {
+      btn.dataset.resumeBound = 'true';
+      const mailto = btn.dataset.mailto ?? '';
+      let clickCount = 0;
+      let positive: string[] = [];
+      let ending: string[] = [];
+      try { positive = JSON.parse(btn.dataset.positive ?? '[]'); } catch {}
+      try { ending = JSON.parse(btn.dataset.ending ?? '[]'); } catch {}
+      const maxPositive = positive.length;
+      const container = document.getElementById('resume-toast-container');
+
+      btn.addEventListener('click', () => {
+        clickCount++;
+        let msg: string;
+
+        if (clickCount <= maxPositive) {
+          msg = positive[clickCount - 1];
+        } else {
+          // random ending, but avoid repeating the last one
+          let idx = Math.floor(Math.random() * ending.length);
+          if (ending.length > 1 && ending[idx] === btn.dataset.lastEnding) {
+            idx = (idx + 1) % ending.length;
+          }
+          btn.dataset.lastEnding = ending[idx];
+          msg = ending[idx];
+        }
+
+        const toast = document.createElement('div');
+        toast.className = 'resume-toast px-4 py-2.5 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] text-sm text-[var(--color-text)] max-w-sm text-center leading-relaxed';
+        toast.textContent = msg;
+        if (container) container.appendChild(toast);
+
+        // keep max 5 visible
+        if (container) {
+          const all = container.querySelectorAll('.resume-toast');
+          for (let i = 0; i < all.length - 5; i++) {
+            const old = all[i];
+            old.classList.add('removing');
+            old.addEventListener('animationend', () => old.remove());
+          }
+        }
+
+        const timer = setTimeout(() => {
+          if (toast.parentNode) {
+            toast.classList.add('removing');
+            toast.addEventListener('animationend', () => toast.remove());
+          }
+        }, 3000);
+        toast.dataset._timer = String(timer);
+
+        // on first click after positive pool exhausted, also open mailto
+        if (clickCount === maxPositive + 1 && mailto) {
+          setTimeout(() => { window.location.href = mailto; }, 800);
+        }
+      });
+    });
+  })();
+  document.addEventListener('astro:after-swap', initResume);
+</script>
