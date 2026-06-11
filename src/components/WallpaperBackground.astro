@@ -1,36 +1,29 @@
 ---
 // Build-time: fetch 8 Bing wallpapers as fallback (no CORS in Node.js).
-interface BingImage {
-  url: string;
-  copyright?: string;
-}
+interface BingImage { url: string; copyright?: string; }
 let prebuiltWallpapers: BingImage[] = [];
 try {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 8000);
-  const res = await fetch(
-    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN',
-    { signal: controller.signal },
-  );
-  clearTimeout(timeout);
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 8000);
+  const res = await fetch('https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN', { signal: ctl.signal });
+  clearTimeout(t);
   if (res.ok) {
     const data: any = await res.json();
-    prebuiltWallpapers = (data.images ?? []).map((img: any) => ({
-      url: 'https://www.bing.com' + (img.url ?? ''),
-      copyright: img.copyright ?? '',
-    }));
+    prebuiltWallpapers = (data.images ?? []).map((img: any) => ({ url: 'https://www.bing.com' + (img.url ?? ''), copyright: img.copyright ?? '' }));
   }
-} catch { /* keep empty — runtime fetch will try */ }
+} catch { /* keep empty */ }
 const prebuiltJson = JSON.stringify(prebuiltWallpapers);
 ---
 
 <span id="bing-wallpaper-data" data-prebuilt={prebuiltJson} aria-hidden="true" hidden></span>
 
 <script>
-  // ── Runtime wallpaper loader with CORS proxy fallback ──
-  const BING_API =
-    'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN';
-  const CORS_PROXY = 'https://corsproxy.io/?';
+  const BING_API = 'https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=8&mkt=zh-CN';
+  // Multiple CORS proxies to try (ordered by reliability)
+  const CORS_PROXIES = [
+    'https://corsproxy.io/?',
+    'https://api.allorigins.win/raw?url=',
+  ];
 
   const dataEl = document.getElementById('bing-wallpaper-data');
   const PREBUILT: { url: string; copyright?: string }[] = (() => {
@@ -38,173 +31,103 @@ const prebuiltJson = JSON.stringify(prebuiltWallpapers);
   })();
 
   const STORAGE_KEY = 'wallpaper-mode';
-  const INDEX_KEY = 'wallpaper-index';
-  const CACHE_KEY = 'bing-wallpapers';
+  const INDEX_KEY  = 'wallpaper-index';
+  const CACHE_KEY  = 'bing-wallpapers';
   const CACHE_DATE = 'bing-wallpaper-date';
 
   let currentUrl: string | null = null;
 
-  // ── helpers ──
   function todayStr() { return new Date().toISOString().slice(0, 10); }
-
-  function loadCachedWallpapers(): { url: string; copyright?: string }[] | null {
-    const date = localStorage.getItem(CACHE_DATE);
-    if (date !== todayStr()) return null;
-    try {
-      const raw = localStorage.getItem(CACHE_KEY);
-      return raw ? JSON.parse(raw) : null;
-    } catch { return null; }
+  function loadCache(): { url: string; copyright?: string }[] | null {
+    if (localStorage.getItem(CACHE_DATE) !== todayStr()) return null;
+    try { const r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
   }
-
-  function saveCachedWallpapers(list: { url: string; copyright?: string }[]) {
+  function saveCache(list: { url: string; copyright?: string }[]) {
     localStorage.setItem(CACHE_KEY, JSON.stringify(list));
     localStorage.setItem(CACHE_DATE, todayStr());
   }
-
-  function getActiveIndex(): number {
-    const stored = localStorage.getItem(INDEX_KEY);
-    const idx = stored ? parseInt(stored, 10) : 0;
-    const list = loadCachedWallpapers() ?? PREBUILT;
-    return Number.isFinite(idx) && idx >= 0 && idx < list.length ? idx : 0;
+  function getIdx(): number {
+    const s = localStorage.getItem(INDEX_KEY); const i = s ? parseInt(s, 10) : 0;
+    const list = loadCache() ?? PREBUILT;
+    return Number.isFinite(i) && i >= 0 && i < list.length ? i : 0;
   }
+  function setIdx(i: number) { localStorage.setItem(INDEX_KEY, String(i)); }
+  function activeList() { return loadCache() ?? PREBUILT; }
+  function getUrl(): string | null { const l = activeList(); if (!l.length) return null; const i = getIdx(); return l[i]?.url ?? l[0]?.url ?? null; }
 
-  function setActiveIndex(idx: number) { localStorage.setItem(INDEX_KEY, String(idx)); }
-
-  function activeList(): { url: string; copyright?: string }[] {
-    return loadCachedWallpapers() ?? PREBUILT;
-  }
-
-  function getWallpaperUrl(): string | null {
-    const list = activeList();
-    if (list.length === 0) return null;
-    const idx = getActiveIndex();
-    return list[idx]?.url ?? list[0]?.url ?? null;
-  }
-
-  // ── apply / remove ──
-  function applyWallpaper(url: string | null) {
+  function apply(url: string | null) {
     if (url) {
       currentUrl = url;
       const img = new Image();
-      img.onload = () => {
-        if (currentUrl !== url) return;
-        document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(url)})`);
-        document.body.classList.add('wallpaper-active');
-      };
+      img.onload = () => { if (currentUrl === url) { document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(url)})`); document.body.classList.add('wallpaper-active'); } };
       img.src = url;
       document.body.style.setProperty('--wallpaper-bg', `url(${encodeURI(url)})`);
       document.body.classList.add('wallpaper-active');
-    } else {
-      currentUrl = null;
-      document.body.style.removeProperty('--wallpaper-bg');
-      document.body.classList.remove('wallpaper-active');
+    } else { currentUrl = null; document.body.style.removeProperty('--wallpaper-bg'); document.body.classList.remove('wallpaper-active'); }
+  }
+  function remove() { currentUrl = null; document.body.style.removeProperty('--wallpaper-bg'); document.body.classList.remove('wallpaper-active'); }
+
+  // ── runtime fetch ──
+  async function fetchFresh(): Promise<{ url: string; copyright?: string }[] | null> {
+    for (const proxy of [null, ...CORS_PROXIES]) {
+      try {
+        const ctl = new AbortController();
+        const t = setTimeout(() => ctl.abort(), proxy ? 8000 : 6000);
+        const url = proxy ? proxy + encodeURIComponent(BING_API) : BING_API;
+        const res = await fetch(url, { signal: ctl.signal });
+        clearTimeout(t);
+        if (res.ok) {
+          const data = await res.json();
+          const imgs = (data.images ?? []) as any[];
+          if (imgs.length) return imgs.map((img: any) => ({ url: 'https://www.bing.com' + (img.url ?? ''), copyright: img.copyright ?? '' }));
+        }
+      } catch { /* try next */ }
     }
-  }
-
-  function removeWallpaper() {
-    currentUrl = null;
-    document.body.style.removeProperty('--wallpaper-bg');
-    document.body.classList.remove('wallpaper-active');
-  }
-
-  // ── runtime fetch (called on page load if no today-cache) ──
-  async function fetchFreshWallpapers(): Promise<{ url: string; copyright?: string }[] | null> {
-    // 1) Try direct fetch
-    try {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 6000);
-      const res = await fetch(BING_API, { signal: controller.signal });
-      clearTimeout(t);
-      if (res.ok) {
-        const data = await res.json();
-        const images = data.images ?? [];
-        return images.map((img: any) => ({
-          url: 'https://www.bing.com' + (img.url ?? ''),
-          copyright: img.copyright ?? '',
-        }));
-      }
-    } catch { /* CORS or network error — try proxy */ }
-
-    // 2) Try CORS proxy
-    try {
-      const controller = new AbortController();
-      const t = setTimeout(() => controller.abort(), 8000);
-      const proxyUrl = CORS_PROXY + encodeURIComponent(BING_API);
-      const res = await fetch(proxyUrl, { signal: controller.signal });
-      clearTimeout(t);
-      if (res.ok) {
-        const data = await res.json();
-        const images = data.images ?? [];
-        return images.map((img: any) => ({
-          url: 'https://www.bing.com' + (img.url ?? ''),
-          copyright: img.copyright ?? '',
-        }));
-      }
-    } catch { /* proxy also failed */ }
-
     return null;
   }
 
-  // ── public API ──
-  async function refreshWallpapers(): Promise<boolean> {
-    const fresh = await fetchFreshWallpapers();
-    if (fresh && fresh.length > 0) {
-      saveCachedWallpapers(fresh);
-      setActiveIndex(0);
-      applyWallpaper(fresh[0].url);
-      window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } }));
-      return true;
+  // ── public ──
+  async function refresh(): Promise<boolean> {
+    // Show spinner on all refresh buttons
+    document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.add('animate-spin'));
+    try {
+      const fresh = await fetchFresh();
+      if (fresh && fresh.length) { saveCache(fresh); setIdx(0); apply(fresh[0].url); window.dispatchEvent(new CustomEvent('wallpaper-refreshed', { detail: { count: fresh.length } })); return true; }
+      // Fallback: cycle to next prebuilt
+      const ok = cycle();
+      if (ok) window.dispatchEvent(new CustomEvent('wallpaper-refresh-fallback', { detail: {} }));
+      return ok;
+    } finally {
+      document.querySelectorAll('.wallpaper-refresh-btn').forEach(b => b.classList.remove('animate-spin'));
     }
-    return false;
   }
 
-  function cycleWallpaper(): boolean {
-    const list = activeList();
-    if (list.length <= 1) return false;
-    const nextIdx = (getActiveIndex() + 1) % list.length;
-    setActiveIndex(nextIdx);
-    const url = list[nextIdx]?.url ?? null;
-    if (url) applyWallpaper(url);
-    window.dispatchEvent(new CustomEvent('wallpaper-cycled', { detail: { index: nextIdx, url, total: list.length } }));
+  function cycle(): boolean {
+    const list = activeList(); if (list.length <= 1) return false;
+    const next = (getIdx() + 1) % list.length; setIdx(next);
+    const url = list[next]?.url ?? null; if (url) apply(url);
+    window.dispatchEvent(new CustomEvent('wallpaper-cycled', { detail: { index: next, url, total: list.length } }));
     return true;
   }
 
-  (window as any).__wallpaperCycle = cycleWallpaper;
-  (window as any).__wallpaperRefresh = refreshWallpapers;
-  (window as any).__wallpaperCount = () => activeList().length;
+  (window as any).__wallpaperCycle   = cycle;
+  (window as any).__wallpaperRefresh = refresh;
+  (window as any).__wallpaperCount   = () => activeList().length;
 
   // ── init ──
   async function init() {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === null) localStorage.setItem(STORAGE_KEY, 'gallery');
     if ((stored ?? 'gallery') !== 'gallery') return;
-
-    // Try runtime fetch for fresh wallpapers
-    const cached = loadCachedWallpapers();
-    if (!cached) {
-      const fresh = await fetchFreshWallpapers();
-      if (fresh && fresh.length > 0) {
-        saveCachedWallpapers(fresh);
-      }
-    }
-
-    const url = getWallpaperUrl();
-    applyWallpaper(url);
+    if (!loadCache()) { const fresh = await fetchFresh(); if (fresh && fresh.length) saveCache(fresh); }
+    apply(getUrl());
   }
-
   init();
 
-  // ── event listeners ──
   window.addEventListener('wallpaper-change', (e: Event) => {
     const { active } = (e as CustomEvent).detail;
-    if (active) {
-      const url = getWallpaperUrl();
-      applyWallpaper(url);
-    } else {
-      removeWallpaper();
-    }
+    active ? apply(getUrl()) : remove();
   });
-
-  window.addEventListener('wallpaper-cycle', () => { cycleWallpaper(); });
-  window.addEventListener('wallpaper-refresh', async () => { await refreshWallpapers(); });
+  window.addEventListener('wallpaper-cycle', () => { cycle(); });
+  window.addEventListener('wallpaper-refresh', async () => { await refresh(); });
 </script>
