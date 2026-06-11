@@ -107,6 +107,7 @@ function isHome(path: string) {
         class="md:hidden p-1.5 rounded-md text-[var(--color-muted)] hover:text-[var(--color-text)] transition-colors"
         aria-label={locale === 'zh' ? '打开菜单' : 'Open menu'}
         aria-expanded="false"
+        aria-controls="mobile-drawer"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />

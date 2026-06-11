@@ -99,10 +99,16 @@ const labels = locale === 'zh'
       }
 
       // Check wallpaper count — hide refresh if only 1
-      const count = typeof (window as any).__wallpaperCount === 'function'
-        ? (window as any).__wallpaperCount()
-        : 0;
-      if (refreshBtn && count <= 1) refreshBtn.classList.add('!hidden');
+      // Defer to RAF to avoid race with WallpaperBackground init
+      function checkCount() {
+        const count = typeof (window as any).__wallpaperCount === 'function'
+          ? (window as any).__wallpaperCount()
+          : 0;
+        if (refreshBtn && count <= 1) refreshBtn.classList.add('!hidden');
+      }
+      requestAnimationFrame(checkCount);
+      // Also recheck when wallpapers are refreshed
+      window.addEventListener('wallpaper-refreshed', checkCount);
 
       // Init state — default to gallery
       const stored = localStorage.getItem('wallpaper-mode');
@@ -121,13 +127,15 @@ const labels = locale === 'zh'
           }
           return;
         }
-        doubleClickTimer = setTimeout(() => { doubleClickTimer = null; }, 300);
-
-        // Single click: toggle
-        active = !active;
-        localStorage.setItem('wallpaper-mode', active ? 'gallery' : 'clean');
-        updateUI(active);
-        window.dispatchEvent(new CustomEvent('wallpaper-change', { detail: { active } }));
+        // Defer single-click — only fire if no second click within 300ms
+        doubleClickTimer = setTimeout(() => {
+          doubleClickTimer = null;
+          // Single click: toggle
+          active = !active;
+          localStorage.setItem('wallpaper-mode', active ? 'gallery' : 'clean');
+          updateUI(active);
+          window.dispatchEvent(new CustomEvent('wallpaper-change', { detail: { active } }));
+        }, 300);
       });
 
       // ── Refresh button: fetch fresh from Bing ──

@@ -136,6 +136,7 @@ export const ui = {
     theme: {
       light: '浅色',
       dark: '深色',
+      toggleLabel: '切换主题',
     },
     rss: 'RSS',
     comments: '评论',
@@ -285,6 +286,7 @@ export const ui = {
     theme: {
       light: 'Light',
       dark: 'Dark',
+      toggleLabel: 'Toggle theme',
     },
     rss: 'RSS',
     comments: 'Comments',

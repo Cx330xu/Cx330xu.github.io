@@ -17,7 +17,6 @@ import GithubActivity from './GithubActivity.astro';
 import PostCard from './PostCard.astro';
 import NoteItem from './NoteItem.astro';
 import TagCloud from './TagCloud.astro';
-import EmailLink from './EmailLink.astro';
 import FadeIn from './FadeIn.astro';
 import WallpaperToggle from './WallpaperToggle.astro';
 
@@ -176,7 +175,7 @@ const latestPostSlug = latestPosts[0]?.id.replace(/^(zh|en)\//, '');
         </FadeIn>
       ))}
     </div>
-    <a href={csdnArchivePath} class="inline-block mt-3 text-sm text-[var(--color-primary)] hover:underline">
+    <a href={csdnArchivePath} class="inline-block mt-5 text-sm text-[var(--color-primary)] hover:underline">
       {ui.home.csdnArchiveTeaser.replace('{count}', String(csdn.postCount))}
     </a>
   </div>
