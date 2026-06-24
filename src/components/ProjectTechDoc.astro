@@ -1,27 +1,49 @@
 ---
 interface Props {
   locale: string;
+  project?: {
+    data: {
+      techChallenges?: string;
+      techDecisions?: string;
+      techArchitecture?: string;
+    };
+  };
 }
 
-const { locale = 'zh' } = Astro.props;
+const { locale = 'zh', project } = Astro.props;
 
 const panels = [
   {
     key: 'challenges',
+    field: 'techChallenges' as const,
     title: { zh: '技术难点', en: 'Technical Challenges' },
     summary: { zh: '为什么做这个项目？解决了什么独特问题？', en: 'Why this project? What unique problem does it solve?' },
   },
   {
     key: 'decisions',
+    field: 'techDecisions' as const,
     title: { zh: '方案对比与决策', en: 'Solution Comparison & Decisions' },
     summary: { zh: '关键技术选型的权衡与理由', en: 'Trade-offs and rationale behind key technical choices' },
   },
   {
     key: 'architecture',
+    field: 'techArchitecture' as const,
     title: { zh: '架构设计', en: 'Architecture Design' },
     summary: { zh: '系统架构、数据流与核心设计模式', en: 'System architecture, data flow, and core design patterns' },
   },
 ];
+
+function hasContent(panel: typeof panels[number]): boolean {
+  const content = project?.data?.[panel.field];
+  const placeholderPatterns = [
+    '正在撰写', 'being written', '占位', 'placeholder',
+  ];
+  // No content at all → placeholder
+  if (!content || content.trim().length === 0) return false;
+  // Content exists but contains placeholder text → still treat as empty
+  const lower = content.toLowerCase();
+  return !placeholderPatterns.some(p => lower.includes(p.toLowerCase()));
+}
 ---
 
 <style>
@@ -58,7 +80,7 @@ const panels = [
     flex-shrink: 0;
   }
   .tech-doc-panel[open] summary::after {
-    content: '−';
+    content: '\2212';
     transform: rotate(180deg);
   }
   .tech-doc-panel .panel-body {
@@ -67,22 +89,35 @@ const panels = [
     line-height: 1.7;
     color: var(--color-muted);
   }
-  .tech-doc-panel .panel-body p {
+  .tech-doc-panel .panel-body :global(p) {
     margin-bottom: 0.75em;
   }
-  .tech-doc-panel .panel-body ul {
+  .tech-doc-panel .panel-body :global(ul) {
     list-style: disc;
     padding-left: 1.25rem;
     margin-bottom: 0.75em;
   }
-  .tech-doc-panel .panel-body li {
+  .tech-doc-panel .panel-body :global(li) {
     margin-bottom: 0.35em;
+  }
+  .tech-doc-panel .panel-body :global(strong) {
+    color: var(--color-text);
+    font-weight: 600;
+  }
+  .tech-doc-panel .panel-body :global(code) {
+    background: var(--color-surface-alt, rgba(128,128,128,0.15));
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.88em;
   }
   .tech-doc-summary-hint {
     font-size: 0.8rem;
     font-weight: 400;
     color: var(--color-muted);
     opacity: 0.6;
+    text-align: right;
+    flex: 1;
+    margin-left: 0.5rem;
   }
 </style>
 
@@ -92,41 +127,40 @@ const panels = [
   </h2>
 
   {
-    panels.map((panel) => (
-      <details class="tech-doc-panel group">
-        <summary>
-          <span>{panel.title[locale as keyof typeof panel.title]}</span>
-          <span class="tech-doc-summary-hint ml-2">{panel.summary[locale as keyof typeof panel.summary]}</span>
-        </summary>
-        <div class="panel-body">
-          {
-            locale === 'zh' ? (
-              <>
-                <p><em>该项目的详细{panel.title.zh}正在撰写中。以下为占位内容，展示此组件的交互形态。</em></p>
-                <p>在实际部署版本中，此处将展示：</p>
-                <ul>
-                  <li>具体的技术挑战描述与解决路径</li>
-                  <li>关键架构决策的前因后果</li>
-                  <li>系统数据流图与核心设计模式说明</li>
-                </ul>
-                <p>此结构化文档直接面向技术面试官的评估维度，展示候选人在技术深度、工程判断力和系统思维方面的能力。</p>
-              </>
+    panels.map((panel) => {
+      const filled = hasContent(panel);
+      const content = project?.data?.[panel.field] ?? '';
+      return (
+        <details class="tech-doc-panel group" open={filled}>
+          <summary>
+            <span>{panel.title[locale as keyof typeof panel.title]}</span>
+            <span class="tech-doc-summary-hint">{panel.summary[locale as keyof typeof panel.summary]}</span>
+          </summary>
+          <div class="panel-body">
+            {filled ? (
+              <Fragment set:html={content} />
             ) : (
               <>
-                <p><em>Detailed {panel.title.en.toLowerCase()} documentation for this project is being written. This is placeholder content demonstrating the component's interaction pattern.</em></p>
-                <p>When populated, this section will showcase:</p>
+                <p><em>{locale === 'zh'
+                  ? `该项目的详细${panel.title.zh}正在撰写中。以下为占位内容，展示此组件的交互形态。`
+                  : `Detailed ${panel.title.en.toLowerCase()} documentation for this project is being written. This is placeholder content demonstrating the component's interaction pattern.`
+                }</em></p>
+                <p>{locale === 'zh' ? '在实际部署版本中，此处将展示：' : 'When populated, this section will showcase:'}</p>
                 <ul>
-                  <li>Specific technical challenges and solutions</li>
-                  <li>Key architectural decisions and their rationale</li>
-                  <li>System data flow and core design patterns</li>
+                  <li>{locale === 'zh' ? '具体的技术挑战描述与解决路径' : 'Specific technical challenges and solutions'}</li>
+                  <li>{locale === 'zh' ? '关键架构决策的前因后果' : 'Key architectural decisions and their rationale'}</li>
+                  <li>{locale === 'zh' ? '系统数据流图与核心设计模式说明' : 'System data flow and core design patterns'}</li>
                 </ul>
-                <p>This structured documentation directly addresses technical interviewer evaluation dimensions.</p>
+                <p>{locale === 'zh'
+                  ? '此结构化文档直接面向技术面试官的评估维度，展示候选人在技术深度、工程判断力和系统思维方面的能力。'
+                  : 'This structured documentation directly addresses technical interviewer evaluation dimensions.'
+                }</p>
               </>
-            )
-          }
-        </div>
-      </details>
-    ))
+            )}
+          </div>
+        </details>
+      );
+    })
   }
 
   <p class="text-xs text-[var(--color-muted)]/50 mt-4">

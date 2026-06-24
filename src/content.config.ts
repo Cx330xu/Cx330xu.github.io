@@ -34,6 +34,9 @@ const projects = defineCollection({
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
     translationKey: z.string().optional(),
+    techChallenges: z.string().optional(),
+    techDecisions: z.string().optional(),
+    techArchitecture: z.string().optional(),
   }),
 });
 

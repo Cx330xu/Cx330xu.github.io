@@ -9,46 +9,84 @@ demo: https://Cx330xu.github.io/games/snake.html
 stack:
   - JavaScript
   - HTML
-  - Web
+  - Canvas
 tags:
-  - JavaScript
   - Game
   - AI
+  - JavaScript
   - Open Source
 draft: false
 translationKey: neon-snake
----
+techChallenges: |
+  **Core Challenge: Keeping AI alive on a grid with accumulating obstacles**
 
-## Situation
+  1. **Corner Food Deadlock**
+     Food lands in dead zones (surrounded by body + obstacles). AI's BFS finds a path, but the survival check says "I'll get trapped after eating" → skip → tail-chase → food stays put → infinite loop.
+     *Solved by:* Adding a "reachable space ≥ body length" weak guarantee alongside the "can reach tail" strong guarantee. Stall deaths: 50% → 3.3%.
 
-I wanted a "not-too-simple" web-based Snake game — with neon aesthetics, smooth animations, and deep mechanics (dynamic obstacles, power-ups, progressive stages). I also wanted to test how high an AI could score on a grid with accumulating obstacles.
+  2. **Unbounded Obstacle Growth**
+     One permanent obstacle per level means available space shrinks linearly. At ~90 segments, 53% of games end via obstacle collision.
+     *Solved by:* Soft cap (30 obstacles, FIFO eviction) + stage milestones that clear all obstacles.
 
-## Task
+  3. **Batch Stats Without UI Freeze**
+     Turbo mode runs 2000+ sync BFS steps per game. 200 consecutive games freezes the page.
+     *Solved by:* `await setTimeout(0)` per game to yield the main thread, plus `onProgress` callback for live updates. Turbo skips rendering, particles, DOM writes, and audio — single game: 10s → 0.3s.
 
-Build a fully-featured single-file Snake game from scratch:
+  4. **State Boundaries in Single-File Architecture**
+     Game, AI, and UI layers all live in one IIFE closure. Batch stats need logic-only execution.
+     *Solved by:* `window.__game` exposes read-only state + diagnostics API. `ai.turbo` flag controls loop branching (normal rAF+render vs sync while-loop). `muted` flag silences audio.
+techDecisions: |
+  **Key Trade-offs & Decisions**
 
-- Smooth interpolated movement (lerp between grid cells, not jumpy)
-- Multiple food types (normal + golden bonus) + 3 timed power-ups (Slow / Shrink / Double Score)
-- Dynamic obstacles that scale with level, capped at 30, plus smart food spawning to prevent dead corners
-- Stage clearance: snake length milestones clear all obstacles + award bonus points, turning "inevitable death" into "how many stages cleared"
-- AI autopilot (BFS pathfinding + survival check + longest survival path), with turbo batch statistics
+  1. **Survival Check: Single vs Dual Criterion**
+     *Option A:* BFS to tail only (strong guarantee) → always false for corner food → deadlock.
+     *Option B:* Reachable space ≥ length only (weak) → occasionally wrong but alive.
+     *Chosen:* Dual OR combination — strong first, weak as fallback. Keeps reliability while covering dead corners. **Verified:** stall 50% → 3%.
 
-## Action
+  2. **Tail Chase: Shortest vs Longest Path**
+     *Shortest:* BFS head→tail step 1, tight circles, body layout static, food safety never changes → stuck.
+     *Longest:* Flood distance map from tail, head picks furthest valid neighbor, wide loops, body layout fully evolves → food safety window opens.
+     *Chosen:* Switched to longest survival path. **Max score:** 920 → 1990 (+116%).
 
-- **Rendering**: Canvas 2D with rAF loop, interpolated snake body (manual lerp), directional eyes on the head
-- **AI Algorithm**: Five-layer fallback decision — ① BFS shortest path to food → ② Simulate body after eating → ③ Survival check (strong: reach tail; weak: reachable space ≥ body length) → ④ Longest survival path (flood from tail, pick furthest direction) → ⑤ Max reachable space as last resort
-- **Game Systems**: Dynamic obstacles (soft cap 30) + smart food (BFS reachability + flood fill fallback) + stage milestones every 50 snake length
-- **Power-ups**: 3 timed types (🐌 Slow 5s / − Shrink -3 segments / 🔥 Double Score 6s), with countdown rings and HUD indicators
-- **Batch Stats**: Turbo mode skips rendering, `setTimeout` chunking prevents UI blocking, outputs max/avg/median/cause distribution
-- **Key Decisions**:
-  - Weak survival check (reachable space) eliminated corner-food deadlocks (stall rate: 50% → 3%)
-  - Longest survival path replaces shortest tail-chase → body layout evolves fully (max score: 920 → 1990)
-  - Obstacle soft cap instead of hard removal → maintains tension while preventing grid exhaustion
+  3. **Obstacle Handling: Infinite vs Hard-Delete vs Soft Cap**
+     *Infinite:* Grid eventually fills — mathematical inevitability.
+     *Hard delete (clear all):* Late-game suddenly easy, jarring experience.
+     *Soft cap (30, FIFO replace):* Maintains tension with a ceiling.
+     *Chosen:* **Soft cap + stage clear** (every +50 segments). Alternates tension and payoff.
 
-## Result
+  4. **Power-up AI: Target vs Passively Eat**
+     *Target:* AI routes to power-ups, adds computation, needs cost-benefit analysis.
+     *Passive:* Power-ups spawn randomly, AI eats them naturally in motion, zero extra computation.
+     *Chosen:* Default "passive eat". `chaseBonus` toggle available for golden bonus targeting. Power-ups don't affect AI benchmarks.
+techArchitecture: |
+  **Single-File Three-Layer Architecture + Turbo Dual Mode**
 
-- ✅ Single 59KB file, zero dependencies — double-click to play, mobile swipe + keyboard dual control
-- ✅ AI 60-game turbo benchmark: peak ~2000, average 1100+, 2 stage milestones cleared
-- ✅ Stall deadlocks reduced from 50% to 3.3%, obstacle deaths from 53% to 33%
-- ✅ Power-up system + obstacle-free mode + stage clearance all verified end-to-end
-- 🔜 Next: Hamilton cycle hybrid strategy, AI power-up decision-making, seeded randomness for debugging
+  ```
+  ┌─────────────────────────────────────────────┐
+  │                  snake.html                  │
+  ├─────────────────┬───────────────────────────┤
+  │  Render Layer    │  rAF loop → Canvas 2D      │
+  │  (visual)        │  Body lerp / particles /   │
+  │                  │  countdown rings / HUD     │
+  ├─────────────────┼───────────────────────────┤
+  │  Game Logic      │  step() / reset() / spawn  │
+  │  (game logic)    │  Collision / food / power  │
+  │                  │  Stages / levels / double   │
+  ├─────────────────┼───────────────────────────┤
+  │  AI Decision     │  aiDecide() 5-tier cascade │
+  │  (ai core)       │  ①→②→③→④→⑤             │
+  │                  │  BFS / simulate / survive / │
+  │                  │  longest path / flood fill  │
+  ├─────────────────┴───────────────────────────┤
+  │  window.__game API                            │
+  │  Turbo: skip render → sync while → batch stats│
+  │  Visible: rAF + render → watch AI decide      │
+  └─────────────────────────────────────────────┘
+  ```
+
+  **Data Flow (per logic tick)**
+  `aiDecide()` → `applyAiDir()` → `dir` update → `step()` collision/eat/stage → `updateHUD()` → next frame
+
+  **Turbo Mode State Machine**
+  Normal: `state=playing` + `ai.turbo=false` → rAF loop advances 1 step/frame + render
+  Turbo: `batchRun()` → sets `ai.turbo=true` + `muted=true` → `runOneGame()` sync `while(state=='playing') turboStep()` → 0.3s/game → `await setTimeout(0)` yield
