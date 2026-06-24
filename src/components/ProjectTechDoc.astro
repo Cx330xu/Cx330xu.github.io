@@ -1,48 +1,32 @@
 ---
+import { projectTechDocs } from '../data/project-tech-docs';
+
 interface Props {
   locale: string;
-  project?: {
-    data: {
-      techChallenges?: string;
-      techDecisions?: string;
-      techArchitecture?: string;
-    };
-  };
+  /** Project translationKey — used to look up tech doc data */
+  slug?: string;
 }
 
-const { locale = 'zh', project } = Astro.props;
+const { locale = 'zh', slug } = Astro.props;
 
 const panels = [
-  {
-    key: 'challenges',
-    field: 'techChallenges' as const,
-    title: { zh: '技术难点', en: 'Technical Challenges' },
-    summary: { zh: '为什么做这个项目？解决了什么独特问题？', en: 'Why this project? What unique problem does it solve?' },
-  },
-  {
-    key: 'decisions',
-    field: 'techDecisions' as const,
-    title: { zh: '方案对比与决策', en: 'Solution Comparison & Decisions' },
-    summary: { zh: '关键技术选型的权衡与理由', en: 'Trade-offs and rationale behind key technical choices' },
-  },
-  {
-    key: 'architecture',
-    field: 'techArchitecture' as const,
-    title: { zh: '架构设计', en: 'Architecture Design' },
-    summary: { zh: '系统架构、数据流与核心设计模式', en: 'System architecture, data flow, and core design patterns' },
-  },
+  { key: 'techChallenges',   title: { zh: '技术难点', en: 'Technical Challenges' }, summary: { zh: '为什么做这个项目？解决了什么独特问题？', en: 'Why this project? What unique problem does it solve?' } },
+  { key: 'techDecisions',    title: { zh: '方案对比与决策', en: 'Solution Comparison & Decisions' }, summary: { zh: '关键技术选型的权衡与理由', en: 'Trade-offs and rationale behind key technical choices' } },
+  { key: 'techArchitecture', title: { zh: '架构设计', en: 'Architecture Design' }, summary: { zh: '系统架构、数据流与核心设计模式', en: 'System architecture, data flow, and core design patterns' } },
 ];
 
-function hasContent(panel: typeof panels[number]): boolean {
-  const content = project?.data?.[panel.field];
-  const placeholderPatterns = [
-    '正在撰写', 'being written', '占位', 'placeholder',
-  ];
-  // No content at all → placeholder
-  if (!content || content.trim().length === 0) return false;
-  // Content exists but contains placeholder text → still treat as empty
+function getContent(panelKey: string): string | null {
+  if (!slug) return null;
+  const projectData = (projectTechDocs as Record<string, any>)[slug];
+  if (!projectData) return null;
+  const localeData = projectData[locale];
+  if (!localeData) return null;
+  const content = localeData[panelKey];
+  if (!content || typeof content !== 'string' || content.trim().length === 0) return null;
+  // Reject placeholder strings
   const lower = content.toLowerCase();
-  return !placeholderPatterns.some(p => lower.includes(p.toLowerCase()));
+  if (['正在撰写', 'being written', '占位', 'placeholder'].some(p => lower.includes(p))) return null;
+  return content;
 }
 ---
 
@@ -66,9 +50,7 @@ function hasContent(panel: typeof panels[number]): boolean {
     color: var(--color-text);
     transition: color 0.15s;
   }
-  .tech-doc-panel summary:hover {
-    color: var(--color-primary);
-  }
+  .tech-doc-panel summary:hover { color: var(--color-primary); }
   .tech-doc-panel summary::after {
     content: '+';
     font-size: 1.2rem;
@@ -89,35 +71,15 @@ function hasContent(panel: typeof panels[number]): boolean {
     line-height: 1.7;
     color: var(--color-muted);
   }
-  .tech-doc-panel .panel-body :global(p) {
-    margin-bottom: 0.75em;
-  }
-  .tech-doc-panel .panel-body :global(ul) {
-    list-style: disc;
-    padding-left: 1.25rem;
-    margin-bottom: 0.75em;
-  }
-  .tech-doc-panel .panel-body :global(li) {
-    margin-bottom: 0.35em;
-  }
-  .tech-doc-panel .panel-body :global(strong) {
-    color: var(--color-text);
-    font-weight: 600;
-  }
-  .tech-doc-panel .panel-body :global(code) {
-    background: var(--color-surface-alt, rgba(128,128,128,0.15));
-    padding: 0.15em 0.4em;
-    border-radius: 4px;
-    font-size: 0.88em;
-  }
+  .tech-doc-panel .panel-body :global(h3) { font-size: 1rem; font-weight: 700; color: var(--color-text); margin-bottom: 0.75em; }
+  .tech-doc-panel .panel-body :global(p) { margin-bottom: 0.75em; }
+  .tech-doc-panel .panel-body :global(strong) { color: var(--color-text); font-weight: 600; }
+  .tech-doc-panel .panel-body :global(em) { color: var(--color-primary); font-style: normal; }
+  .tech-doc-panel .panel-body :global(code) { background: rgba(128,128,128,0.15); padding: 0.15em 0.4em; border-radius: 4px; font-size: 0.88em; }
+  .tech-doc-panel .panel-body :global(pre) { background: var(--color-surface-alt, rgba(0,0,0,0.3)); padding: 0.75rem 1rem; border-radius: 8px; overflow-x: auto; white-space: pre; font-family: 'Cascadia Code','Fira Code',monospace; font-size: 0.82em; line-height: 1.5; margin-bottom: 0.75em; }
   .tech-doc-summary-hint {
-    font-size: 0.8rem;
-    font-weight: 400;
-    color: var(--color-muted);
-    opacity: 0.6;
-    text-align: right;
-    flex: 1;
-    margin-left: 0.5rem;
+    font-size: 0.8rem; font-weight: 400; color: var(--color-muted); opacity: 0.6;
+    text-align: right; flex: 1; margin-left: 0.5rem;
   }
 </style>
 
@@ -125,47 +87,34 @@ function hasContent(panel: typeof panels[number]): boolean {
   <h2 class="text-lg font-semibold mb-3">
     {locale === 'zh' ? '技术文档' : 'Technical Documentation'}
   </h2>
-
-  {
-    panels.map((panel) => {
-      const filled = hasContent(panel);
-      const content = project?.data?.[panel.field] ?? '';
-      return (
-        <details class="tech-doc-panel group" open={filled}>
-          <summary>
-            <span>{panel.title[locale as keyof typeof panel.title]}</span>
-            <span class="tech-doc-summary-hint">{panel.summary[locale as keyof typeof panel.summary]}</span>
-          </summary>
-          <div class="panel-body">
-            {filled ? (
-              <Fragment set:html={content} />
-            ) : (
-              <>
-                <p><em>{locale === 'zh'
-                  ? `该项目的详细${panel.title.zh}正在撰写中。以下为占位内容，展示此组件的交互形态。`
-                  : `Detailed ${panel.title.en.toLowerCase()} documentation for this project is being written. This is placeholder content demonstrating the component's interaction pattern.`
-                }</em></p>
-                <p>{locale === 'zh' ? '在实际部署版本中，此处将展示：' : 'When populated, this section will showcase:'}</p>
-                <ul>
-                  <li>{locale === 'zh' ? '具体的技术挑战描述与解决路径' : 'Specific technical challenges and solutions'}</li>
-                  <li>{locale === 'zh' ? '关键架构决策的前因后果' : 'Key architectural decisions and their rationale'}</li>
-                  <li>{locale === 'zh' ? '系统数据流图与核心设计模式说明' : 'System data flow and core design patterns'}</li>
-                </ul>
-                <p>{locale === 'zh'
-                  ? '此结构化文档直接面向技术面试官的评估维度，展示候选人在技术深度、工程判断力和系统思维方面的能力。'
-                  : 'This structured documentation directly addresses technical interviewer evaluation dimensions.'
-                }</p>
-              </>
-            )}
-          </div>
-        </details>
-      );
-    })
-  }
-
+  {panels.map((panel) => {
+    const content = getContent(panel.key);
+    const filled = !!content;
+    return (
+      <details class="tech-doc-panel group" open={filled}>
+        <summary>
+          <span>{panel.title[locale as keyof typeof panel.title]}</span>
+          <span class="tech-doc-summary-hint">{panel.summary[locale as keyof typeof panel.summary]}</span>
+        </summary>
+        <div class="panel-body">
+          {filled ? (
+            <div set:html={content!} />
+          ) : (
+            <>
+              <p><em>{locale === 'zh'
+                ? `该项目的详细${panel.title.zh}正在撰写中。`
+                : `Detailed ${panel.title.en.toLowerCase()} documentation for this project is being written.`
+              }</em></p>
+              <p>{locale === 'zh' ? '在实际部署版本中，此处将展示具体的技术描述、架构决策与设计模式说明。' : 'When populated, this section will showcase specific technical descriptions, architectural decisions, and design patterns.'}</p>
+            </>
+          )}
+        </div>
+      </details>
+    );
+  })}
   <p class="text-xs text-[var(--color-muted)]/50 mt-4">
     {locale === 'zh'
-      ? '💡 提示：点击每个面板展开详细内容。此组件采用 HTML5 <details> 元素，无需 JavaScript，支持键盘导航与屏幕阅读器。'
-      : '💡 Tip: Click each panel to expand. This uses native HTML5 <details> elements — no JavaScript needed, keyboard-accessible.'}
+      ? '💡 提示：点击每个面板展开详细内容。此组件采用 HTML5 <details> 元素，无需 JavaScript。'
+      : '💡 Tip: Click each panel to expand. Uses native HTML5 <details> elements — no JavaScript needed.'}
   </p>
 </div>
