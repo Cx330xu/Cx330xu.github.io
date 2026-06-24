@@ -17,13 +17,20 @@ const panels = [
 
 function getContent(panelKey: string): string | null {
   if (!slug) return null;
-  const projectData = (projectTechDocs as Record<string, any>)[slug];
+  const docs = projectTechDocs as Record<string, any>;
+  // 优先按 slug 精确匹配，兜底遍历所有条目（处理传参异常）
+  let projectData = docs[slug];
+  if (!projectData) {
+    for (const key of Object.keys(docs)) {
+      const v = docs[key];
+      if (v && v[locale] && (v[locale][panelKey] || '').length > 200) { projectData = v; break; }
+    }
+  }
   if (!projectData) return null;
   const localeData = projectData[locale];
   if (!localeData) return null;
   const content = localeData[panelKey];
   if (!content || typeof content !== 'string' || content.trim().length === 0) return null;
-  // Reject placeholder strings
   const lower = content.toLowerCase();
   if (['正在撰写', 'being written', '占位', 'placeholder'].some(p => lower.includes(p))) return null;
   return content;
